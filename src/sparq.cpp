@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
 
@@ -7,19 +6,31 @@
 #include "imgui.h"
 #include "implot.h"
 
-#define VERSION "v0.1"
+#include "sparq_config.h"
+
+#include <vector>
+#include <string>
+
+struct sparq_xy_t
+{
+    float x;
+    float y;
+
+} typedef sparq_xy_t;
 
 int main(int argc, char *argv[])
 {
-    std::string win_title = std::string("SPARQ - ") + VERSION;
 
-    sf::RenderWindow window(sf::VideoMode(1280, 720), win_title);
+    sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
-    window.setFramerateLimit(60);
-    window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(SPARQ_MAX_FPS);
+    window.setVerticalSyncEnabled(SPARQ_VSYNC);
 
     ImGui::SFML::Init(window);
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    ImGui::CreateContext();
+    ImPlot::CreateContext();
 
     sf::Clock deltaClock;
     while (window.isOpen())
@@ -51,27 +62,47 @@ int main(int argc, char *argv[])
 
         ImGui::SFML::Update(window, deltaClock.restart());
 
+        // Create Dockspace so that the windows can stick to the main view
+        ImGuiID main_dockspace = ImGui::DockSpaceOverViewport();
+
         ImGui::BeginMainMenuBar();
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Open", "Ctrl+O"))
+            {
+            }
+
+            ImGui::EndMenu();
+        }
         ImGui::EndMainMenuBar();
 
         ImGui::Begin("Plot");
 
+        // ImPlot::CreateContext();
+
         float x_data[2] = {1, 2};
         float y_data[2] = {4, 12};
 
-        // ImGui::CreateContext();
-        ImPlot::CreateContext();
+        if (ImPlot::BeginPlot("Serial Data", ImVec2(-1, -1)))
+        {
+            ImPlot::SetupAxes("Time", "");
+            ImPlot::PlotLine("1", x_data, y_data, 2);
+            ImPlot::EndPlot();
+        }
 
-        ImPlot::ShowDemoWindow();
-
-        ImPlot::DestroyContext();
-        // ImGui::DestroyContext();
+        // ImPlot::DestroyContext();
 
         ImGui::End();
+
+        ImVector<const char *> log;
+        log.push_back("test");
 
         ImGui::Begin("Console");
-
+        ImGui::Separator();
+        ImGui::TextUnformatted("test");
+        ImGui::Separator();
         ImGui::End();
+
         ImGui::Begin("Connection");
 
         ImGui::End();
@@ -80,6 +111,9 @@ int main(int argc, char *argv[])
         ImGui::SFML::Render(window);
         window.display();
     }
+
+    ImPlot::DestroyContext();
+    ImGui::DestroyContext();
 
     ImGui::SFML::Shutdown();
 
