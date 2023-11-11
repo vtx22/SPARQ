@@ -4,8 +4,6 @@ set(SFML_VERSION 2.6.1)
 set(IMGUI_VERSION 1.89.9)
 # set(IMGUI_SFML_VERSION 2.6.x)
 
-# It's nice to get stripped-down release zips instead of cloning
-# a repo and checking out a tag
 FetchContent_Declare(
   SFML
   URL "https://github.com/SFML/SFML/archive/${SFML_VERSION}.zip"
@@ -17,15 +15,16 @@ FetchContent_Declare(
   GIT_TAG        docking
 )
 
-# Or by tag...
+FetchContent_Declare(
+  implot
+  GIT_REPOSITORY https://github.com/epezent/implot.git
+  GIT_TAG        master
+)
+
 FetchContent_Declare(
   imgui-sfml
   GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
   GIT_TAG        2.6.x
-  # GIT_COMMIT 5f54b69b6aee18db846c81633f86f78c2586dded
-  # ^ or like this - sometimes it's better because FetchContent won't look
-  # into remote to see if branch head was updated or not - good for stable
-  # tags like 'vX.X' corresponding to releases
 )
 
 ## finally, let's build
@@ -44,3 +43,6 @@ option(IMGUI_SFML_FIND_SFML "Use find_package to find SFML" OFF)
 option(IMGUI_SFML_IMGUI_DEMO "Build imgui_demo.cpp" ON)
 
 FetchContent_MakeAvailable(imgui-sfml)
+
+# ImPlot
+FetchContent_MakeAvailable(implot)

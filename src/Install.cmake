@@ -4,7 +4,6 @@ install(TARGETS sparq
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-# For std::filesystem support used by blockplot
 set_target_properties(sparq PROPERTIES CXX_STANDARD 20)
 
 # Installing is not easy, when we're dealing with shared libs
