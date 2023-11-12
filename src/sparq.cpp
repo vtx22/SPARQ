@@ -8,18 +8,27 @@
 
 #include "sparq_config.h"
 
+// Window Applications
+#include "ConnectionWindow.hpp"
+#include "ConsoleWindow.hpp"
+
 #include <vector>
 #include <string>
-
-struct sparq_xy_t
-{
-    float x;
-    float y;
-
-} typedef sparq_xy_t;
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
+    float x[256];
+    float y[256];
+
+    for (uint16_t i = 0; i < 256; i++)
+    {
+        x[i] = i;
+        y[i] = sin(i / 255.0 * 2 * 3.14);
+    }
+
+    ConnectionWindow connection_window;
+    ConsoleWindow console_window;
 
     sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
@@ -74,37 +83,34 @@ int main(int argc, char *argv[])
 
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Settings"))
+        {
+
+            ImGui::EndMenu();
+        }
         ImGui::EndMainMenuBar();
 
         ImGui::Begin("Plot");
 
-        // ImPlot::CreateContext();
-
-        float x_data[2] = {1, 2};
-        float y_data[2] = {4, 12};
-
         if (ImPlot::BeginPlot("Serial Data", ImVec2(-1, -1)))
         {
+            ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
             ImPlot::SetupAxes("Time", "");
-            ImPlot::PlotLine("1", x_data, y_data, 2);
+            ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+            ImPlot::PlotLine("1", x, y, 255);
+            ImPlot::PopStyleColor();
             ImPlot::EndPlot();
         }
 
-        // ImPlot::DestroyContext();
-
         ImGui::End();
 
-        ImVector<const char *> log;
-        log.push_back("test");
+        connection_window.update();
+        console_window.update();
 
-        ImGui::Begin("Console");
-        ImGui::Separator();
-        ImGui::TextUnformatted("test");
-        ImGui::Separator();
+        ImGui::Begin("Graphing");
         ImGui::End();
 
-        ImGui::Begin("Connection");
-
+        ImGui::Begin("Measurement");
         ImGui::End();
 
         window.clear(sf::Color(20, 20, 20));
