@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <stdint.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -15,18 +16,38 @@
 
 #include "ConsoleWindow.hpp"
 
-int close_app(sf::RenderWindow *window);
+struct sparq_data_point
+{
+    float x;
+    float y;
+
+} typedef sparq_data_point;
+
+struct sparq_dataset
+{
+    uint8_t uuid;
+    std::vector<float> x_values;
+    std::vector<float> y_values;
+
+} typedef sparq_dataset;
+
+std::vector<sparq_dataset> data;
+
+int close_app(sf::RenderWindow &window);
 
 int main(int argc, char *argv[])
 {
-    float x[256];
-    float y[256];
+
+    sparq_dataset sine_ds;
+    sine_ds.uuid = 1;
 
     for (uint16_t i = 0; i < 256; i++)
     {
-        x[i] = i;
-        y[i] = sin(i / 255.0 * 2 * 3.14);
+        sine_ds.x_values.push_back(i);
+        sine_ds.y_values.push_back(sin(i / 255.0 * 2 * 3.14));
     }
+
+    data.push_back(sine_ds);
 
     ConsoleWindow console_window;
 
@@ -42,6 +63,7 @@ int main(int argc, char *argv[])
         std::cout << "IMGUI SFML Window Init failed!" << std::endl;
         return -1;
     }
+
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui::CreateContext();
@@ -57,7 +79,7 @@ int main(int argc, char *argv[])
 
             if (event.type == sf::Event::Closed)
             {
-                return close_app(&window);
+                return close_app(window);
             }
 
             if (event.type == sf::Event::Resized)
@@ -66,18 +88,14 @@ int main(int argc, char *argv[])
                 sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
                 window.setView(sf::View(visibleArea));
             }
-
-            if (event.type == sf::Event::MouseWheelMoved)
-            {
-            }
-            if (event.type == sf::Event::MouseMoved)
-            {
-            }
         }
 
+        // == UPDATE == //
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        // Create Dockspace so that the windows can stick to the main view
+        console_window.update();
+
+        // == DRAWING == //
         ImGui::DockSpaceOverViewport();
 
         if (ImGui::BeginMainMenuBar())
@@ -98,46 +116,52 @@ int main(int argc, char *argv[])
             ImGui::EndMainMenuBar();
         }
 
-        ImGui::Begin("Plot");
-
-        if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
+        if (ImGui::Begin("Plot"))
         {
-            ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
-            ImPlot::SetupAxes("Time", "");
-            ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-            ImPlot::PlotLine("1", x, y, 255);
-            ImPlot::PopStyleColor();
-            ImPlot::EndPlot();
+
+            if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
+            {
+                ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
+                ImPlot::SetupAxes("Time", "");
+                ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+
+                for (auto &ds : data)
+                {
+                    ImPlot::PlotLine("ds.uuid", ds.x_values.data(), ds.y_values.data(), 255);
+                }
+
+                ImPlot::PopStyleColor();
+                ImPlot::EndPlot();
+            }
+
+            ImGui::End();
         }
 
-        ImGui::End();
+        if (ImGui::Begin("Graphing"))
+        {
+            ImGui::End();
+        }
 
-        console_window.update();
-
-        // connection_window.update();
-        // console_window.update();
-
-        ImGui::Begin("Graphing");
-        ImGui::End();
-
-        ImGui::Begin("Measurement");
-        ImGui::End();
+        if (ImGui::Begin("Measurement"))
+        {
+            ImGui::End();
+        }
 
         window.clear(sf::Color(20, 20, 20));
         ImGui::SFML::Render(window);
         window.display();
     }
 
-    return close_app(&window);
+    return close_app(window);
 }
 
-int close_app(sf::RenderWindow *window)
+int close_app(sf::RenderWindow &window)
 {
     // ImPlot::DestroyContext();
     // ImGui::DestroyContext();
     // ImGui::SFML::Shutdown();
 
-    window->close();
+    window.close();
 
     return 0;
 }
