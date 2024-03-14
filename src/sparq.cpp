@@ -8,9 +8,7 @@
 
 #include "sparq_config.h"
 
-// Window Applications
-#include "ConnectionWindow.hpp"
-#include "ConsoleWindow.hpp"
+#include <cmath>
 
 #include <vector>
 #include <string>
@@ -27,15 +25,19 @@ int main(int argc, char *argv[])
         y[i] = sin(i / 255.0 * 2 * 3.14);
     }
 
-    ConnectionWindow connection_window;
-    ConsoleWindow console_window;
+    // ConnectionWindow connection_window;
+    // ConsoleWindow console_window;
 
     sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
     window.setFramerateLimit(SPARQ_MAX_FPS);
     window.setVerticalSyncEnabled(SPARQ_VSYNC);
 
-    ImGui::SFML::Init(window);
+    if (!ImGui::SFML::Init(window))
+    {
+        std::cout << "IMGUI SFML Window Init failed!" << std::endl;
+        return -1;
+    }
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui::CreateContext();
@@ -104,8 +106,8 @@ int main(int argc, char *argv[])
 
         ImGui::End();
 
-        connection_window.update();
-        console_window.update();
+        // connection_window.update();
+        // console_window.update();
 
         ImGui::Begin("Graphing");
         ImGui::End();
