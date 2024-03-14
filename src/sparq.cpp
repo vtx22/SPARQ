@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 
                 for (auto &ds : data)
                 {
-                    ImPlot::PlotLine("ds.uuid", ds.x_values.data(), ds.y_values.data(), 255);
+                    ImPlot::PlotLine(std::to_string(ds.uuid).c_str(), ds.x_values.data(), ds.y_values.data(), 255);
                 }
 
                 ImPlot::PopStyleColor();
