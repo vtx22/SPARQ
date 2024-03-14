@@ -1,3 +1,8 @@
+#include <cmath>
+#include <vector>
+#include <string>
+#include <iostream>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
@@ -8,11 +13,7 @@
 
 #include "sparq_config.h"
 
-#include <cmath>
-
-#include <vector>
-#include <string>
-#include <iostream>
+#include "ConsoleWindow.hpp"
 
 int close_app(sf::RenderWindow *window);
 
@@ -27,8 +28,9 @@ int main(int argc, char *argv[])
         y[i] = sin(i / 255.0 * 2 * 3.14);
     }
 
+    ConsoleWindow console_window;
+
     // ConnectionWindow connection_window;
-    // ConsoleWindow console_window;
 
     sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
@@ -76,27 +78,29 @@ int main(int argc, char *argv[])
         ImGui::SFML::Update(window, deltaClock.restart());
 
         // Create Dockspace so that the windows can stick to the main view
-        ImGuiID main_dockspace = ImGui::DockSpaceOverViewport();
+        ImGui::DockSpaceOverViewport();
 
-        ImGui::BeginMainMenuBar();
-        if (ImGui::BeginMenu("File"))
+        if (ImGui::BeginMainMenuBar())
         {
-            if (ImGui::MenuItem("Open", "Ctrl+O"))
+            if (ImGui::BeginMenu("File"))
             {
+                if (ImGui::MenuItem("Open", "Ctrl+O"))
+                {
+                }
+
+                ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Settings"))
+            {
 
-            ImGui::EndMenu();
+                ImGui::EndMenu();
+            }
+            ImGui::EndMainMenuBar();
         }
-        if (ImGui::BeginMenu("Settings"))
-        {
-
-            ImGui::EndMenu();
-        }
-        ImGui::EndMainMenuBar();
 
         ImGui::Begin("Plot");
 
-        if (ImPlot::BeginPlot("Serial Data", ImVec2(-1, -1)))
+        if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
         {
             ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
             ImPlot::SetupAxes("Time", "");
@@ -107,6 +111,8 @@ int main(int argc, char *argv[])
         }
 
         ImGui::End();
+
+        console_window.update();
 
         // connection_window.update();
         // console_window.update();
