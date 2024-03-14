@@ -14,6 +14,8 @@
 #include <string>
 #include <iostream>
 
+int close_app(sf::RenderWindow *window);
+
 int main(int argc, char *argv[])
 {
     float x[256];
@@ -53,7 +55,7 @@ int main(int argc, char *argv[])
 
             if (event.type == sf::Event::Closed)
             {
-                goto shutdown;
+                return close_app(&window);
             }
 
             if (event.type == sf::Event::Resized)
@@ -120,11 +122,16 @@ int main(int argc, char *argv[])
         window.display();
     }
 
-shutdown:
-    ImPlot::DestroyContext();
-    ImGui::DestroyContext();
+    return close_app(&window);
+}
 
-    ImGui::SFML::Shutdown();
+int close_app(sf::RenderWindow *window)
+{
+    // ImPlot::DestroyContext();
+    // ImGui::DestroyContext();
+    // ImGui::SFML::Shutdown();
+
+    window->close();
 
     return 0;
 }
