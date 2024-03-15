@@ -2,7 +2,7 @@
 
 ConsoleWindow::ConsoleWindow()
 {
-    ClearLog();
+    clear_log();
     memset(InputBuf, 0, sizeof(InputBuf));
     HistoryPos = -1;
 
@@ -13,12 +13,12 @@ ConsoleWindow::ConsoleWindow()
     Commands.push_back("CLASSIFY");
     AutoScroll = true;
     ScrollToBottom = false;
-    AddLog("Welcome to SPARQ!");
+    add_log("Welcome to SPARQ!");
 }
 
 ConsoleWindow::~ConsoleWindow()
 {
-    ClearLog();
+    clear_log();
     for (int i = 0; i < History.Size; i++)
     {
         free(History[i]);
@@ -27,10 +27,10 @@ ConsoleWindow::~ConsoleWindow()
 
 void ConsoleWindow::update()
 {
-    Draw("Console");
+    draw("Console");
 }
 
-void ConsoleWindow::ClearLog()
+void ConsoleWindow::clear_log()
 {
     for (int i = 0; i < Items.Size; i++)
     {
@@ -40,7 +40,7 @@ void ConsoleWindow::ClearLog()
     Items.clear();
 }
 
-void ConsoleWindow::AddLog(const char *fmt, ...) // IM_FMTARGS(2)
+void ConsoleWindow::add_log(const char *fmt, ...) // IM_FMTARGS(2)
 {
     // FIXME-OPT
     char buf[1024];
@@ -52,9 +52,9 @@ void ConsoleWindow::AddLog(const char *fmt, ...) // IM_FMTARGS(2)
     Items.push_back(Strdup(buf));
 }
 
-void ConsoleWindow::Draw(const char *title)
+void ConsoleWindow::draw(const char *title)
 {
-    ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
+    // ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
     if (!ImGui::Begin(title))
     {
         ImGui::End();
@@ -65,24 +65,24 @@ void ConsoleWindow::Draw(const char *title)
 
     /*if (ImGui::SmallButton("Add Debug Text"))
     {
-       AddLog("%d some text", Items.Size);
-       AddLog("some more text");
-       AddLog("display very important message here!");
+       add_log("%d some text", Items.Size);
+       add_log("some more text");
+       add_log("display very important message here!");
     }
     ImGui::SameLine();
     if (ImGui::SmallButton("Add Debug Error"))
     {
-       AddLog("[error] something went wrong");
+       add_log("[error] something went wrong");
     }
     ImGui::SameLine();
     */
     if (ImGui::Button("Clear"))
     {
-        ClearLog();
+        clear_log();
     }
     ImGui::SameLine();
     bool copy_to_clipboard = ImGui::Button("Copy");
-    // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
+    // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); add_log("Spam %f", t); }
     ImGui::SameLine();
     ImGui::Checkbox("Auto-scroll", &AutoScroll);
 
@@ -98,7 +98,7 @@ void ConsoleWindow::Draw(const char *title)
         if (ImGui::BeginPopupContextWindow())
         {
             if (ImGui::Selectable("Clear"))
-                ClearLog();
+                clear_log();
             ImGui::EndPopup();
         }
 
@@ -171,12 +171,12 @@ void ConsoleWindow::Draw(const char *title)
     // Command-line
     bool reclaim_focus = false;
     ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub, (void *)this))
+    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &text_edit_callbackStub, (void *)this))
     {
         char *s = InputBuf;
         Strtrim(s);
         if (s[0])
-            ExecCommand(s);
+            exec_command(s);
         strcpy(s, "");
         reclaim_focus = true;
     }
@@ -189,9 +189,9 @@ void ConsoleWindow::Draw(const char *title)
     ImGui::End();
 }
 
-void ConsoleWindow::ExecCommand(const char *command_line)
+void ConsoleWindow::exec_command(const char *command_line)
 {
-    AddLog("# %s\n", command_line);
+    add_log("# %s\n", command_line);
 
     // Insert into history. First find match and delete it so it can be pushed to the back.
     // This isn't trying to be smart or optimal.
@@ -208,32 +208,32 @@ void ConsoleWindow::ExecCommand(const char *command_line)
     // Process command
     if (Stricmp(command_line, "CLEAR") == 0)
     {
-        ClearLog();
+        clear_log();
     }
     else if (Stricmp(command_line, "HELP") == 0)
     {
-        AddLog("Commands:");
+        add_log("Commands:");
         for (int i = 0; i < Commands.Size; i++)
-            AddLog("- %s", Commands[i]);
+            add_log("- %s", Commands[i]);
     }
     else if (Stricmp(command_line, "HISTORY") == 0)
     {
         int first = History.Size - 10;
         for (int i = first > 0 ? first : 0; i < History.Size; i++)
-            AddLog("%3d: %s\n", i, History[i]);
+            add_log("%3d: %s\n", i, History[i]);
     }
     else
     {
-        AddLog("Unknown command: '%s'\n", command_line);
+        add_log("Unknown command: '%s'\n", command_line);
     }
 
     // On command input, we scroll to bottom even if AutoScroll==false
     ScrollToBottom = true;
 }
 
-int ConsoleWindow::TextEditCallback(ImGuiInputTextCallbackData *data)
+int ConsoleWindow::text_edit_callback(ImGuiInputTextCallbackData *data)
 {
-    // AddLog("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
+    // add_log("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
     switch (data->EventFlag)
     {
     case ImGuiInputTextFlags_CallbackCompletion:
@@ -260,7 +260,7 @@ int ConsoleWindow::TextEditCallback(ImGuiInputTextCallbackData *data)
         if (candidates.Size == 0)
         {
             // No match
-            AddLog("No match for \"%.*s\"!\n", (int)(word_end - word_start), word_start);
+            add_log("No match for \"%.*s\"!\n", (int)(word_end - word_start), word_start);
         }
         else if (candidates.Size == 1)
         {
@@ -295,9 +295,9 @@ int ConsoleWindow::TextEditCallback(ImGuiInputTextCallbackData *data)
             }
 
             // List matches
-            AddLog("Possible matches:\n");
+            add_log("Possible matches:\n");
             for (int i = 0; i < candidates.Size; i++)
-                AddLog("- %s\n", candidates[i]);
+                add_log("- %s\n", candidates[i]);
         }
 
         break;

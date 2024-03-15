@@ -11,17 +11,17 @@ public:
     ~ConsoleWindow();
 
     void update();
-    void ClearLog();
-    void AddLog(const char *fmt, ...); // IM_FMTARGS(2);
+    void clear_log();
+    void add_log(const char *fmt, ...); // IM_FMTARGS(2);
 
-    void Draw(const char *title);
-    void ExecCommand(const char *command_line);
-    int TextEditCallback(ImGuiInputTextCallbackData *data);
+    void draw(const char *title);
+    void exec_command(const char *command_line);
+    int text_edit_callback(ImGuiInputTextCallbackData *data);
 
-    static int TextEditCallbackStub(ImGuiInputTextCallbackData *data)
+    static int text_edit_callbackStub(ImGuiInputTextCallbackData *data)
     {
         ConsoleWindow *console = (ConsoleWindow *)data->UserData;
-        return console->TextEditCallback(data);
+        return console->text_edit_callback(data);
     }
 
     static int Stricmp(const char *s1, const char *s2)
