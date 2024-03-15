@@ -15,6 +15,7 @@
 #include "sparq_config.h"
 
 #include "ConsoleWindow.hpp"
+#include "ConnectionWindow.hpp"
 
 struct sparq_data_point
 {
@@ -50,8 +51,7 @@ int main(int argc, char *argv[])
     data.push_back(sine_ds);
 
     ConsoleWindow console_window;
-
-    // ConnectionWindow connection_window;
+    ConnectionWindow connection_window;
 
     sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
@@ -93,8 +93,6 @@ int main(int argc, char *argv[])
         // == UPDATE == //
         ImGui::SFML::Update(window, deltaClock.restart());
 
-        console_window.update();
-
         // == DRAWING == //
         ImGui::DockSpaceOverViewport();
 
@@ -133,19 +131,21 @@ int main(int argc, char *argv[])
                 ImPlot::PopStyleColor();
                 ImPlot::EndPlot();
             }
-
-            ImGui::End();
         }
+        ImGui::End();
 
         if (ImGui::Begin("Graphing"))
         {
-            ImGui::End();
         }
+        ImGui::End();
 
         if (ImGui::Begin("Measurement"))
         {
-            ImGui::End();
         }
+        ImGui::End();
+
+        console_window.update();
+        connection_window.update();
 
         window.clear(sf::Color(20, 20, 20));
         ImGui::SFML::Render(window);
