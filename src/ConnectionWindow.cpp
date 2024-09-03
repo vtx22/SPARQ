@@ -72,16 +72,6 @@ void ConnectionWindow::update()
             ImGui::EndCombo();
         }
 
-        if (_port_open)
-        {
-            ImGui::EndDisabled();
-        }
-
-        if (_port_open)
-        {
-            ImGui::BeginDisabled();
-        }
-
         if (ImGui::Button("Open"))
         {
             _port_open = true;
