@@ -22,15 +22,10 @@ void ConnectionWindow::update()
             ImGui::BeginDisabled();
         }
 
-        if (ImGui::Button("Refresh Ports"))
-        {
-            _com_ports = Serial::get_port_names();
-        }
-        ImGui::SameLine();
-        ImGui::PushItemWidth(-FLT_MIN);
+        // ImGui::PushItemWidth(-FLT_MIN);
 
         // COM Port selection
-        if (ImGui::BeginCombo("##", _com_ports[_current_id].c_str()))
+        if (ImGui::BeginCombo("##ComPorts", _com_ports[_current_id].c_str()))
         {
             for (int n = 0; n < (int)_com_ports.size(); n++)
             {
@@ -49,10 +44,17 @@ void ConnectionWindow::update()
             }
             ImGui::EndCombo();
         }
-        ImGui::PopItemWidth();
+
+        ImGui::SameLine();
+        if (ImGui::Button("Refresh Ports"))
+        {
+            _com_ports = Serial::get_port_names();
+        }
+
+        // ImGui::PopItemWidth();
 
         // Baud Rate selection
-        if (ImGui::BeginCombo("Baud Rate", std::to_string(_baud_rate).c_str()))
+        if (ImGui::BeginCombo("###BaudRateSelect", std::to_string(_baud_rate).c_str()))
         {
             for (uint8_t n = 0; n < _available_baud_rates.size(); n++)
             {
@@ -71,6 +73,9 @@ void ConnectionWindow::update()
             }
             ImGui::EndCombo();
         }
+
+        ImGui::SameLine();
+        ImGui::Text("Baud Rate");
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 1, 0, 1));
         if (ImGui::Button("Open"))
