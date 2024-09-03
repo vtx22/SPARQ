@@ -2,6 +2,7 @@
 #define SPARQ_HPP
 
 #include <vector>
+#include <cstring>
 
 struct sparq_data_point
 {
@@ -12,12 +13,11 @@ struct sparq_data_point
 
 struct sparq_dataset
 {
-    uint8_t uuid;
+    uint8_t id;
+    std::string name = "";
     std::vector<float> x_values;
     std::vector<float> y_values;
 
 } typedef sparq_dataset;
-
-std::vector<sparq_dataset> data;
 
 #endif // SPARQ_HPP
