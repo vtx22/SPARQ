@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <stdint.h>
+#include <windows.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -45,6 +46,8 @@ int main(int argc, char *argv[])
 
     window.setFramerateLimit(SPARQ_MAX_FPS);
     window.setVerticalSyncEnabled(SPARQ_VSYNC);
+
+    ::ShowWindow(window.getSystemHandle(), SW_MAXIMIZE);
 
     if (!ImGui::SFML::Init(window))
     {
