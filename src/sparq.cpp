@@ -18,29 +18,15 @@
 
 #include "ConsoleWindow.hpp"
 #include "ConnectionWindow.hpp"
+#include "PlottingWindow.hpp"
 
 int close_app(sf::RenderWindow &window);
 
 int main(int argc, char *argv[])
 {
-
-    sparq_dataset sine_ds;
-    sine_ds.uuid = 1;
-
-    for (uint16_t i = 0; i < 256; i++)
-    {
-        sine_ds.x_values.push_back(i);
-        sine_ds.y_values.push_back(sin(i / 255.0 * 2 * 3.14));
-    }
-
-    data.push_back(sine_ds);
-    sine_ds.uuid = 2;
-    data.push_back(sine_ds);
-    sine_ds.uuid = 3;
-    data.push_back(sine_ds);
-
     ConsoleWindow console_window;
     ConnectionWindow connection_window;
+    PlottingWindow plotting_window;
 
     sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
@@ -105,25 +91,6 @@ int main(int argc, char *argv[])
             ImGui::EndMainMenuBar();
         }
 
-        if (ImGui::Begin("Plot"))
-        {
-            if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
-            {
-                ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
-                ImPlot::SetupAxes("Time", "");
-                // ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-
-                for (auto &ds : data)
-                {
-                    ImPlot::PlotLine(std::to_string(ds.uuid).c_str(), ds.x_values.data(), ds.y_values.data(), 255);
-                }
-
-                // ImPlot::PopStyleColor();
-                ImPlot::EndPlot();
-            }
-        }
-        ImGui::End();
-
         if (ImGui::Begin("Graphing"))
         {
         }
@@ -134,6 +101,7 @@ int main(int argc, char *argv[])
         }
         ImGui::End();
 
+        plotting_window.update();
         console_window.update();
         connection_window.update();
 
