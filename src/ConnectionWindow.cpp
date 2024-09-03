@@ -10,17 +10,14 @@ ConnectionWindow::~ConnectionWindow()
 
 void ConnectionWindow::update()
 {
-    // ImGui::SetNextWindowSizeConstraints(ImVec2(1000.0f, 0.0f), ImVec2(FLT_MAX, FLT_MAX));
     if (ImGui::Begin("Connection"))
     {
-        static bool port_open = false;
-
         if (_com_ports.size() == 0)
         {
             _com_ports.push_back("COM-");
         }
 
-        if (port_open)
+        if (_port_open)
         {
             ImGui::BeginDisabled();
         }
@@ -32,6 +29,7 @@ void ConnectionWindow::update()
         ImGui::SameLine();
         ImGui::PushItemWidth(-FLT_MIN);
 
+        // COM Port selection
         if (ImGui::BeginCombo("##", _com_ports[_current_id].c_str()))
         {
             for (int n = 0; n < (int)_com_ports.size(); n++)
@@ -53,6 +51,7 @@ void ConnectionWindow::update()
         }
         ImGui::PopItemWidth();
 
+        // Baud Rate selection
         if (ImGui::BeginCombo("Baud Rate", std::to_string(_baud_rate).c_str()))
         {
             for (uint8_t n = 0; n < _available_baud_rates.size(); n++)
@@ -73,22 +72,37 @@ void ConnectionWindow::update()
             ImGui::EndCombo();
         }
 
-        if (port_open)
+        if (_port_open)
         {
             ImGui::EndDisabled();
         }
 
-        if (false)
+        if (_port_open)
         {
             ImGui::BeginDisabled();
         }
 
         if (ImGui::Button("Open"))
         {
-            port_open = !port_open;
+            _port_open = true;
+        }
+        else if (_port_open)
+        {
+            ImGui::EndDisabled();
         }
 
-        if (false)
+        ImGui::SameLine();
+
+        if (!_port_open)
+        {
+            ImGui::BeginDisabled();
+        }
+
+        if (ImGui::Button("Close"))
+        {
+            _port_open = false;
+        }
+        else if (!_port_open)
         {
             ImGui::EndDisabled();
         }
