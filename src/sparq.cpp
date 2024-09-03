@@ -13,26 +13,10 @@
 #include "implot.h"
 
 #include "sparq_config.h"
+#include "sparq.hpp"
 
 #include "ConsoleWindow.hpp"
 #include "ConnectionWindow.hpp"
-
-struct sparq_data_point
-{
-    float x;
-    float y;
-
-} typedef sparq_data_point;
-
-struct sparq_dataset
-{
-    uint8_t uuid;
-    std::vector<float> x_values;
-    std::vector<float> y_values;
-
-} typedef sparq_dataset;
-
-std::vector<sparq_dataset> data;
 
 int close_app(sf::RenderWindow &window);
 
@@ -48,6 +32,10 @@ int main(int argc, char *argv[])
         sine_ds.y_values.push_back(sin(i / 255.0 * 2 * 3.14));
     }
 
+    data.push_back(sine_ds);
+    sine_ds.uuid = 2;
+    data.push_back(sine_ds);
+    sine_ds.uuid = 3;
     data.push_back(sine_ds);
 
     ConsoleWindow console_window;
@@ -116,19 +104,18 @@ int main(int argc, char *argv[])
 
         if (ImGui::Begin("Plot"))
         {
-
             if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
             {
                 ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
                 ImPlot::SetupAxes("Time", "");
-                ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+                // ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 
                 for (auto &ds : data)
                 {
                     ImPlot::PlotLine(std::to_string(ds.uuid).c_str(), ds.x_values.data(), ds.y_values.data(), 255);
                 }
 
-                ImPlot::PopStyleColor();
+                // ImPlot::PopStyleColor();
                 ImPlot::EndPlot();
             }
         }
@@ -157,8 +144,8 @@ int main(int argc, char *argv[])
 
 int close_app(sf::RenderWindow &window)
 {
-    // ImPlot::DestroyContext();
-    // ImGui::DestroyContext();
+    ImPlot::DestroyContext();
+    ImGui::DestroyContext();
     // ImGui::SFML::Shutdown();
 
     window.close();
