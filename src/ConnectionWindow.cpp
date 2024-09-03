@@ -72,6 +72,7 @@ void ConnectionWindow::update()
             ImGui::EndCombo();
         }
 
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 1, 0, 1));
         if (ImGui::Button("Open"))
         {
             _port_open = true;
@@ -83,6 +84,7 @@ void ConnectionWindow::update()
 
         ImGui::SameLine();
 
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
         if (!_port_open)
         {
             ImGui::BeginDisabled();
@@ -96,6 +98,7 @@ void ConnectionWindow::update()
         {
             ImGui::EndDisabled();
         }
+        ImGui::PopStyleColor(2);
     }
     ImGui::End();
 }
