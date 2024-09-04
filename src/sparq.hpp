@@ -2,7 +2,8 @@
 #define SPARQ_HPP
 
 #include <vector>
-#include <cstring>
+#include <string>
+#include <cstdint>
 
 struct sparq_data_point
 {
@@ -13,7 +14,7 @@ struct sparq_data_point
 
 struct sparq_dataset
 {
-    uint8_t id;
+    uint8_t id = 0;
     std::string name = "";
     std::vector<float> x_values;
     std::vector<float> y_values;

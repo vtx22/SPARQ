@@ -28,6 +28,16 @@ int main(int argc, char *argv[])
     ConnectionWindow connection_window;
     PlottingWindow plotting_window;
 
+    sparq_dataset ds;
+
+    for (uint8_t i = 0; i < 254; i++)
+    {
+        ds.x_values.push_back(i);
+        ds.y_values.push_back(i);
+    }
+
+    plotting_window.add_dataset(ds);
+
     sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
     window.setFramerateLimit(SPARQ_MAX_FPS);

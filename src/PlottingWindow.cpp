@@ -8,6 +8,11 @@ PlottingWindow::~PlottingWindow()
 {
 }
 
+void PlottingWindow::add_dataset(const sparq_dataset &dataset)
+{
+    _datasets.push_back(dataset);
+}
+
 void PlottingWindow::update()
 {
     if (ImGui::Begin("Plot"))
@@ -16,14 +21,12 @@ void PlottingWindow::update()
         {
             ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
             ImPlot::SetupAxes("Time", "");
-            // ImPlot::PushStyleColor(ImPlotCol_Line, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
 
-            // for (auto &ds : data)
-            //{
-            //     ImPlot::PlotLine(std::to_string(ds.uuid).c_str(), ds.x_values.data(), ds.y_values.data(), 255);
-            // }
+            for (auto &ds : _datasets)
+            {
+                ImPlot::PlotLine(std::to_string(ds.id).c_str(), ds.x_values.data(), ds.y_values.data(), ds.x_values.size());
+            }
 
-            // ImPlot::PopStyleColor();
             ImPlot::EndPlot();
         }
     }
