@@ -86,6 +86,7 @@ void ConnectionWindow::update()
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 1, 0, 1));
         if (ImGui::Button("Open"))
         {
+            _signature = hex_chars_to_byte(_signature_chars[0], _signature_chars[1]);
             _port_open = true;
         }
         else if (_port_open)
@@ -125,4 +126,33 @@ int ConnectionWindow::get_selected_index()
 std::string ConnectionWindow::get_selected_port()
 {
     return _com_ports.at(_current_id);
+}
+
+uint8_t ConnectionWindow::hex_chars_to_byte(char high, char low)
+{
+    auto char_to_hex_value = [](char c) -> uint8_t
+    {
+        if (c == 0)
+        {
+            return 0;
+        }
+        if (c >= '0' && c <= '9')
+        {
+            return c - '0';
+        }
+        else if (c >= 'A' && c <= 'F')
+        {
+            return c - 'A' + 10;
+        }
+        else if (c >= 'a' && c <= 'f')
+        {
+            return c - 'a' + 10;
+        }
+        return 0;
+    };
+
+    uint8_t high_value = char_to_hex_value(high);
+    uint8_t low_value = char_to_hex_value(low);
+
+    return (high_value << 4) | low_value;
 }
