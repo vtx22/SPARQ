@@ -12,7 +12,7 @@ void ConnectionWindow::update()
 {
     if (ImGui::Begin("Connection"))
     {
-        ImGui::Text("Settings");
+        ImGui::SeparatorText("Settings");
 
         if (_com_ports.size() == 0)
         {
@@ -112,8 +112,7 @@ void ConnectionWindow::update()
         }
         ImGui::PopStyleColor(2);
 
-        ImGui::Separator();
-        ImGui::Text("Statistic");
+        ImGui::SeparatorText("Statistic");
     }
     ImGui::End();
 }
