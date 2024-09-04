@@ -12,6 +12,8 @@ void ConnectionWindow::update()
 {
     if (ImGui::Begin("Connection"))
     {
+        ImGui::Text("Settings");
+
         if (_com_ports.size() == 0)
         {
             _com_ports.push_back("COM-");
@@ -77,6 +79,10 @@ void ConnectionWindow::update()
         ImGui::SameLine();
         ImGui::Text("Baud Rate");
 
+        ImGui::InputText("##SignatureInput", _signature_chars, 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
+        ImGui::SameLine();
+        ImGui::Text("Signature");
+
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 1, 0, 1));
         if (ImGui::Button("Open"))
         {
@@ -104,6 +110,9 @@ void ConnectionWindow::update()
             ImGui::EndDisabled();
         }
         ImGui::PopStyleColor(2);
+
+        ImGui::Separator();
+        ImGui::Text("Statistic");
     }
     ImGui::End();
 }

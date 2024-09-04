@@ -25,7 +25,8 @@ private:
     std::vector<std::string> _com_ports;
 
     int _baud_rate = 115200;
-    std::array<int, 6> _available_baud_rates = {9600, 19200, 38400, 57600, 115200, 230400};
+    const std::array<int, 6> _available_baud_rates = {9600, 19200, 38400, 57600, 115200, 230400};
+    char _signature_chars[3] = {'F', 'F', 0};
 
     bool _port_open = false;
 };
