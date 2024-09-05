@@ -12,7 +12,8 @@ public:
     DataHandler(Serial *sp);
     ~DataHandler();
 
-    sparq_message_t receive_package();
+    void update();
+    sparq_message_t receive_message();
 
 private:
     Serial *_sp;
