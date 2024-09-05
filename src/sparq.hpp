@@ -21,4 +21,15 @@ struct sparq_dataset
 
 } typedef sparq_dataset;
 
+struct sparq_message_t
+{
+    uint8_t signature;
+    uint8_t control;
+    uint8_t nval;
+    std::vector<uint8_t> ids;
+    std::vector<float> values;
+    uint8_t checksum;
+
+} typedef sparq_message_t;
+
 #endif // SPARQ_HPP
