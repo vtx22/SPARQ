@@ -1,6 +1,6 @@
 #include "ConnectionWindow.hpp"
 
-ConnectionWindow::ConnectionWindow()
+ConnectionWindow::ConnectionWindow(Serial *sp) : _sp(sp)
 {
 }
 
@@ -87,7 +87,10 @@ void ConnectionWindow::update()
         if (ImGui::Button("Open"))
         {
             _signature = hex_chars_to_byte(_signature_chars[0], _signature_chars[1]);
-            _port_open = true;
+            if (_sp->open(_com_ports[_current_id].c_str(), _baud_rate) == SERIAL_ERR::OK)
+            {
+                _port_open = true;
+            }
         }
         else if (_port_open)
         {

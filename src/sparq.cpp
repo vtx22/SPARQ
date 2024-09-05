@@ -13,6 +13,8 @@
 #include "imgui.h"
 #include "implot.h"
 
+#include "serial.hpp"
+
 #include "sparq_config.h"
 #include "sparq.hpp"
 
@@ -24,8 +26,10 @@ int close_app(sf::RenderWindow &window);
 
 int main(int argc, char *argv[])
 {
+    Serial sp;
+
     ConsoleWindow console_window;
-    ConnectionWindow connection_window;
+    ConnectionWindow connection_window(&sp);
     PlottingWindow plotting_window;
 
     sparq_dataset ds;

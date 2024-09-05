@@ -12,7 +12,7 @@ class ConnectionWindow
 {
 
 public:
-    ConnectionWindow();
+    ConnectionWindow(Serial *sp);
     ~ConnectionWindow();
 
     void update();
@@ -32,6 +32,8 @@ private:
     bool _port_open = false;
 
     uint8_t hex_chars_to_byte(char high, char low);
+
+    Serial* _sp;
 };
 
 #endif // CONNECTION_WINDOW_HPP
