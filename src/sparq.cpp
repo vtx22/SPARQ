@@ -1,32 +1,13 @@
-#include <cmath>
-#include <vector>
-#include <string>
-#include <iostream>
-#include <stdint.h>
-#include <windows.h>
+#include "SPARQ.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/Window/Event.hpp>
+SPARQ::SPARQ()
+{
+}
 
-#include "imgui-SFML.h"
-#include "imgui.h"
-#include "implot.h"
-
-#include "serial.hpp"
-
-#include "sparq_config.h"
-#include "sparq.hpp"
-
-#include "ConsoleWindow.hpp"
-#include "ConnectionWindow.hpp"
-#include "PlottingWindow.hpp"
-
-int close_app(sf::RenderWindow &window);
-
-int main(int argc, char *argv[])
+int SPARQ::run()
 {
     Serial sp;
+    DataHandler data_handler(&sp);
 
     ConsoleWindow console_window;
     ConnectionWindow connection_window(&sp);
@@ -115,6 +96,7 @@ int main(int argc, char *argv[])
         }
         ImGui::End();
 
+        data_handler.update();
         plotting_window.update();
         console_window.update();
         connection_window.update();
@@ -127,7 +109,7 @@ int main(int argc, char *argv[])
     return close_app(window);
 }
 
-int close_app(sf::RenderWindow &window)
+int SPARQ::close_app(sf::RenderWindow &window)
 {
     ImPlot::DestroyContext();
     ImGui::DestroyContext();
