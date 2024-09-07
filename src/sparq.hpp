@@ -5,6 +5,12 @@
 #include <string>
 #include <cstdint>
 
+#define SPARQ_MESSAGE_HEADER_LENGTH 4
+#define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 255 * 5)
+#define SPARQ_MIN_MESSAGE_LENGTH 11
+
+#define SPARQ_DEFAULT_SIGNATURE 0xFF
+
 struct sparq_data_point
 {
     float x;
