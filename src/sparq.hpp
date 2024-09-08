@@ -31,8 +31,14 @@ class SPARQ
 public:
     SPARQ();
 
+    int init();
     int run();
     int close_app(sf::RenderWindow &window);
 
 private:
+    Serial *_sp;
+    DataHandler *_data_handler;
+    ConsoleWindow *_console_window;
+    ConnectionWindow *_connection_window;
+    PlottingWindow *_plotting_window;
 };

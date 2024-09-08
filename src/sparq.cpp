@@ -4,25 +4,25 @@ SPARQ::SPARQ()
 {
 }
 
+int SPARQ::init()
+{
+    static Serial serial_port;
+    static DataHandler data_handler(&serial_port);
+    static ConsoleWindow console_window;
+    static ConnectionWindow connection_window(&serial_port);
+    static PlottingWindow plotting_window;
+
+    _sp = &serial_port;
+    _data_handler = &data_handler;
+    _console_window = &console_window;
+    _connection_window = &connection_window;
+    _plotting_window = &plotting_window;
+
+    return 0;
+}
+
 int SPARQ::run()
 {
-    Serial sp;
-    DataHandler data_handler(&sp);
-
-    ConsoleWindow console_window;
-    ConnectionWindow connection_window(&sp);
-    PlottingWindow plotting_window;
-
-    sparq_dataset ds;
-
-    for (uint8_t i = 0; i < 254; i++)
-    {
-        ds.x_values.push_back(i);
-        ds.y_values.push_back(i);
-    }
-
-    plotting_window.add_dataset(ds);
-
     sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
     window.setFramerateLimit(SPARQ_MAX_FPS);
@@ -96,10 +96,10 @@ int SPARQ::run()
         }
         ImGui::End();
 
-        data_handler.update();
-        plotting_window.update();
-        console_window.update();
-        connection_window.update();
+        _data_handler->update();
+        _plotting_window->update();
+        _console_window->update();
+        _connection_window->update();
 
         window.clear(sf::Color(20, 20, 20));
         ImGui::SFML::Render(window);
