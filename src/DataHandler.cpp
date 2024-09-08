@@ -12,9 +12,20 @@ DataHandler::~DataHandler()
 
 void DataHandler::update()
 {
-    if (!_sp->get_open())
+    if (!receive_message())
     {
         return;
+    }
+
+    // Received complete message
+    std::cout << "Received message! First value: " << _last_message.values[0] << "\n";
+}
+
+bool DataHandler::receive_message()
+{
+    if (!_sp->get_open())
+    {
+        return false;
     }
 
     static bool in_message = false;
@@ -44,63 +55,50 @@ void DataHandler::update()
         if (!in_message)
         {
             _message_buffer.clear();
-            return;
+            return false;
         }
     }
 
     // If we got here signature was detected and it is at the start of the buffer
-    static sparq_message_t message;
 
     // Message is not complete yet, header is incomplete
     if (_message_buffer.size() < SPARQ_MESSAGE_HEADER_LENGTH)
     {
-        return;
+        return false;
     }
 
-    message.header.from_array(_message_buffer.data());
+    _last_message.header.from_array(_message_buffer.data());
 
-    if (message.header.checksum != DataHandler::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
+    if (_last_message.header.checksum != DataHandler::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
     {
         // Header checksum is wrong, clear the message buffer from that part
         std::cout << "Message Header Checksum is wrong!\n";
         _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
         in_message = false;
-        return;
+        return false;
     }
 
-    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + 2 + message.header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
+    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + 2 + _last_message.header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
 
     if (_message_buffer.size() < total_message_length)
     {
         // Message is not complete yet, we are expecting nval id/value pairs
-        return;
+        return false;
     }
 
     // Finally we got a full message
-    message.from_array(_message_buffer.data());
+    _last_message.from_array(_message_buffer.data());
 
-    if (message.checksum != DataHandler::xor16_cs(_message_buffer.data(), total_message_length - 2))
+    if (_last_message.checksum != DataHandler::xor16_cs(_message_buffer.data(), total_message_length - 2))
     {
         // Checksum is wrong
         std::cout << "Message Checksum is wrong!\n";
-        // TODO: Handle
+        return false;
     }
-
-    std::cout << "Message Received! First value: " << message.values.at(0) << std::endl;
 
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
     in_message = false;
-    return;
-}
-
-sparq_message_t DataHandler::receive_message()
-{
-    sparq_message_t message;
-
-    if (!_sp->get_open())
-    {
-        return message;
-    }
+    return true;
 }
 
 uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)

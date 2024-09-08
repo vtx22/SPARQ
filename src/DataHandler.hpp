@@ -14,7 +14,7 @@ public:
     ~DataHandler();
 
     void update();
-    sparq_message_t receive_message();
+    bool receive_message();
 
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
     static uint16_t xor16_cs(const uint8_t *data, uint32_t length);
@@ -25,4 +25,6 @@ private:
     std::vector<uint8_t> _serial_buffer;
     std::vector<uint8_t> _message_buffer;
     bool _within_message = false;
+
+    sparq_message_t _last_message;
 };
