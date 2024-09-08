@@ -85,24 +85,6 @@ int SPARQ::run()
         // == DRAWING == //
         ImGui::DockSpaceOverViewport();
 
-        if (ImGui::BeginMainMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {
-                if (ImGui::MenuItem("Open", "Ctrl+O"))
-                {
-                }
-
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("Settings"))
-            {
-
-                ImGui::EndMenu();
-            }
-            ImGui::EndMainMenuBar();
-        }
-
         if (ImGui::Begin("Graphing"))
         {
         }
