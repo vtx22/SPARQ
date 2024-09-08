@@ -76,12 +76,13 @@ struct sparq_message_t
 
         for (uint8_t pair = 0; pair < header.nval; pair++)
         {
-            ids[start] = data[start + pair];
+            uint16_t pair_index = start + pair;
 
-            uint8_t v3 = data[start + pair + 1];
-            uint8_t v2 = data[start + pair + 2];
-            uint8_t v1 = data[start + pair + 3];
-            uint8_t v0 = data[start + pair + 4];
+            ids[start] = data[pair_index];
+            uint8_t v3 = data[pair_index + 1];
+            uint8_t v2 = data[pair_index + 2];
+            uint8_t v1 = data[pair_index + 3];
+            uint8_t v0 = data[pair_index + 4];
 
             uint32_t value = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
             values.push_back(*(float *)&value);
