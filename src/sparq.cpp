@@ -85,16 +85,6 @@ int SPARQ::run()
         // == DRAWING == //
         ImGui::DockSpaceOverViewport();
 
-        if (ImGui::Begin("Graphing"))
-        {
-        }
-        ImGui::End();
-
-        if (ImGui::Begin("Measurement"))
-        {
-        }
-        ImGui::End();
-
         _data_handler->update();
         _plotting_window->update();
         _console_window->update();
