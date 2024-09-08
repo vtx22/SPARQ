@@ -1,5 +1,4 @@
-#ifndef PLOTTING_WINDOW_HPP
-#define PLOTTING_WINDOW_HPP
+#pragma once
 
 #include "imgui.h"
 #include "implot.h"
@@ -24,5 +23,3 @@ public:
 private:
     std::vector<sparq_dataset> _datasets;
 };
-
-#endif // PLOTTING_WINDOW_HPP

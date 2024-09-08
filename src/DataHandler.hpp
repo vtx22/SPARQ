@@ -1,5 +1,4 @@
-#ifndef DATA_HANDLER_HPP
-#define DATA_HANDLER_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -19,4 +18,3 @@ private:
     Serial *_sp;
 };
 
-#endif // DATA_HANDLER_HPP

@@ -1,5 +1,4 @@
-#ifndef CONNECTION_WINDOW_HPP
-#define CONNECTION_WINDOW_HPP
+#pragma once
 
 #include <array>
 #include "imgui.h"
@@ -33,7 +32,5 @@ private:
 
     uint8_t hex_chars_to_byte(char high, char low);
 
-    Serial* _sp;
+    Serial *_sp;
 };
-
-#endif // CONNECTION_WINDOW_HPP

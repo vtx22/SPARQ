@@ -1,5 +1,4 @@
-#ifndef CONSOLE_WINDOW_HPP
-#define CONSOLE_WINDOW_HPP
+#pragma once
 
 #include "imgui.h"
 #include "serial.hpp"
@@ -71,5 +70,3 @@ private:
     bool AutoScroll;
     bool ScrollToBottom;
 };
-
-#endif // CONSOLE_WINDOW_HPP

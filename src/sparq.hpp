@@ -1,5 +1,4 @@
-#ifndef SPARQ_HPP
-#define SPARQ_HPP
+#pragma once
 
 #include <cmath>
 #include <vector>
@@ -37,5 +36,3 @@ public:
 
 private:
 };
-
-#endif // SPARQ_HPP
