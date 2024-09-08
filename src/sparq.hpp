@@ -32,6 +32,7 @@ public:
     SPARQ();
 
     int init();
+    void object_init();
     int window_init();
     int run();
     int close_app();

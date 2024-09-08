@@ -6,6 +6,18 @@ SPARQ::SPARQ()
 
 int SPARQ::init()
 {
+    object_init();
+
+    if (window_init() < 0)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+void SPARQ::object_init()
+{
     static Serial serial_port;
     static DataHandler data_handler(&serial_port);
     static ConsoleWindow console_window;
@@ -17,13 +29,6 @@ int SPARQ::init()
     _console_window = &console_window;
     _connection_window = &connection_window;
     _plotting_window = &plotting_window;
-
-    if (window_init() < 0)
-    {
-        return -1;
-    }
-
-    return 0;
 }
 
 int SPARQ::window_init()
@@ -53,7 +58,6 @@ int SPARQ::window_init()
 
 int SPARQ::run()
 {
-
     sf::Clock deltaClock;
     while (_window->isOpen())
     {
