@@ -4,7 +4,7 @@
 #include <array>
 #include <iostream>
 
-#include "sparq.hpp"
+#include "sparq_types.hpp"
 #include "serial.hpp"
 
 class DataHandler
