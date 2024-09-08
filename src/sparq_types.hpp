@@ -4,7 +4,8 @@
 #include <string>
 
 #define SPARQ_MESSAGE_HEADER_LENGTH 4
-#define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 255 * 5)
+#define SPARQ_BYTES_PER_VALUE_PAIR 5
+#define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 255 * SPARQ_BYTES_PER_VALUE_PAIR)
 #define SPARQ_MIN_MESSAGE_LENGTH 11
 #define SPARQ_DEFAULT_SIGNATURE 0xFF
 
@@ -88,7 +89,7 @@ struct sparq_message_t
             values.push_back(*(float *)&value);
         }
 
-        checksum = (data[SPARQ_MESSAGE_HEADER_LENGTH + header.nval * 5] << 8) + data[SPARQ_MESSAGE_HEADER_LENGTH + header.nval * 5 + 1];
+        checksum = (data[SPARQ_MESSAGE_HEADER_LENGTH + header.nval * SPARQ_BYTES_PER_VALUE_PAIR] << 8) + data[SPARQ_MESSAGE_HEADER_LENGTH + header.nval * SPARQ_BYTES_PER_VALUE_PAIR + 1];
     }
 
 } typedef sparq_message_t;
