@@ -18,12 +18,17 @@ int SPARQ::init()
     _connection_window = &connection_window;
     _plotting_window = &plotting_window;
 
+    if (window_init() < 0)
+    {
+        return -1;
+    }
+
     return 0;
 }
 
-int SPARQ::run()
+int SPARQ::window_init()
 {
-    sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
+    static sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION);
 
     window.setFramerateLimit(SPARQ_MAX_FPS);
     window.setVerticalSyncEnabled(SPARQ_VSYNC);
@@ -41,29 +46,37 @@ int SPARQ::run()
     ImGui::CreateContext();
     ImPlot::CreateContext();
 
+    _window = &window;
+
+    return 0;
+}
+
+int SPARQ::run()
+{
+
     sf::Clock deltaClock;
-    while (window.isOpen())
+    while (_window->isOpen())
     {
         sf::Event event;
-        while (window.pollEvent(event))
+        while (_window->pollEvent(event))
         {
             ImGui::SFML::ProcessEvent(event);
 
             if (event.type == sf::Event::Closed)
             {
-                return close_app(window);
+                return close_app();
             }
 
             if (event.type == sf::Event::Resized)
             {
                 // update the view to the new size of the window
                 sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
-                window.setView(sf::View(visibleArea));
+                _window->setView(sf::View(visibleArea));
             }
         }
 
         // == UPDATE == //
-        ImGui::SFML::Update(window, deltaClock.restart());
+        ImGui::SFML::Update(*_window, deltaClock.restart());
 
         // == DRAWING == //
         ImGui::DockSpaceOverViewport();
@@ -101,21 +114,21 @@ int SPARQ::run()
         _console_window->update();
         _connection_window->update();
 
-        window.clear(sf::Color(20, 20, 20));
-        ImGui::SFML::Render(window);
-        window.display();
+        _window->clear(sf::Color(20, 20, 20));
+        ImGui::SFML::Render(*_window);
+        _window->display();
     }
 
-    return close_app(window);
+    return close_app();
 }
 
-int SPARQ::close_app(sf::RenderWindow &window)
+int SPARQ::close_app()
 {
     ImPlot::DestroyContext();
     ImGui::DestroyContext();
     // ImGui::SFML::Shutdown();
 
-    window.close();
+    _window->close();
 
     return 0;
 }

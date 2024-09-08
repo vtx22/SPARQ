@@ -32,8 +32,9 @@ public:
     SPARQ();
 
     int init();
+    int window_init();
     int run();
-    int close_app(sf::RenderWindow &window);
+    int close_app();
 
 private:
     Serial *_sp;
@@ -41,4 +42,6 @@ private:
     ConsoleWindow *_console_window;
     ConnectionWindow *_connection_window;
     PlottingWindow *_plotting_window;
+
+    sf::RenderWindow *_window;
 };
