@@ -4,7 +4,7 @@
 #include "imgui.h"
 #include "implot.h"
 
-#include "sparq.hpp"
+#include "sparq_types.hpp"
 
 #include <vector>
 #include <string>
