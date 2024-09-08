@@ -79,9 +79,22 @@ void ConnectionWindow::update()
         ImGui::SameLine();
         ImGui::Text("Baud Rate");
 
+        ImGui::Checkbox("SPARQ Format", &_sparq_format);
+        ImGui::SameLine();
+
+        if (!_sparq_format)
+        {
+            ImGui::BeginDisabled();
+        }
+
         ImGui::InputText("##SignatureInput", _signature_chars, 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
         ImGui::SameLine();
         ImGui::Text("Signature");
+
+        if (!_sparq_format)
+        {
+            ImGui::EndDisabled();
+        }
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 1, 0, 1));
         if (ImGui::Button("Open"))
