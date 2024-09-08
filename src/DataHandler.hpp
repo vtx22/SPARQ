@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <array>
+#include <iostream>
 
 #include "sparq.hpp"
 #include "serial.hpp"

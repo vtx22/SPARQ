@@ -17,64 +17,80 @@ void DataHandler::update()
         return;
     }
 
+    static bool in_message = false;
+
     // Read everything thats available
     int len = _sp->read(_serial_buffer.data(), SPARQ_MAX_MESSAGE_LENGTH * 2);
-
-    if (len <= 0)
-    {
-        return;
-    }
-
-    // if (!_within_message)
-    {
-        _message_buffer.clear();
-    }
-
-    // Append newly received part
+    // Append to message buffer
     _message_buffer.insert(_message_buffer.end(), _serial_buffer.begin(), _serial_buffer.begin() + len);
 
-    // Wait for rest of message if there aren't enough bytes yet
-    if (_message_buffer.size() < SPARQ_MIN_MESSAGE_LENGTH)
+    if (!in_message)
     {
-        return;
-    }
-
-    // Search for header signature
-    // TODO: Delete previous part of message buffer before
-    bool sig_found = false;
-    uint32_t sig_index = 0;
-    for (uint32_t i = 0; i < _message_buffer.size(); i++)
-    {
-        if (_message_buffer[i] == SPARQ_DEFAULT_SIGNATURE)
+        // We are waiting for a new message, so check everything that we have for a signature
+        for (uint32_t i = 0; i < _message_buffer.size(); i++)
         {
-            if (i > _message_buffer.size() - SPARQ_MIN_MESSAGE_LENGTH)
+            // TODO: Replace with set signature
+            if (_message_buffer[i] == SPARQ_DEFAULT_SIGNATURE)
             {
-                // Message is not fully in current buffer, wait for the rest
-                _within_message = true;
-                return;
-            }
+                // Delete everything in font of the signature so that the current message is always at the front
+                _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + i);
 
-            sig_found = true;
-            sig_index = i;
-            break;
+                in_message = true;
+                break;
+            }
+        }
+
+        // No signature found, ditch buffer
+        if (!in_message)
+        {
+            _message_buffer.clear();
+            return;
         }
     }
 
-    // No signature found, whole buffer can be deleted
-    // TODO FIX
-    if (!sig_found)
+    // If we got here signature was detected and it is at the start of the buffer
+    static sparq_message_t message;
+
+    // Message is not complete yet, header is incomplete
+    if (_message_buffer.size() < SPARQ_MESSAGE_HEADER_LENGTH)
     {
         return;
     }
 
-    // When we got to here signature was found with atleast MIN_MESSAGE_LENGTH bytes
-    sparq_message_t message;
-    message.from_array(&_message_buffer[sig_index]);
+    message.header.from_array(_message_buffer.data());
 
-    std::cout << message.values[0] << std::endl;
+    if (message.header.checksum != DataHandler::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
+    {
+        // Header checksum is wrong, clear the message buffer from that part
+        std::cout << "Message Header Checksum is wrong!\n";
+        _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
+        in_message = false;
+        return;
+    }
 
-    // Message fully parsed
-    _within_message = false;
+    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + 2 + message.header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
+
+    if (_message_buffer.size() < total_message_length)
+    {
+        // Message is not complete yet, we are expecting nval id/value pairs
+        return;
+    }
+
+    // Finally we got a full message
+    message.from_array(_message_buffer.data());
+
+    if (message.checksum != DataHandler::xor16_cs(_message_buffer.data(), total_message_length - 2))
+    {
+        // Checksum is wrong
+        std::cout << "Message Checksum is wrong!\n";
+        // TODO: Handle
+    }
+
+    std::cout << "Message Received! First value: " << message.values.at(0) << std::endl;
+
+    _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
+    in_message = false;
+    return;
 }
 
 sparq_message_t DataHandler::receive_message()
