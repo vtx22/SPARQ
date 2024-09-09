@@ -15,7 +15,7 @@ void PlottingWindow::update(const std::vector<sparq_dataset_t> datasets)
         if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
         {
             ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
-            ImPlot::SetupAxes("Time", "");
+            ImPlot::SetupAxes("Time", "", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 
             for (const auto &ds : datasets)
             {
