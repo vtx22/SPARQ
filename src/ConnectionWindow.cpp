@@ -120,6 +120,7 @@ void ConnectionWindow::update()
 
         if (ImGui::Button("Close"))
         {
+            _sp->close();
             _port_open = false;
         }
         else if (!_port_open)
