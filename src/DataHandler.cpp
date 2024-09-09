@@ -52,6 +52,34 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
     }
 }
 
+bool DataHandler::add_dataset(const sparq_dataset_t &dataset)
+{
+    for (const auto &ds : _datasets)
+    {
+        if (dataset.id == ds.id)
+        {
+            return false;
+        }
+    }
+
+    _datasets.push_back(dataset);
+    return true;
+}
+
+bool DataHandler::delete_dataset(uint8_t id)
+{
+    for (uint8_t i = 0; i < _datasets.size(); i++)
+    {
+        if (_datasets[i].id == id)
+        {
+            _datasets.erase(_datasets.begin() + i);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool DataHandler::receive_message()
 {
     if (!_sp->get_open())

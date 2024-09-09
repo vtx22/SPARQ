@@ -20,6 +20,7 @@ public:
     const std::vector<sparq_dataset_t> &get_datasets();
 
     bool add_dataset(const sparq_dataset_t &dataset);
+    bool delete_dataset(uint8_t id);
 
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
 
