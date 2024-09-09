@@ -8,12 +8,7 @@ PlottingWindow::~PlottingWindow()
 {
 }
 
-void PlottingWindow::add_dataset(const sparq_dataset &dataset)
-{
-    _datasets.push_back(dataset);
-}
-
-void PlottingWindow::update()
+void PlottingWindow::update(const std::vector<sparq_dataset_t> datasets)
 {
     if (ImGui::Begin("Plot"))
     {
@@ -22,7 +17,7 @@ void PlottingWindow::update()
             ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 3);
             ImPlot::SetupAxes("Time", "");
 
-            for (auto &ds : _datasets)
+            for (const auto &ds : datasets)
             {
                 ImPlot::PlotLine(std::to_string(ds.id).c_str(), ds.x_values.data(), ds.y_values.data(), ds.x_values.size());
             }

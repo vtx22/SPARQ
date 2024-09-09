@@ -16,10 +16,7 @@ public:
     PlottingWindow();
     ~PlottingWindow();
 
-    void add_dataset(const sparq_dataset &dataset);
-
-    void update();
+    void update(const std::vector<sparq_dataset_t> datasets);
 
 private:
-    std::vector<sparq_dataset> _datasets;
 };
