@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <array>
 #include <iostream>
+#include <chrono>
 
 #include "sparq_types.hpp"
 #include "serial.hpp"

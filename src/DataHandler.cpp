@@ -128,6 +128,8 @@ bool DataHandler::receive_message()
         std::cout << "Message Checksum is wrong!\n";
     }
 
+    using namespace std::chrono;
+    _last_message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
     return _last_message.valid;
 }
