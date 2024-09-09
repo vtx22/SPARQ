@@ -132,6 +132,9 @@ bool DataHandler::receive_message()
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
 
     return true;
+const std::vector<sparq_dataset_t> &DataHandler::get_datasets()
+{
+    return _datasets;
 }
 
 uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
