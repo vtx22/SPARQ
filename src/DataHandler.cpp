@@ -19,6 +19,37 @@ void DataHandler::update()
 
     // Received complete message
     std::cout << "Received message! First value: " << _last_message.values[0] << "\n";
+
+    add_to_datasets(_last_message);
+}
+
+void DataHandler::add_to_datasets(const sparq_message_t &message)
+{
+    for (uint8_t i = 0; i < message.header.nval; i++)
+    {
+        bool ds_found = false;
+        for (auto &ds : _datasets)
+        {
+            if (ds.id == message.ids[i])
+            {
+                ds.x_values.push_back(ds.x_values.back() + 1);
+                ds.y_values.push_back(message.values[i]);
+                std::cout << "Adding values: " << (ds.x_values.back() + 1) << " " << message.values[i] << "\n";
+                ds_found = true;
+                break;
+            }
+        }
+
+        if (!ds_found)
+        {
+            std::cout << "DS not found, creating new one!\n";
+            sparq_dataset ds;
+            ds.id = message.ids[i];
+            ds.x_values.push_back(0);
+            ds.y_values.push_back(message.values[i]);
+            _datasets.push_back(ds);
+        }
+    }
 }
 
 bool DataHandler::receive_message()

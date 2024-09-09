@@ -27,4 +27,8 @@ private:
     bool _within_message = false;
 
     sparq_message_t _last_message;
+
+    std::vector<sparq_dataset_t> _datasets;
+
+    void add_to_datasets(const sparq_message_t &message);
 };
