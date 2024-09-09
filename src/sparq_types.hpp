@@ -82,7 +82,7 @@ struct sparq_message_t
         {
             uint16_t pair_index = start + pair;
 
-            ids[start] = data[pair_index];
+            ids[pair] = data[pair_index];
             uint8_t v3 = data[pair_index + 1];
             uint8_t v2 = data[pair_index + 2];
             uint8_t v1 = data[pair_index + 3];
