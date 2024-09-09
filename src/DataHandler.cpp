@@ -121,7 +121,7 @@ bool DataHandler::receive_message()
     _last_message.from_array(_message_buffer.data());
     in_message = false;
 
-    _last_message.valid = _last_message.checksum == DataHandler::xor16_cs(_message_buffer.data(), total_message_length - 2);
+    _last_message.valid = _last_message.checksum == (uint16_t)DataHandler::xor8_cs(_message_buffer.data(), total_message_length - 2);
 
     if (!_last_message.valid)
     {
@@ -142,18 +142,6 @@ const std::vector<sparq_dataset_t> &DataHandler::get_datasets()
 uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
 {
     uint8_t cs = 0x00;
-
-    for (uint32_t i = 0; i < length; i++)
-    {
-        cs ^= data[i];
-    }
-
-    return cs;
-}
-
-uint16_t DataHandler::xor16_cs(const uint8_t *data, uint32_t length)
-{
-    uint16_t cs = 0x0000;
 
     for (uint32_t i = 0; i < length; i++)
     {

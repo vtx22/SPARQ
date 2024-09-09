@@ -20,8 +20,6 @@ public:
     const std::vector<sparq_dataset_t> &get_datasets();
 
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
-    static uint16_t xor16_cs(const uint8_t *data, uint32_t length);
-
 private:
     Serial *_sp;
 
