@@ -17,7 +17,7 @@ struct sparq_data_point
 
 } typedef sparq_data_point;
 
-struct sparq_dataset
+struct sparq_dataset_t
 {
     uint8_t id = 0;
     std::string name = "";
