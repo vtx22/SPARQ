@@ -88,16 +88,18 @@ bool DataHandler::receive_message()
 
     // Finally we got a full message
     _last_message.from_array(_message_buffer.data());
+    in_message = false;
 
     if (_last_message.checksum != DataHandler::xor16_cs(_message_buffer.data(), total_message_length - 2))
     {
         // Checksum is wrong
         std::cout << "Message Checksum is wrong!\n";
+        _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
         return false;
     }
 
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
-    in_message = false;
+
     return true;
 }
 
