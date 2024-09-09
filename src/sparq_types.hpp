@@ -66,6 +66,7 @@ struct sparq_message_t
     std::vector<uint8_t> ids;
     std::vector<float> values;
     uint16_t checksum;
+    bool valid = false;
 
     void from_array(const uint8_t *data)
     {
