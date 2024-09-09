@@ -25,6 +25,7 @@
 #include "ConsoleWindow.hpp"
 #include "ConnectionWindow.hpp"
 #include "PlottingWindow.hpp"
+#include "DataWindow.hpp"
 
 class SPARQ
 {
@@ -43,6 +44,7 @@ private:
     ConsoleWindow *_console_window;
     ConnectionWindow *_connection_window;
     PlottingWindow *_plotting_window;
+    DataWindow *_data_window;
 
     sf::RenderWindow *_window;
 };

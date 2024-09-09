@@ -23,12 +23,14 @@ void SPARQ::object_init()
     static ConsoleWindow console_window;
     static ConnectionWindow connection_window(&serial_port);
     static PlottingWindow plotting_window;
+    static DataWindow data_window;
 
     _sp = &serial_port;
     _data_handler = &data_handler;
     _console_window = &console_window;
     _connection_window = &connection_window;
     _plotting_window = &plotting_window;
+    _data_window = &data_window;
 }
 
 int SPARQ::window_init()
@@ -89,6 +91,7 @@ int SPARQ::run()
         _plotting_window->update(_data_handler->get_datasets());
         _console_window->update();
         _connection_window->update();
+        _data_window->update();
 
         _window->clear(sf::Color(20, 20, 20));
         ImGui::SFML::Render(*_window);
