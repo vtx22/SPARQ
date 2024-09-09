@@ -121,15 +121,15 @@ bool DataHandler::receive_message()
     _last_message.from_array(_message_buffer.data());
     in_message = false;
 
-    bool cs_result = _last_message.checksum == DataHandler::xor16_cs(_message_buffer.data(), total_message_length - 2);
+    _last_message.valid = _last_message.checksum == DataHandler::xor16_cs(_message_buffer.data(), total_message_length - 2);
 
-    if (!cs_result)
+    if (!_last_message.valid)
     {
         std::cout << "Message Checksum is wrong!\n";
     }
 
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
-    return cs_result;
+    return _last_message.valid;
 }
 
 const std::vector<sparq_dataset_t> &DataHandler::get_datasets()
