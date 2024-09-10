@@ -13,7 +13,7 @@ public:
 
     void update();
 
-    void dataset_entries(const std::vector<sparq_dataset_t> &datasets);
+    void dataset_entries(std::vector<sparq_dataset_t> &datasets);
 
 private:
     DataHandler *_data_handler;

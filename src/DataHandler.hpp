@@ -18,6 +18,7 @@ public:
     bool receive_message();
 
     const std::vector<sparq_dataset_t> &get_datasets();
+    std::vector<sparq_dataset_t> &get_datasets_editable();
 
     bool add_dataset(const sparq_dataset_t &dataset);
     bool delete_dataset(uint8_t id);

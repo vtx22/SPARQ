@@ -167,6 +167,11 @@ const std::vector<sparq_dataset_t> &DataHandler::get_datasets()
     return _datasets;
 }
 
+std::vector<sparq_dataset_t> &DataHandler::get_datasets_editable()
+{
+    return _datasets;
+}
+
 uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
 {
     uint8_t cs = 0x00;
