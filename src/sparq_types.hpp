@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdint>
 #include <string>
+#include "imgui.h"
 
 #define SPARQ_MESSAGE_HEADER_LENGTH 4
 #define SPARQ_BYTES_PER_VALUE_PAIR 5
@@ -21,6 +22,7 @@ struct sparq_dataset_t
 {
     uint8_t id = 0;
     std::string name = "";
+    ImVec4 color;
     std::vector<float> x_values;
     std::vector<float> y_values;
 
