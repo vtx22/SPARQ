@@ -19,7 +19,8 @@ void PlottingWindow::update(const std::vector<sparq_dataset_t> &datasets)
 
             for (const auto &ds : datasets)
             {
-                ImPlot::PlotLine(std::to_string(ds.id).c_str(), ds.x_values.data(), ds.y_values.data(), ds.x_values.size());
+                std::string name = (ds.name == "") ? std::to_string(ds.id) : ds.name;
+                ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), ds.x_values.data(), ds.y_values.data(), ds.x_values.size());
             }
 
             ImPlot::EndPlot();
