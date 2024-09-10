@@ -38,7 +38,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             ImGui::AlignTextToFramePadding();
             ImGui::Text("%d", datasets[i].id);
             ImGui::TableSetColumnIndex(1);
-            ImGui::SetNextItemWidth(100);
+            ImGui::SetNextItemWidth(150);
             ImGui::InputTextWithHint(("##DsNameTB" + i_str).c_str(), "Custom Name", datasets[i].name, 64);
             ImGui::TableSetColumnIndex(2);
             ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float *)&datasets[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
