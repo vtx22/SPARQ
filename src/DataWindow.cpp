@@ -12,6 +12,7 @@ void DataWindow::update()
 {
     if (ImGui::Begin("Data"))
     {
+        ImGui::SeparatorText("Datasets");
         dataset_entries(_data_handler->get_datasets_editable());
     }
 
@@ -20,6 +21,10 @@ void DataWindow::update()
 
 void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
 {
+    if (datasets.size() == 0)
+    {
+        ImGui::Text("No Datasets present.");
+    }
 
     if (ImGui::BeginTable("##DatasetEditorTable", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
