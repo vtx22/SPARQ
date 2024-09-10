@@ -16,7 +16,7 @@ public:
     PlottingWindow();
     ~PlottingWindow();
 
-    void update(const std::vector<sparq_dataset_t> datasets);
+    void update(const std::vector<sparq_dataset_t> &datasets);
 
 private:
 };

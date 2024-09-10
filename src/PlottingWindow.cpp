@@ -8,7 +8,7 @@ PlottingWindow::~PlottingWindow()
 {
 }
 
-void PlottingWindow::update(const std::vector<sparq_dataset_t> datasets)
+void PlottingWindow::update(const std::vector<sparq_dataset_t> &datasets)
 {
     if (ImGui::Begin("Plot"))
     {
