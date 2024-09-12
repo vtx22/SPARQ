@@ -12,15 +12,16 @@ DataHandler::~DataHandler()
 
 void DataHandler::update()
 {
-    if (!receive_message())
+    sparq_message_t message = receive_message();
+    if (!message.valid)
     {
         return;
     }
 
     // Received complete message
-    std::cout << "Received message! First value: " << _last_message.values[0] << "\n";
+    std::cout << "Received message! First value: " << message.values[0] << "\n";
 
-    add_to_datasets(_last_message);
+    add_to_datasets(message);
 }
 
 void DataHandler::add_to_datasets(const sparq_message_t &message)
@@ -42,7 +43,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
 
         if (!ds_found)
         {
-            std::cout << "DS not found, creating new one!\n";
+            std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
             sparq_dataset ds;
             ds.id = message.ids[i];
             ds.x_values.push_back(0);
@@ -80,11 +81,13 @@ bool DataHandler::delete_dataset(uint8_t id)
     return false;
 }
 
-bool DataHandler::receive_message()
+sparq_message_t DataHandler::receive_message()
 {
+    sparq_message_t message;
+
     if (!_sp->get_open())
     {
-        return false;
+        return message;
     }
 
     static bool in_message = false;
@@ -114,7 +117,7 @@ bool DataHandler::receive_message()
         if (!in_message)
         {
             _message_buffer.clear();
-            return false;
+            return message;
         }
     }
 
@@ -123,43 +126,52 @@ bool DataHandler::receive_message()
     // Message is not complete yet, header is incomplete
     if (_message_buffer.size() < SPARQ_MESSAGE_HEADER_LENGTH)
     {
-        return false;
+        return message;
     }
 
-    _last_message.header.from_array(_message_buffer.data());
+    message.header.from_array(_message_buffer.data());
 
-    if (_last_message.header.checksum != DataHandler::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
+    if (message.header.checksum != DataHandler::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
     {
         // Header checksum is wrong, clear the message buffer from that part
         std::cout << "Message Header Checksum is wrong!\n";
         _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
         in_message = false;
-        return false;
+        return message;
     }
 
-    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + 2 + _last_message.header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
+    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + 2 + message.header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
 
     if (_message_buffer.size() < total_message_length)
     {
         // Message is not complete yet, we are expecting nval id/value pairs
-        return false;
+        return message;
     }
 
+    for (auto b : _message_buffer)
+    {
+        std::cout << (int)b << " ";
+    }
+    std::cout << "\n";
+
     // Finally we got a full message
-    _last_message.from_array(_message_buffer.data());
+    message.from_array(_message_buffer.data());
+
+    std::cout << message.values[0] << std::endl;
+
     in_message = false;
 
-    _last_message.valid = _last_message.checksum == (uint16_t)DataHandler::xor8_cs(_message_buffer.data(), total_message_length - 2);
+    message.valid = message.checksum == (uint16_t)DataHandler::xor8_cs(_message_buffer.data(), total_message_length - 2);
 
-    if (!_last_message.valid)
+    if (!message.valid)
     {
         std::cout << "Message Checksum is wrong!\n";
     }
 
     using namespace std::chrono;
-    _last_message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+    message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
-    return _last_message.valid;
+    return message;
 }
 
 const std::vector<sparq_dataset_t> &DataHandler::get_datasets()

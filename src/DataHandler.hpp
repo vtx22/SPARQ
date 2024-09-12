@@ -15,7 +15,7 @@ public:
     ~DataHandler();
 
     void update();
-    bool receive_message();
+    sparq_message_t receive_message();
 
     const std::vector<sparq_dataset_t> &get_datasets();
     std::vector<sparq_dataset_t> &get_datasets_editable();
@@ -31,8 +31,6 @@ private:
     std::vector<uint8_t> _serial_buffer;
     std::vector<uint8_t> _message_buffer;
     bool _within_message = false;
-
-    sparq_message_t _last_message;
 
     std::vector<sparq_dataset_t> _datasets;
 
