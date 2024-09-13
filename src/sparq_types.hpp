@@ -22,7 +22,7 @@ struct sparq_dataset_t
 {
     uint8_t id = 0;
     char name[64] = {0};
-    ImVec4 color;
+    ImVec4 color = ImVec4(1, 0, 0, 1);
     bool toggle_visibility = false;
     std::vector<float> x_values;
     std::vector<float> y_values;
