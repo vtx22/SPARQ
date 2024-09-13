@@ -35,7 +35,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
             {
                 ds.samples.push_back(ds.samples.back() + 1);
                 ds.y_values.push_back(message.values[i]);
-                ds.relative_times.push_back(message.timestamp - ds.start_time);
+                ds.relative_times.push_back((message.timestamp - ds.start_time) / 1000.0f);
                 std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.values[i] << "\n";
                 ds_found = true;
                 break;
