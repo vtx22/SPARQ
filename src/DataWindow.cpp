@@ -53,7 +53,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
 
             if (ImGui::Button(("HIDE##" + i_str).c_str()))
             {
-                datasets[i].hidden = !datasets[i].hidden;
+                datasets[i].toggle_visibility = true;
             }
         }
 

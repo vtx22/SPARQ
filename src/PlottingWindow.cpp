@@ -8,7 +8,7 @@ PlottingWindow::~PlottingWindow()
 {
 }
 
-void PlottingWindow::update(const std::vector<sparq_dataset_t> &datasets)
+void PlottingWindow::update(std::vector<sparq_dataset_t> &datasets)
 {
     if (ImGui::Begin("Plot"))
     {
@@ -21,13 +21,18 @@ void PlottingWindow::update(const std::vector<sparq_dataset_t> &datasets)
             ImPlotPlot *plot = ctx->CurrentPlot;
 
             uint8_t i = 0;
-            for (const auto &ds : datasets)
+            for (auto &ds : datasets)
             {
                 std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
                 ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), ds.x_values.data(), ds.y_values.data(), ds.x_values.size());
 
                 ImPlotItem *item = plot->Items.GetLegendItem(i);
-                item->Show = !ds.hidden;
+                if (ds.toggle_visibility)
+                {
+                    item->Show = !item->Show;
+                    ds.toggle_visibility = false;
+                }
+
                 i++;
             }
 
