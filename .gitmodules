@@ -1,3 +1,6 @@
 [submodule "src/cpp-serial-win"]
 	path = src/cpp-serial-win
 	url = https://github.com/vtx22/cpp-serial-win.git
+[submodule "src/ImStyles"]
+	path = src/ImStyles
+	url = https://github.com/vtx22/ImStyles.git
