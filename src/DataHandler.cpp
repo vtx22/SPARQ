@@ -148,16 +148,15 @@ sparq_message_t DataHandler::receive_message()
         return message;
     }
 
-    for (auto b : _message_buffer)
-    {
-        std::cout << (int)b << " ";
-    }
-    std::cout << "\n";
+    // std::cout << std::hex << std::setfill('0') << std::setw(2);
+    // for (auto b : _message_buffer)
+    // {
+    //     std::cout << (int)b << " ";
+    // }
+    // std::cout << "\n";
 
     // Finally we got a full message
     message.from_array(_message_buffer.data());
-
-    std::cout << message.values[0] << std::endl;
 
     in_message = false;
 
@@ -167,6 +166,8 @@ sparq_message_t DataHandler::receive_message()
     {
         std::cout << "Message Checksum is wrong!\n";
     }
+    std::cout << "TML: " << total_message_length << " NVAL: " << (int)message.header.nval << "\n";
+    std::cout << "Values: " << message.values[0] << " " << message.values[1] << "\n\n";
 
     using namespace std::chrono;
     message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();

@@ -4,6 +4,7 @@
 #include <array>
 #include <iostream>
 #include <chrono>
+#include <iomanip>
 
 #include "sparq_types.hpp"
 #include "serial.hpp"
