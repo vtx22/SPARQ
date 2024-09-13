@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <windows.h>
+#include <dwmapi.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>

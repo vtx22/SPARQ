@@ -45,7 +45,9 @@ int SPARQ::window_init()
     window.setFramerateLimit(SPARQ_MAX_FPS);
     window.setVerticalSyncEnabled(SPARQ_VSYNC);
 
-    ::ShowWindow(window.getSystemHandle(), SW_MAXIMIZE);
+    BOOL USE_DARK_MODE = true;
+    DwmSetWindowAttribute(window.getSystemHandle(), DWMWINDOWATTRIBUTE::DWMWA_USE_IMMERSIVE_DARK_MODE, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
+    ShowWindow(window.getSystemHandle(), SW_MAXIMIZE);
 
     if (!ImGui::SFML::Init(window))
     {
