@@ -50,7 +50,11 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             }
 
             ImGui::TableSetColumnIndex(4);
-            ImGui::Button(("HIDE##" + i_str).c_str());
+
+            if (ImGui::Button(("HIDE##" + i_str).c_str()))
+            {
+                datasets[i].hidden = !datasets[i].hidden;
+            }
         }
 
         ImGui::EndTable();
