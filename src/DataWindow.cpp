@@ -13,6 +13,27 @@ void DataWindow::update()
     if (ImGui::Begin("Data"))
     {
         ImGui::SeparatorText("Datasets");
+
+        if (_data_handler->get_datasets().size() == 0)
+        {
+            ImGui::BeginDisabled();
+        }
+
+        if (ImGui::Button("Import"))
+        {
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Export"))
+        {
+        }
+
+        ImGui::Separator();
+
+        if (_data_handler->get_datasets().size() == 0)
+        {
+            ImGui::EndDisabled();
+        }
+
         dataset_entries(_data_handler->get_datasets_editable());
     }
 
