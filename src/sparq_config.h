@@ -4,3 +4,4 @@
 
 #define SPARQ_MAX_FPS 60
 #define SPARQ_VSYNC true
+#define SPARQ_ANTIALIASING 16
