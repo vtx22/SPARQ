@@ -24,7 +24,15 @@ void PlottingWindow::update(std::vector<sparq_dataset_t> &datasets)
             {
                 std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
                 ImPlot::SetNextLineStyle(ds.color, 3);
-                ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), ds.x_values.data(), ds.y_values.data(), ds.x_values.size());
+
+                std::vector<float> &x_values = ds.samples;
+
+                if (true)
+                {
+                    x_values = ds.relative_times;
+                }
+
+                ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values.data(), ds.y_values.data(), ds.y_values.size());
 
                 ImPlotItem *item = plot->Items.GetLegendItem(i);
                 if (ds.toggle_visibility)

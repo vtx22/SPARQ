@@ -9,6 +9,8 @@
 #include "sparq_types.hpp"
 #include "serial.hpp"
 
+using namespace std::chrono;
+
 class DataHandler
 {
 public:

@@ -33,9 +33,10 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         {
             if (ds.id == message.ids[i])
             {
-                ds.x_values.push_back(ds.x_values.back() + 1);
+                ds.samples.push_back(ds.samples.back() + 1);
                 ds.y_values.push_back(message.values[i]);
-                std::cout << "Adding values: " << (ds.x_values.back() + 1) << " " << message.values[i] << "\n";
+                ds.relative_times.push_back(message.timestamp - ds.start_time);
+                std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.values[i] << "\n";
                 ds_found = true;
                 break;
             }
@@ -45,8 +46,10 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         {
             std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
             sparq_dataset ds;
+            ds.start_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
             ds.id = message.ids[i];
-            ds.x_values.push_back(0);
+            ds.samples.push_back(0);
+            ds.relative_times.push_back(0);
             ds.y_values.push_back(message.values[i]);
             _datasets.push_back(ds);
         }
@@ -169,7 +172,6 @@ sparq_message_t DataHandler::receive_message()
     std::cout << "TML: " << total_message_length << " NVAL: " << (int)message.header.nval << "\n";
     std::cout << "Values: " << message.values[0] << " " << message.values[1] << "\n\n";
 
-    using namespace std::chrono;
     message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
     return message;

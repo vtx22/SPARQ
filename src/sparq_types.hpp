@@ -24,7 +24,10 @@ struct sparq_dataset_t
     char name[64] = {0};
     ImVec4 color = ImVec4(1, 0, 0, 1);
     bool toggle_visibility = false;
-    std::vector<float> x_values;
+
+    uint64_t start_time = 0;
+    std::vector<float> relative_times;
+    std::vector<float> samples;
     std::vector<float> y_values;
 
 } typedef sparq_dataset;
