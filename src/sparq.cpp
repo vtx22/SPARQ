@@ -42,6 +42,12 @@ int SPARQ::window_init()
 
     static sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION, sf::Style::Default, settings);
 
+    sf::Image icon;
+    if (icon.loadFromFile("./assets/icon.png"))
+    {
+        window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+    }
+
     window.setFramerateLimit(SPARQ_MAX_FPS);
     window.setVerticalSyncEnabled(SPARQ_VSYNC);
 
