@@ -16,6 +16,7 @@
 #include "implot.h"
 
 #include "serial.hpp"
+#include "imstyles.hpp"
 
 #include "sparq_config.h"
 #include "sparq_types.hpp"

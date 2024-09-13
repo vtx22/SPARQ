@@ -13,6 +13,8 @@ int SPARQ::init()
         return -1;
     }
 
+    set_style(ULTRA_DARK);
+
     return 0;
 }
 
