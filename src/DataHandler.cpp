@@ -37,22 +37,20 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
                 ds.y_values.push_back(message.values[i]);
                 ds.relative_times.push_back(message.timestamp - ds.start_time);
                 std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.values[i] << "\n";
-                ds_found = true;
-                break;
+                return;
             }
         }
 
-        if (!ds_found)
-        {
-            std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
-            sparq_dataset ds;
-            ds.start_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-            ds.id = message.ids[i];
-            ds.samples.push_back(0);
-            ds.relative_times.push_back(0);
-            ds.y_values.push_back(message.values[i]);
-            _datasets.push_back(ds);
-        }
+        std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
+
+        sparq_dataset ds;
+        ds.start_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        ds.id = message.ids[i];
+        ds.samples.push_back(0);
+        ds.relative_times.push_back(0);
+        ds.y_values.push_back(message.values[i]);
+
+        _datasets.push_back(ds);
     }
 }
 
