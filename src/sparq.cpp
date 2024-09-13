@@ -64,7 +64,7 @@ int SPARQ::window_init()
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF("opensans.ttf", 20);
+    io.Fonts->AddFontFromFileTTF("./assets/opensans.ttf", 20);
 
     if (!ImGui::SFML::UpdateFontTexture())
     {
