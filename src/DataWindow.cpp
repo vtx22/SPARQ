@@ -10,9 +10,33 @@ DataWindow::~DataWindow()
 
 void DataWindow::update()
 {
-    if (ImGui::Begin("Data"))
+    if (ImGui::Begin("Data & View"))
     {
-        ImGui::SeparatorText("Datasets");
+        const char *x_axis_types[3] = {"Samples", "Relative Time", "Absolute Time"};
+
+        ImGui::SeparatorText("View Settings");
+
+        static int selected_axis_type = 0;
+        if (ImGui::BeginCombo("X View", x_axis_types[selected_axis_type]))
+        {
+            for (uint8_t n = 0; n < 3; n++)
+            {
+                bool is_selected = (selected_axis_type == n);
+
+                if (ImGui::Selectable(x_axis_types[n], is_selected))
+                {
+                    selected_axis_type = n;
+                }
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::SeparatorText("Data");
 
         if (_data_handler->get_datasets().size() == 0)
         {
@@ -27,14 +51,15 @@ void DataWindow::update()
         {
         }
 
-        ImGui::Separator();
-
         if (_data_handler->get_datasets().size() == 0)
         {
             ImGui::EndDisabled();
         }
 
-        dataset_entries(_data_handler->get_datasets_editable());
+        if (ImGui::CollapsingHeader("Datasets", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            dataset_entries(_data_handler->get_datasets_editable());
+        }
     }
 
     ImGui::End();
