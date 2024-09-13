@@ -33,7 +33,6 @@ private:
 
     std::vector<uint8_t> _serial_buffer;
     std::vector<uint8_t> _message_buffer;
-    bool _within_message = false;
 
     std::vector<sparq_dataset_t> _datasets;
 
