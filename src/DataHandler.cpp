@@ -46,7 +46,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         {
             std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
             sparq_dataset ds;
-            ds.start_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+            ds.start_time = message.timestamp;
             ds.id = message.ids[i];
             ds.samples.push_back(0);
             ds.relative_times.push_back(0);
