@@ -22,13 +22,13 @@ void DataWindow::update()
         ImGui::SeparatorText("View Settings");
 
         int selected_index = _data_handler->x_axis_select;
-        if (ImGui::BeginCombo("X View", x_axis_types[selected_index].dropdown_name.c_str()))
+        if (ImGui::BeginCombo("X View", x_axis_types[selected_index].dropdown_name))
         {
             for (uint8_t n = 0; n < 3; n++)
             {
                 bool is_selected = (selected_index == n);
 
-                if (ImGui::Selectable(x_axis_types[n].dropdown_name.c_str(), is_selected))
+                if (ImGui::Selectable(x_axis_types[n].dropdown_name, is_selected))
                 {
                     _data_handler->x_axis_select = n;
                 }

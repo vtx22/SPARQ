@@ -99,8 +99,8 @@ struct sparq_message_t
 
 struct sparq_axis_t
 {
-    std::string dropdown_name = "";
-    std::string axis_label = "";
+    const char *dropdown_name;
+    const char *axis_label;
 } typedef sparq_axis_t;
 
 const sparq_axis_t X_AX_SAMPLES = {.dropdown_name = "Samples", .axis_label = "Samples"};

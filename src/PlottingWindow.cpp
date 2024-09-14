@@ -14,7 +14,7 @@ void PlottingWindow::update(std::vector<sparq_dataset_t> &datasets)
     {
         if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
         {
-            ImPlot::SetupAxes(x_axis_types[_data_handler->x_axis_select].axis_label.c_str(), "", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+            ImPlot::SetupAxes(x_axis_types[_data_handler->x_axis_select].axis_label, "", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 
             ImPlotContext *ctx = ImPlot::GetCurrentContext();
             ImPlotPlot *plot = ctx->CurrentPlot;
