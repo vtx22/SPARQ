@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdint>
 #include <string>
+#include <array>
 #include "imgui.h"
 
 #define SPARQ_MESSAGE_HEADER_LENGTH 4
@@ -95,3 +96,15 @@ struct sparq_message_t
     }
 
 } typedef sparq_message_t;
+
+struct sparq_axis_t
+{
+    std::string dropdown_name = "";
+    std::string axis_label = "";
+} typedef sparq_axis_t;
+
+const sparq_axis_t X_AX_SAMPLES = {.dropdown_name = "Samples", .axis_label = "Samples"};
+const sparq_axis_t X_AX_REL_TIME = {.dropdown_name = "Relative Time", .axis_label = "Time [s]"};
+const sparq_axis_t X_AX_ABS_TIME = {.dropdown_name = "Date Time", .axis_label = "Date"};
+
+const std::array<sparq_axis_t, 3> x_axis_types = {X_AX_SAMPLES, X_AX_REL_TIME, X_AX_ABS_TIME};

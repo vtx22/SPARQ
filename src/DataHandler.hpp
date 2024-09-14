@@ -28,6 +28,8 @@ public:
 
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
 
+    uint8_t x_axis_select = 0;
+
 private:
     Serial *_sp;
 

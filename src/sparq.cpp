@@ -24,8 +24,8 @@ void SPARQ::object_init()
     static DataHandler data_handler(&serial_port);
     static ConsoleWindow console_window;
     static ConnectionWindow connection_window(&serial_port);
-    static PlottingWindow plotting_window;
-    static DataWindow data_window(&data_handler, &plotting_window);
+    static PlottingWindow plotting_window(&data_handler);
+    static DataWindow data_window(&data_handler);
 
     _sp = &serial_port;
     _data_handler = &data_handler;

@@ -1,6 +1,6 @@
 #include "DataWindow.hpp"
 
-DataWindow::DataWindow(DataHandler *data_handler, PlottingWindow *plotting_window) : _data_handler(data_handler), _plotting_window(plotting_window)
+DataWindow::DataWindow(DataHandler *data_handler) : _data_handler(data_handler)
 {
     _delete_icon.loadFromFile("./assets/icon_delete.png");
     _hide_icon.loadFromFile("./assets/icon_visibility_off.png");
@@ -19,21 +19,18 @@ void DataWindow::update()
 {
     if (ImGui::Begin("Data & View"))
     {
-        const char *x_axis_types[3] = {"Samples", "Relative Time", "Absolute Time"};
-
         ImGui::SeparatorText("View Settings");
 
-        static int selected_axis_type = 0;
-        if (ImGui::BeginCombo("X View", x_axis_types[selected_axis_type]))
+        int selected_index = _data_handler->x_axis_select;
+        if (ImGui::BeginCombo("X View", x_axis_types[selected_index].dropdown_name.c_str()))
         {
             for (uint8_t n = 0; n < 3; n++)
             {
-                bool is_selected = (selected_axis_type == n);
+                bool is_selected = (selected_index == n);
 
-                if (ImGui::Selectable(x_axis_types[n], is_selected))
+                if (ImGui::Selectable(x_axis_types[n].dropdown_name.c_str(), is_selected))
                 {
-                    selected_axis_type = n;
-                    _plotting_window->set_x_type((SPARQ_X_TYPE)selected_axis_type);
+                    _data_handler->x_axis_select = n;
                 }
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)

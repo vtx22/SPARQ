@@ -1,6 +1,6 @@
 #include "PlottingWindow.hpp"
 
-PlottingWindow::PlottingWindow()
+PlottingWindow::PlottingWindow(DataHandler *data_handler) : _data_handler(data_handler)
 {
 }
 
@@ -14,7 +14,7 @@ void PlottingWindow::update(std::vector<sparq_dataset_t> &datasets)
     {
         if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
         {
-            ImPlot::SetupAxes("Time", "", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+            ImPlot::SetupAxes(x_axis_types[_data_handler->x_axis_select].axis_label.c_str(), "", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
 
             ImPlotContext *ctx = ImPlot::GetCurrentContext();
             ImPlotPlot *plot = ctx->CurrentPlot;
@@ -27,16 +27,16 @@ void PlottingWindow::update(std::vector<sparq_dataset_t> &datasets)
 
                 std::vector<float> *x_values;
 
-                switch (_x_type)
+                switch (_data_handler->x_axis_select)
                 {
                 default:
-                case SAMPLES:
+                case 0:
                     x_values = &ds.samples;
                     break;
-                case RELATIVE_TIME:
+                case 1:
                     x_values = &ds.relative_times;
                     break;
-                case ABSOLUTE_TIME:
+                case 2:
                     x_values = &ds.samples;
                     break;
                 }
@@ -59,9 +59,4 @@ void PlottingWindow::update(std::vector<sparq_dataset_t> &datasets)
         }
     }
     ImGui::End();
-}
-
-void PlottingWindow::set_x_type(SPARQ_X_TYPE x_type)
-{
-    _x_type = x_type;
 }
