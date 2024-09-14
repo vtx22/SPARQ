@@ -20,7 +20,6 @@ struct sparq_dataset_t
     bool toggle_visibility = false;
     bool hidden = false;
 
-    uint64_t start_time = 0;
     std::vector<double> absolute_times;
     std::vector<double> relative_times;
     std::vector<double> samples;

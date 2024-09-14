@@ -34,10 +34,12 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
             if (ds.id == message.ids[i])
             {
                 ds.samples.push_back(ds.samples.back() + 1);
+                ds.relative_times.push_back(message.timestamp / 1000.0 - ds.absolute_times[0]);
+                ds.absolute_times.push_back(message.timestamp / 1000.0);
+
                 ds.y_values.push_back(message.values[i]);
-                ds.relative_times.push_back((message.timestamp - ds.start_time) / 1000.0f);
-                ds.absolute_times.push_back((double)message.timestamp / 1000.0);
-                std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.timestamp / 1000.0f << "\n";
+
+                std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.timestamp / 1000.0 << "\n";
                 ds_found = true;
                 break;
             }
@@ -46,14 +48,16 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         if (!ds_found)
         {
             std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
-            sparq_dataset ds;
 
-            ds.absolute_times.push_back((double)message.timestamp / 1000.0);
-            ds.start_time = message.timestamp;
+            sparq_dataset ds;
             ds.id = message.ids[i];
+
             ds.samples.push_back(0);
             ds.relative_times.push_back(0);
+            ds.absolute_times.push_back(message.timestamp / 1000.0);
+
             ds.y_values.push_back(message.values[i]);
+
             _datasets.push_back(ds);
         }
     }
