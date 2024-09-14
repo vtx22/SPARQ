@@ -96,17 +96,17 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float *)&datasets[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
             ImGui::TableSetColumnIndex(3);
 
-            if (ImGui::ImageButton(("DEL##" + i_str).c_str(), gl_handle_to_imgui_id(_delete_icon.getNativeHandle()), ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
-            {
-                to_delete.push_back(datasets[i].id);
-            }
-
-            ImGui::TableSetColumnIndex(4);
-
             ImTextureID hide_icon = datasets[i].hidden ? _show_icon_id : _hide_icon_id;
             if (ImGui::ImageButton(("HIDE##" + i_str).c_str(), hide_icon, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
             {
                 datasets[i].toggle_visibility = true;
+            }
+
+            ImGui::TableSetColumnIndex(4);
+
+            if (ImGui::ImageButton(("DEL##" + i_str).c_str(), gl_handle_to_imgui_id(_delete_icon.getNativeHandle()), ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
+            {
+                to_delete.push_back(datasets[i].id);
             }
         }
 
