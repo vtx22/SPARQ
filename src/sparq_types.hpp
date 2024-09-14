@@ -11,13 +11,6 @@
 #define SPARQ_MIN_MESSAGE_LENGTH 11
 #define SPARQ_DEFAULT_SIGNATURE 0xFF
 
-struct sparq_data_point
-{
-    float x;
-    float y;
-
-} typedef sparq_data_point;
-
 struct sparq_dataset_t
 {
     uint8_t id = 0;
