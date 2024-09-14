@@ -41,6 +41,8 @@ void PlottingWindow::update(std::vector<sparq_dataset_t> &datasets)
                     ds.toggle_visibility = false;
                 }
 
+                ds.hidden = !item->Show;
+
                 i++;
             }
 

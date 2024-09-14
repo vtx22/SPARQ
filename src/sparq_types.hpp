@@ -24,6 +24,7 @@ struct sparq_dataset_t
     char name[64] = {0};
     ImVec4 color = ImVec4(1, 0, 0, 1);
     bool toggle_visibility = false;
+    bool hidden = false;
 
     uint64_t start_time = 0;
     std::vector<float> relative_times;
