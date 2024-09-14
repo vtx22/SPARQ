@@ -16,6 +16,10 @@ void PlottingWindow::update()
         if (ImPlot::BeginPlot("Data", ImVec2(-1, -1)))
         {
             ImPlot::SetupAxes(x_axis_types[_data_handler->x_axis_select].axis_label, "", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+            if (_data_handler->x_axis_select == 2)
+            {
+                ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
+            }
 
             ImPlotContext *ctx = ImPlot::GetCurrentContext();
             ImPlotPlot *plot = ctx->CurrentPlot;
@@ -26,7 +30,7 @@ void PlottingWindow::update()
                 std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
                 ImPlot::SetNextLineStyle(ds.color, 3);
 
-                std::vector<float> *x_values;
+                std::vector<double> *x_values;
 
                 switch (_data_handler->x_axis_select)
                 {
@@ -38,7 +42,7 @@ void PlottingWindow::update()
                     x_values = &ds.relative_times;
                     break;
                 case 2:
-                    x_values = &ds.samples;
+                    x_values = &ds.absolute_times;
                     break;
                 }
 
