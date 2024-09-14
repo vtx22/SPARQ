@@ -1,6 +1,6 @@
 #include "DataWindow.hpp"
 
-DataWindow::DataWindow(DataHandler *data_handler) : _data_handler(data_handler)
+DataWindow::DataWindow(DataHandler *data_handler, PlottingWindow *plotting_window) : _data_handler(data_handler), _plotting_window(plotting_window)
 {
     _delete_icon.loadFromFile("./assets/icon_delete.png");
     _hide_icon.loadFromFile("./assets/icon_visibility_off.png");
@@ -33,6 +33,7 @@ void DataWindow::update()
                 if (ImGui::Selectable(x_axis_types[n], is_selected))
                 {
                     selected_axis_type = n;
+                    _plotting_window->set_x_type((SPARQ_X_TYPE)selected_axis_type);
                 }
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -43,6 +44,7 @@ void DataWindow::update()
             }
             ImGui::EndCombo();
         }
+
         ImGui::SeparatorText("Data");
 
         if (_data_handler->get_datasets().size() == 0)

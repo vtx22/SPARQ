@@ -10,6 +10,13 @@
 #include <string>
 #include <cstdint>
 
+enum SPARQ_X_TYPE
+{
+    SAMPLES,
+    RELATIVE_TIME,
+    ABSOLUTE_TIME,
+};
+
 class PlottingWindow
 {
 
@@ -19,5 +26,8 @@ public:
 
     void update(std::vector<sparq_dataset_t> &datasets);
 
+    void set_x_type(SPARQ_X_TYPE x_type);
+
 private:
+    SPARQ_X_TYPE _x_type = SAMPLES;
 };
