@@ -83,11 +83,9 @@ struct sparq_message_t
         ids.reserve(header.nval);
         values.reserve(header.nval);
 
-        uint8_t start = SPARQ_MESSAGE_HEADER_LENGTH;
-
         for (uint8_t pair = 0; pair < header.nval; pair++)
         {
-            uint16_t pair_index = start + pair * SPARQ_BYTES_PER_VALUE_PAIR;
+            uint16_t pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
 
             ids[pair] = data[pair_index];
             uint8_t v3 = data[pair_index + 1];
