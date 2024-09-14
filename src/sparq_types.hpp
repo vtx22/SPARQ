@@ -97,7 +97,8 @@ struct sparq_message_t
             values.push_back(*(float *)&value);
         }
 
-        checksum = (data[SPARQ_MESSAGE_HEADER_LENGTH + header.nval * SPARQ_BYTES_PER_VALUE_PAIR] << 8) + data[SPARQ_MESSAGE_HEADER_LENGTH + header.nval * SPARQ_BYTES_PER_VALUE_PAIR + 1];
+        uint16_t checksum_start = SPARQ_MESSAGE_HEADER_LENGTH + header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
+        checksum = (data[checksum_start] << 8) + data[checksum_start + 1];
     }
 
 } typedef sparq_message_t;
