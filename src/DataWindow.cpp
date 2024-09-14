@@ -8,6 +8,7 @@ DataWindow::DataWindow(DataHandler *data_handler) : _data_handler(data_handler)
 
     _hide_icon_id = gl_handle_to_imgui_id(_hide_icon.getNativeHandle());
     _show_icon_id = gl_handle_to_imgui_id(_show_icon.getNativeHandle());
+    _delete_icon_id = gl_handle_to_imgui_id(_delete_icon.getNativeHandle());
 }
 
 DataWindow::~DataWindow()
@@ -104,7 +105,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
 
             ImGui::TableSetColumnIndex(4);
 
-            if (ImGui::ImageButton(("DEL##" + i_str).c_str(), gl_handle_to_imgui_id(_delete_icon.getNativeHandle()), ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
+            if (ImGui::ImageButton(("DEL##" + i_str).c_str(), _delete_icon_id, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
             {
                 to_delete.push_back(datasets[i].id);
             }

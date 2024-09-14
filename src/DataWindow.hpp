@@ -24,5 +24,5 @@ private:
     DataHandler *_data_handler;
 
     sf::Texture _delete_icon, _hide_icon, _show_icon;
-    ImTextureID _hide_icon_id, _show_icon_id;
+    ImTextureID _delete_icon_id, _hide_icon_id, _show_icon_id;
 };
