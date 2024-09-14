@@ -21,9 +21,10 @@ struct sparq_dataset_t
     bool hidden = false;
 
     uint64_t start_time = 0;
-    std::vector<float> relative_times;
-    std::vector<float> samples;
-    std::vector<float> y_values;
+    std::vector<double> absolute_times;
+    std::vector<double> relative_times;
+    std::vector<double> samples;
+    std::vector<double> y_values;
 
 } typedef sparq_dataset;
 
