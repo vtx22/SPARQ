@@ -110,7 +110,7 @@ int SPARQ::run()
         ImGui::DockSpaceOverViewport();
 
         _data_handler->update();
-        _plotting_window->update(_data_handler->get_datasets_editable());
+        _plotting_window->update();
         _console_window->update();
         _connection_window->update();
         _data_window->update();

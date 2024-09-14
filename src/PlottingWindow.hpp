@@ -18,7 +18,7 @@ public:
     PlottingWindow(DataHandler * data_handler);
     ~PlottingWindow();
 
-    void update(std::vector<sparq_dataset_t> &datasets);
+    void update();
 
 private:
     DataHandler *_data_handler;
