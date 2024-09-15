@@ -86,7 +86,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
         ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Data");
     }
 
-    if (ImGui::BeginTable("##DatasetEditorTable", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##DatasetEditorTable", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
         std::vector<uint8_t> to_delete;
         for (uint8_t i = 0; i < datasets.size(); i++)
@@ -116,6 +116,9 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             {
                 to_delete.push_back(datasets[i].id);
             }
+
+            ImGui::TableSetColumnIndex(5);
+            ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "%lld", datasets[i].y_values.size());
         }
 
         ImGui::EndTable();
