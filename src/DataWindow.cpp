@@ -44,6 +44,16 @@ void DataWindow::update()
             }
 
             ImGui::Checkbox("Interpolation", &_data_handler->interpolation);
+            ImGui::SameLine();
+            ImGui::InputInt("Subsampling Resolution", &_data_handler->ip_values_per_step, 1, 1);
+            if (_data_handler->ip_values_per_step < 1)
+            {
+                _data_handler->ip_values_per_step = 1;
+            }
+            if (_data_handler->ip_values_per_step > 100)
+            {
+                _data_handler->ip_values_per_step = 100;
+            }
         }
 
         if (ImGui::CollapsingHeader("Datasets"))
