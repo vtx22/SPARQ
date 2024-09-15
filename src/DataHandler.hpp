@@ -33,6 +33,7 @@ public:
 
 private:
     uint32_t current_absolute_sample = 0;
+    uint64_t first_receive_timestamp = 0;
 
     Serial *_sp;
 

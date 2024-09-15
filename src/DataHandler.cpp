@@ -34,7 +34,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
             if (ds.id == message.ids[i])
             {
                 ds.samples.push_back(ds.samples.back() + 1);
-                ds.relative_times.push_back(message.timestamp / 1000.0 - ds.absolute_times[0]);
+                ds.relative_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
                 ds.absolute_times.push_back(message.timestamp / 1000.0);
 
                 ds.y_values.push_back(message.values[i]);
@@ -50,6 +50,11 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
             continue;
         }
 
+        if (first_receive_timestamp == 0)
+        {
+            first_receive_timestamp = message.timestamp;
+        }
+
         std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
 
         sparq_dataset ds;
@@ -57,7 +62,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         ds.color = ImPlot::GetColormapColor(ds.id);
 
         ds.samples.push_back(current_absolute_sample);
-        ds.relative_times.push_back(0);
+        ds.relative_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
         ds.absolute_times.push_back(message.timestamp / 1000.0);
 
         ds.y_values.push_back(message.values[i]);
@@ -89,6 +94,12 @@ bool DataHandler::delete_dataset(uint8_t id)
         if (_datasets[i].id == id)
         {
             _datasets.erase(_datasets.begin() + i);
+
+            if (_datasets.size() == 0)
+            {
+                first_receive_timestamp = 0;
+            }
+
             return true;
         }
     }
