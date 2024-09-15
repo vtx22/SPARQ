@@ -45,22 +45,24 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
             }
         }
 
-        if (!ds_found)
+        if (ds_found)
         {
-            std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
-
-            sparq_dataset ds;
-            ds.id = message.ids[i];
-            ds.color = ImPlot::GetColormapColor(ds.id);
-
-            ds.samples.push_back(0);
-            ds.relative_times.push_back(0);
-            ds.absolute_times.push_back(message.timestamp / 1000.0);
-
-            ds.y_values.push_back(message.values[i]);
-
-            _datasets.push_back(ds);
+            continue;
         }
+
+        std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
+
+        sparq_dataset ds;
+        ds.id = message.ids[i];
+        ds.color = ImPlot::GetColormapColor(ds.id);
+
+        ds.samples.push_back(0);
+        ds.relative_times.push_back(0);
+        ds.absolute_times.push_back(message.timestamp / 1000.0);
+
+        ds.y_values.push_back(message.values[i]);
+
+        _datasets.push_back(ds);
     }
 }
 
