@@ -31,12 +31,15 @@ void PlottingWindow::update()
                 ImPlot::SetNextLineStyle(ds.color, 3);
 
                 std::vector<double> *x_values;
+                std::vector<double> *y_values;
+
+                y_values = _data_handler->interpolation ? &ds.y_values_ip : &ds.y_values;
 
                 switch (_data_handler->x_axis_select)
                 {
                 default:
                 case 0:
-                    x_values = &ds.samples;
+                    x_values = _data_handler->interpolation ? &ds.samples_ip : &ds.samples;
                     break;
                 case 1:
                     x_values = &ds.relative_times;
@@ -46,7 +49,7 @@ void PlottingWindow::update()
                     break;
                 }
 
-                ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), (*x_values).data(), ds.y_values.data(), ds.y_values.size());
+                ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
 
                 ImPlotItem *item = plot->Items.GetLegendItem(i);
                 if (ds.toggle_visibility)

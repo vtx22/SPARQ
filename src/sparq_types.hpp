@@ -25,6 +25,9 @@ struct sparq_dataset_t
     std::vector<double> samples;
     std::vector<double> y_values;
 
+    std::vector<double> samples_ip;
+    std::vector<double> y_values_ip;
+
 } typedef sparq_dataset;
 
 struct sparq_message_header_t

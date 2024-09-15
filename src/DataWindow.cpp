@@ -42,6 +42,8 @@ void DataWindow::update()
                 }
                 ImGui::EndCombo();
             }
+
+            ImGui::Checkbox("Interpolation", &_data_handler->interpolation);
         }
 
         if (ImGui::CollapsingHeader("Datasets"))

@@ -31,6 +31,8 @@ public:
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
 
     uint8_t x_axis_select = 0;
+    bool interpolation = false;
+    uint8_t ip_values_per_step = 10;
 
 private:
     uint32_t current_absolute_sample = 0;

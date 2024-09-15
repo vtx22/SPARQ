@@ -33,6 +33,30 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         {
             if (ds.id == message.ids[i])
             {
+
+                {
+                    double k0 = ds.y_values.back();
+                    double k1 = message.values[i];
+                    double k2 = k1;
+                    double kn1 = ds.y_values.size() == 1 ? k0 : ds.y_values.at(ds.y_values.size() - 1);
+
+                    double m0 = (k1 - kn1) / 2.0;
+                    double m1 = (k2 - k0) / 2.0;
+
+                    double d = k0;
+                    double c = m0;
+                    double b = 3 * (k1 - d) - 2 * c - m1;
+                    double a = k1 - b - c - d;
+
+                    double start = ds.samples_ip.back();
+                    for (uint8_t i = 1; i <= ip_values_per_step; i++)
+                    {
+                        double x = i * 1.0 / ip_values_per_step;
+                        ds.samples_ip.push_back(start + x);
+                        ds.y_values_ip.push_back(a * x * x * x + b * x * x + c * x + d);
+                    }
+                }
+
                 ds.samples.push_back(ds.samples.back() + 1);
                 ds.relative_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
                 ds.absolute_times.push_back(message.timestamp / 1000.0);
@@ -62,10 +86,12 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         ds.color = ImPlot::GetColormapColor(ds.id);
 
         ds.samples.push_back(current_absolute_sample);
+        ds.samples_ip.push_back(current_absolute_sample);
         ds.relative_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
         ds.absolute_times.push_back(message.timestamp / 1000.0);
 
         ds.y_values.push_back(message.values[i]);
+        ds.y_values_ip.push_back(message.values[i]);
 
         _datasets.push_back(ds);
     }
