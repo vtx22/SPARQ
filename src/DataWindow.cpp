@@ -19,52 +19,61 @@ void DataWindow::update()
 {
     if (ImGui::Begin("Data & View"))
     {
-        ImGui::SeparatorText("View Settings");
 
-        int selected_index = _data_handler->x_axis_select;
-        if (ImGui::BeginCombo("X View", x_axis_types[selected_index].dropdown_name))
+        if (ImGui::CollapsingHeader("View"))
         {
-            for (uint8_t n = 0; n < 3; n++)
+            int selected_index = _data_handler->x_axis_select;
+            if (ImGui::BeginCombo("X View", x_axis_types[selected_index].dropdown_name))
             {
-                bool is_selected = (selected_index == n);
-
-                if (ImGui::Selectable(x_axis_types[n].dropdown_name, is_selected))
+                for (uint8_t n = 0; n < 3; n++)
                 {
-                    _data_handler->x_axis_select = n;
-                }
+                    bool is_selected = (selected_index == n);
 
-                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                if (is_selected)
-                {
-                    ImGui::SetItemDefaultFocus();
+                    if (ImGui::Selectable(x_axis_types[n].dropdown_name, is_selected))
+                    {
+                        _data_handler->x_axis_select = n;
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
                 }
+                ImGui::EndCombo();
             }
-            ImGui::EndCombo();
         }
 
-        ImGui::SeparatorText("Data");
+        if (ImGui::CollapsingHeader("Data"))
+        {
 
-        if (_data_handler->get_datasets().size() == 0)
-        {
-            ImGui::BeginDisabled();
-        }
+            if (ImGui::Button("Import"))
+            {
+            }
+            ImGui::SameLine();
 
-        if (ImGui::Button("Import"))
-        {
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Export"))
-        {
-        }
+            if (_data_handler->get_datasets().size() == 0)
+            {
+                ImGui::BeginDisabled();
+            }
 
-        if (_data_handler->get_datasets().size() == 0)
-        {
-            ImGui::EndDisabled();
-        }
+            if (ImGui::Button("Export"))
+            {
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Clear All"))
+            {
+            }
 
-        if (ImGui::CollapsingHeader("Datasets", ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            dataset_entries(_data_handler->get_datasets_editable());
+            if (_data_handler->get_datasets().size() == 0)
+            {
+                ImGui::EndDisabled();
+            }
+
+            if (ImGui::CollapsingHeader("Datasets", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                dataset_entries(_data_handler->get_datasets_editable());
+            }
         }
     }
 
