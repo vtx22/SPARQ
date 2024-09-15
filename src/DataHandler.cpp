@@ -81,7 +81,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
 
         std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
 
-        sparq_dataset ds;
+        sparq_dataset_t ds;
         ds.id = message.ids[i];
         ds.color = ImPlot::GetColormapColor(ds.id);
 
