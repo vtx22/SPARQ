@@ -32,7 +32,7 @@ public:
 
     uint8_t x_axis_select = 0;
     bool interpolation = false;
-    int ip_values_per_step = 10;
+    int ip_values_per_step = 20;
 
 private:
     uint32_t current_absolute_sample = 0;
