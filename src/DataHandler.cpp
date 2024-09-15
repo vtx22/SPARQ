@@ -33,7 +33,6 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         {
             if (ds.id == message.ids[i])
             {
-
                 {
                     double k0 = ds.y_values.back();
                     double k1 = message.values[i];
@@ -85,13 +84,10 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         ds.id = message.ids[i];
         ds.color = ImPlot::GetColormapColor(ds.id);
 
-        ds.samples.push_back(current_absolute_sample);
-        ds.samples_ip.push_back(current_absolute_sample);
-        ds.relative_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
-        ds.absolute_times.push_back(message.timestamp / 1000.0);
+        double rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
+        double abs_time = message.timestamp / 1000.0;
 
-        ds.y_values.push_back(message.values[i]);
-        ds.y_values_ip.push_back(message.values[i]);
+        ds.append_start_values(current_absolute_sample, rel_time, abs_time, message.values[i]);
 
         _datasets.push_back(ds);
     }

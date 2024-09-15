@@ -34,6 +34,8 @@ public:
     bool interpolation = false;
     int ip_values_per_step = 20;
 
+    static void interpolate(double x0, double y0, double x1, double y1, int steps);
+
 private:
     uint32_t current_absolute_sample = 0;
     uint64_t first_receive_timestamp = 0;
@@ -46,4 +48,6 @@ private:
     std::vector<sparq_dataset_t> _datasets;
 
     void add_to_datasets(const sparq_message_t &message);
+
+    void add_interpolated_values(sparq_dataset_t &dataset);
 };

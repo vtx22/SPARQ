@@ -28,6 +28,17 @@ struct sparq_dataset_t
     std::vector<double> samples_ip;
     std::vector<double> y_values_ip;
 
+    void append_start_values(double first_sample, double rel_time, double abs_time, double first_y)
+    {
+        samples.push_back(first_sample);
+        samples_ip.push_back(first_sample);
+        relative_times.push_back(rel_time);
+        absolute_times.push_back(abs_time);
+
+        y_values.push_back(first_y);
+        y_values_ip.push_back(first_y);
+    }
+
 } typedef sparq_dataset_t;
 
 struct sparq_message_header_t
