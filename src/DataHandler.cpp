@@ -51,6 +51,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
 
             sparq_dataset ds;
             ds.id = message.ids[i];
+            ds.color = ImPlot::GetColormapColor(ds.id);
 
             ds.samples.push_back(0);
             ds.relative_times.push_back(0);

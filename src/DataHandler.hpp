@@ -8,6 +8,7 @@
 
 #include "sparq_types.hpp"
 #include "serial.hpp"
+#include "implot.h"
 
 using namespace std::chrono;
 
