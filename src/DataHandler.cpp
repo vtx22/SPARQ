@@ -40,8 +40,8 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
                     double k2 = k1;
                     double kn1 = ds.y_values.size() == 1 ? k0 : ds.y_values.at(ds.y_values.size() - 1);
 
-                    double m0 = (k1 - kn1) / 2.0;
-                    double m1 = (k2 - k0) / 2.0;
+                    double m0 = 0; //(k1 - kn1) / 2.0;
+                    double m1 = 0; //(k2 - k0) / 2.0;
 
                     double d = k0;
                     double c = m0;
