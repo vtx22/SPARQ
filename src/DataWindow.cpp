@@ -44,7 +44,7 @@ void DataWindow::update()
             }
         }
 
-        if (ImGui::CollapsingHeader("Data"))
+        if (ImGui::CollapsingHeader("Datasets"))
         {
 
             if (ImGui::Button("Import"))
@@ -70,10 +70,9 @@ void DataWindow::update()
                 ImGui::EndDisabled();
             }
 
-            if (ImGui::CollapsingHeader("Datasets", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                dataset_entries(_data_handler->get_datasets_editable());
-            }
+            ImGui::Separator();
+
+            dataset_entries(_data_handler->get_datasets_editable());
         }
     }
 
@@ -84,7 +83,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
 {
     if (datasets.size() == 0)
     {
-        ImGui::Text("No Datasets present.");
+        ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Data");
     }
 
     if (ImGui::BeginTable("##DatasetEditorTable", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
