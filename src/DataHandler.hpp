@@ -32,6 +32,8 @@ public:
     uint8_t x_axis_select = 0;
 
 private:
+    uint32_t current_absolute_sample = 0;
+
     Serial *_sp;
 
     std::vector<uint8_t> _serial_buffer;

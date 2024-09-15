@@ -56,7 +56,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         ds.id = message.ids[i];
         ds.color = ImPlot::GetColormapColor(ds.id);
 
-        ds.samples.push_back(0);
+        ds.samples.push_back(current_absolute_sample);
         ds.relative_times.push_back(0);
         ds.absolute_times.push_back(message.timestamp / 1000.0);
 
@@ -64,6 +64,8 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
 
         _datasets.push_back(ds);
     }
+
+    current_absolute_sample++;
 }
 
 bool DataHandler::add_dataset(const sparq_dataset_t &dataset)
