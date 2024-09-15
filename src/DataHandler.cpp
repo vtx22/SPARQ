@@ -107,6 +107,14 @@ bool DataHandler::delete_dataset(uint8_t id)
     return false;
 }
 
+void DataHandler::delete_all_datasets()
+{
+    for (const auto &ds : _datasets)
+    {
+        delete_dataset(ds.id);
+    }
+}
+
 sparq_message_t DataHandler::receive_message()
 {
     sparq_message_t message;

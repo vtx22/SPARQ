@@ -26,6 +26,7 @@ public:
 
     bool add_dataset(const sparq_dataset_t &dataset);
     bool delete_dataset(uint8_t id);
+    void delete_all_datasets();
 
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
 

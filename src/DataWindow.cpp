@@ -63,9 +63,9 @@ void DataWindow::update()
             ImGui::SameLine();
             if (ImGui::Button("Clear All"))
             {
+                _data_handler->delete_all_datasets();
             }
-
-            if (_data_handler->get_datasets().size() == 0)
+            else if (_data_handler->get_datasets().size() == 0)
             {
                 ImGui::EndDisabled();
             }
