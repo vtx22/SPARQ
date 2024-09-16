@@ -24,7 +24,7 @@ void ConnectionWindow::update()
             ImGui::BeginDisabled();
         }
 
-        // ImGui::PushItemWidth(-FLT_MIN);
+        ImGui::SetNextItemWidth(-150);
 
         // COM Port selection
         if (ImGui::BeginCombo("##ComPorts", _com_ports[_current_id].c_str()))
@@ -48,13 +48,13 @@ void ConnectionWindow::update()
         }
 
         ImGui::SameLine();
-        if (ImGui::Button("Refresh Ports"))
+
+        if (ImGui::Button("Refresh Ports", ImVec2(150, 0)))
         {
             _com_ports = Serial::get_port_names();
         }
 
-        // ImGui::PopItemWidth();
-
+        ImGui::SetNextItemWidth(-150);
         // Baud Rate selection
         if (ImGui::BeginCombo("###BaudRateSelect", std::to_string(_baud_rate).c_str()))
         {
@@ -77,16 +77,42 @@ void ConnectionWindow::update()
         }
 
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+
         ImGui::Text("Baud Rate");
 
-        ImGui::Checkbox("SPARQ Format", &_sparq_format);
+        ImGui::SetNextItemWidth(-200 - ImGui::GetStyle().ItemInnerSpacing.x);
+
+        const char *comm_modes[2] = {"SPARQ", "ASCII"};
+        static int selected_comm_mode = 0;
+
+        if (ImGui::BeginCombo("###CommModeSelect", comm_modes[selected_comm_mode]))
+        {
+            for (uint8_t n = 0; n < 2; n++)
+            {
+                bool is_selected = (n == selected_comm_mode);
+
+                if (ImGui::Selectable(comm_modes[n], is_selected))
+                {
+                    selected_comm_mode = n;
+                }
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+
         ImGui::SameLine();
 
         if (!_sparq_format)
         {
             ImGui::BeginDisabled();
         }
-
+        ImGui::SetNextItemWidth(50);
         ImGui::InputText("##SignatureInput", _signature_chars, 3, ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
         ImGui::SameLine();
         ImGui::Text("Signature");
