@@ -33,28 +33,13 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         {
             if (ds.id == message.ids[i])
             {
-                {
-                    double k0 = ds.y_values.back();
-                    double k1 = message.values[i];
-                    double k2 = k1;
-                    double kn1 = ds.y_values.size() == 1 ? k0 : ds.y_values.at(ds.y_values.size() - 1);
+                auto interpolated = interpolate(ds.samples_ip.back(), ds.y_values.back(), ds.samples_ip.back() + 1, message.values[i], ip_values_per_step);
 
-                    double m0 = 0; //(k1 - kn1) / 2.0;
-                    double m1 = 0; //(k2 - k0) / 2.0;
+                ds.samples_ip.pop_back();
+                ds.y_values_ip.pop_back();
 
-                    double d = k0;
-                    double c = m0;
-                    double b = 3 * (k1 - d) - 2 * c - m1;
-                    double a = k1 - b - c - d;
-
-                    double start = ds.samples_ip.back();
-                    for (uint8_t i = 1; i <= ip_values_per_step; i++)
-                    {
-                        double x = i * 1.0 / ip_values_per_step;
-                        ds.samples_ip.push_back(start + x);
-                        ds.y_values_ip.push_back(a * x * x * x + b * x * x + c * x + d);
-                    }
-                }
+                ds.samples_ip.insert(ds.samples_ip.end(), std::get<0>(interpolated).begin(), std::get<0>(interpolated).end());
+                ds.y_values_ip.insert(ds.y_values_ip.end(), std::get<1>(interpolated).begin(), std::get<1>(interpolated).end());
 
                 ds.samples.push_back(ds.samples.back() + 1);
                 ds.relative_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
@@ -250,4 +235,29 @@ uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
     }
 
     return cs;
+}
+
+std::tuple<std::vector<double>, std::vector<double>> DataHandler::interpolate(double x0, double y0, double x1, double y1, int steps)
+{
+    std::vector<double> x_values, y_values;
+
+    x_values.push_back(x0);
+    y_values.push_back(y0);
+
+    double m0 = 0;
+    double m1 = 0;
+
+    double d = y0;
+    double c = m0;
+    double b = 3 * (y1 - d) - 2 * c - m1;
+    double a = y1 - b - c - d;
+
+    for (uint8_t i = 1; i <= steps; i++)
+    {
+        double x = i * (x1 - x0) / steps;
+        x_values.push_back(x0 + x);
+        y_values.push_back(a * x * x * x + b * x * x + c * x + d);
+    }
+
+    return {x_values, y_values};
 }
