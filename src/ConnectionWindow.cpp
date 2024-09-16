@@ -131,7 +131,7 @@ void ConnectionWindow::update()
 
         ImGui::SeparatorText("Statistic");
 
-        ImGui::Text("FPS: %d", (int)ImGui::GetIO().Framerate);
+        ImGui::Text("FPS: %d", (int)round(ImGui::GetIO().Framerate));
     }
     ImGui::End();
 }
