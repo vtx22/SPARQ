@@ -1,14 +1,10 @@
 #include "DataWindow.hpp"
 
-DataWindow::DataWindow(DataHandler *data_handler) : _data_handler(data_handler)
+DataWindow::DataWindow(DataHandler *data_handler, AssetHolder *asset_holder) : _data_handler(data_handler), _asset_holder(asset_holder)
 {
-    _delete_icon.loadFromFile("./assets/icon_delete.png");
-    _hide_icon.loadFromFile("./assets/icon_visibility_off.png");
-    _show_icon.loadFromFile("./assets/icon_visibility_on.png");
-
-    _hide_icon_id = gl_handle_to_imgui_id(_hide_icon.getNativeHandle());
-    _show_icon_id = gl_handle_to_imgui_id(_show_icon.getNativeHandle());
-    _delete_icon_id = gl_handle_to_imgui_id(_delete_icon.getNativeHandle());
+    _hide_icon_id = _asset_holder->add_asset("./assets/icon_visibility_off.png");
+    _show_icon_id = _asset_holder->add_asset("./assets/icon_visibility_on.png");
+    _delete_icon_id = _asset_holder->add_asset("./assets/icon_delete.png");
 }
 
 DataWindow::~DataWindow()
@@ -140,11 +136,4 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             _data_handler->delete_dataset(id);
         }
     }
-}
-
-ImTextureID DataWindow::gl_handle_to_imgui_id(GLuint gl_texture_handle)
-{
-    ImTextureID textureID = nullptr;
-    std::memcpy(&textureID, &gl_texture_handle, sizeof(GLuint));
-    return textureID;
 }
