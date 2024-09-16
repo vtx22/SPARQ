@@ -20,7 +20,7 @@ ImTextureID AssetHolder::add_asset(const char *path)
 
     if (stored_textures >= SPARQ_MAX_TEXTURES)
     {
-        std::cout << "Could not load texture because maximum number of textured exceeded! Check sparq_config.h\n";
+        std::cout << "Could not load texture because maximum number of textures exceeded! Check sparq_config.h\n";
         return nullptr;
     }
 
