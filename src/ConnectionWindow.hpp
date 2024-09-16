@@ -8,11 +8,13 @@
 #include <vector>
 #include <cmath>
 
+#include "AssetHolder.hpp"
+
 class ConnectionWindow
 {
 
 public:
-    ConnectionWindow(Serial *sp);
+    ConnectionWindow(Serial *sp, AssetHolder *asset_holder);
     ~ConnectionWindow();
 
     void update();
@@ -35,4 +37,7 @@ private:
     uint8_t hex_chars_to_byte(char high, char low);
 
     Serial *_sp;
+    AssetHolder *_asset_holder;
+
+    ImTextureID _refresh_icon;
 };

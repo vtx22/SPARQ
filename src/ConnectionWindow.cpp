@@ -1,7 +1,8 @@
 #include "ConnectionWindow.hpp"
 
-ConnectionWindow::ConnectionWindow(Serial *sp) : _sp(sp)
+ConnectionWindow::ConnectionWindow(Serial *sp, AssetHolder *asset_holder) : _sp(sp), _asset_holder(asset_holder)
 {
+    _refresh_icon = _asset_holder->add_asset("./assets/icon_refresh.png");
 }
 
 ConnectionWindow::~ConnectionWindow()
@@ -24,7 +25,8 @@ void ConnectionWindow::update()
             ImGui::BeginDisabled();
         }
 
-        ImGui::SetNextItemWidth(-150);
+        int spacing_right = 80;
+        ImGui::SetNextItemWidth(-spacing_right);
 
         // COM Port selection
         if (ImGui::BeginCombo("##ComPorts", _com_ports[_current_id].c_str()))
@@ -49,12 +51,12 @@ void ConnectionWindow::update()
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Refresh Ports", ImVec2(150, 0)))
+        if (ImGui::ImageButton("##RefreshButton", _refresh_icon, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
         {
             _com_ports = Serial::get_port_names();
         }
 
-        ImGui::SetNextItemWidth(-150);
+        ImGui::SetNextItemWidth(-spacing_right);
         // Baud Rate selection
         if (ImGui::BeginCombo("###BaudRateSelect", std::to_string(_baud_rate).c_str()))
         {
@@ -77,11 +79,11 @@ void ConnectionWindow::update()
         }
 
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(150);
+        ImGui::SetNextItemWidth(spacing_right);
 
         ImGui::Text("Baud Rate");
 
-        ImGui::SetNextItemWidth(-200 - ImGui::GetStyle().ItemInnerSpacing.x);
+        ImGui::SetNextItemWidth(-spacing_right - 50 - ImGui::GetStyle().ItemInnerSpacing.x);
 
         const char *comm_modes[2] = {"SPARQ", "ASCII"};
         static int selected_comm_mode = 0;
