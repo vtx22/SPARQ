@@ -300,12 +300,12 @@ std::vector<double> &DataHandler::add_value_interpolated_y(std::vector<double> &
     return data;
 }
 
-double DataHandler::get_max_sample()
+double DataHandler::get_max_sample() const
 {
     return current_absolute_sample;
 }
 
-double DataHandler::get_max_rel_time()
+double DataHandler::get_max_rel_time() const
 {
     double max_rel_time = 0;
 
@@ -320,7 +320,7 @@ double DataHandler::get_max_rel_time()
     return max_rel_time;
 }
 
-double DataHandler::get_max_abs_time()
+double DataHandler::get_max_abs_time() const
 {
     double max_abs_time = 0;
 
