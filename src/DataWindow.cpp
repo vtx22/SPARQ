@@ -18,12 +18,11 @@ void DataWindow::update()
 
         if (ImGui::CollapsingHeader("View"))
         {
-            int selected_index = _data_handler->x_axis_select;
-            if (ImGui::BeginCombo("X View", x_axis_types[selected_index].dropdown_name))
+            if (ImGui::BeginCombo("X View", x_axis_types[_data_handler->x_axis_select].dropdown_name))
             {
                 for (uint8_t n = 0; n < x_axis_types.size(); n++)
                 {
-                    bool is_selected = (selected_index == n);
+                    bool is_selected = (_data_handler->x_axis_select == n);
 
                     if (ImGui::Selectable(x_axis_types[n].dropdown_name, is_selected))
                     {
@@ -39,16 +38,15 @@ void DataWindow::update()
                 ImGui::EndCombo();
             }
 
-            static int fit_select = 0;
-            if (ImGui::BeginCombo("X Fit", x_axis_fits[fit_select]))
+            if (ImGui::BeginCombo("X Fit", x_axis_fits[_data_handler->x_fit_select]))
             {
                 for (uint8_t n = 0; n < x_axis_fits.size(); n++)
                 {
-                    bool is_selected = (fit_select == n);
+                    bool is_selected = (_data_handler->x_fit_select == n);
 
                     if (ImGui::Selectable(x_axis_fits[n], is_selected))
                     {
-                        fit_select = n;
+                        _data_handler->x_fit_select = n;
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
