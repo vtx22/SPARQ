@@ -123,7 +123,7 @@ void PlottingWindow::config_limits_n_values()
     case 0:
     {
         int max_sample = round(_data_handler->get_max_sample()) - 1;
-        int min_sample = max_sample - _last_n + 1;
+        int min_sample = max_sample - _data_handler->last_n + 1;
 
         if (min_sample < 0)
         {
@@ -138,7 +138,7 @@ void PlottingWindow::config_limits_n_values()
     case 1:
     {
         double max_rel_time = _data_handler->get_max_rel_time();
-        double min_rel_time = max_rel_time - _last_n;
+        double min_rel_time = max_rel_time - _data_handler->last_n;
 
         if (min_rel_time < 0)
         {
@@ -153,7 +153,7 @@ void PlottingWindow::config_limits_n_values()
     case 2:
     {
         double max_abs_time = _data_handler->get_max_abs_time();
-        double min_abs_time = max_abs_time - _last_n;
+        double min_abs_time = max_abs_time - _data_handler->last_n;
 
         if (min_abs_time < 0)
         {

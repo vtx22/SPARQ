@@ -27,7 +27,5 @@ public:
     std::tuple<std::vector<double> *, std::vector<double> *> get_xy_values(sparq_dataset_t &dataset);
 
 private:
-    uint32_t _last_n = 10;
-
     DataHandler *_data_handler;
 };

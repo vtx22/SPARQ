@@ -35,6 +35,8 @@ public:
     uint8_t x_fit_select = 0;
     uint8_t y_fit_select = 0;
 
+    int last_n = 10;
+
     bool interpolation = false;
     int ip_values_per_step = 20;
 
