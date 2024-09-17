@@ -32,7 +32,7 @@ private:
     uint8_t _signature = 0xFF;
 
     bool _port_open = false;
-    bool _sparq_format = true;
+    int _selected_comm_mode = 0;
 
     uint8_t hex_chars_to_byte(char high, char low);
 

@@ -86,17 +86,16 @@ void ConnectionWindow::update()
         ImGui::SetNextItemWidth(-spacing_right - 50 - ImGui::GetStyle().ItemInnerSpacing.x);
 
         const char *comm_modes[2] = {"SPARQ", "ASCII"};
-        static int selected_comm_mode = 0;
 
-        if (ImGui::BeginCombo("###CommModeSelect", comm_modes[selected_comm_mode]))
+        if (ImGui::BeginCombo("###CommModeSelect", comm_modes[_selected_comm_mode]))
         {
             for (uint8_t n = 0; n < 2; n++)
             {
-                bool is_selected = (n == selected_comm_mode);
+                bool is_selected = (n == _selected_comm_mode);
 
                 if (ImGui::Selectable(comm_modes[n], is_selected))
                 {
-                    selected_comm_mode = n;
+                    _selected_comm_mode = n;
                 }
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -110,7 +109,7 @@ void ConnectionWindow::update()
 
         ImGui::SameLine();
 
-        if (!_sparq_format)
+        if (_selected_comm_mode != 0)
         {
             ImGui::BeginDisabled();
         }
@@ -119,7 +118,7 @@ void ConnectionWindow::update()
         ImGui::SameLine();
         ImGui::Text("Signature");
 
-        if (!_sparq_format)
+        if (_selected_comm_mode != 0)
         {
             ImGui::EndDisabled();
         }
