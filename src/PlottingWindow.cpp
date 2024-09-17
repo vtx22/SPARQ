@@ -123,7 +123,7 @@ void PlottingWindow::config_limits_n_values()
     case 0:
     {
         int max_sample = round(_data_handler->get_max_sample()) - 1;
-        int min_sample = max_sample - _last_n;
+        int min_sample = max_sample - _last_n + 1;
 
         if (min_sample < 0)
         {
