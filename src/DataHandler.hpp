@@ -44,6 +44,10 @@ public:
     static std::vector<double> &add_value_interpolated_x(std::vector<double> &data, double new_value, int steps);
     static std::vector<double> &add_value_interpolated_y(std::vector<double> &data, double new_value, int steps);
 
+    double get_max_sample();
+    double get_max_rel_time();
+    double get_max_abs_time();
+
 private:
     uint32_t current_absolute_sample = 0;
     uint64_t first_receive_timestamp = 0;

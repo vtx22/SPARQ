@@ -299,3 +299,38 @@ std::vector<double> &DataHandler::add_value_interpolated_y(std::vector<double> &
     data.insert(data.end(), interpolated.begin(), interpolated.end());
     return data;
 }
+
+double DataHandler::get_max_sample()
+{
+    return current_absolute_sample;
+}
+
+double DataHandler::get_max_rel_time()
+{
+    double max_rel_time = 0;
+
+    for (const auto &ds : _datasets)
+    {
+        if (ds.relative_times.back() > max_rel_time)
+        {
+            max_rel_time = ds.relative_times.back();
+        }
+    }
+
+    return max_rel_time;
+}
+
+double DataHandler::get_max_abs_time()
+{
+    double max_abs_time = 0;
+
+    for (const auto &ds : _datasets)
+    {
+        if (ds.relative_times.back() > max_abs_time)
+        {
+            max_abs_time = ds.absolute_times.back();
+        }
+    }
+
+    return max_abs_time;
+}
