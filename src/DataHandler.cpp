@@ -46,10 +46,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
                 add_value_interpolated_y(ds.y_values_ip, new_y_value, ip_values_per_step);
 
                 // Add uninterpolated values
-                ds.samples.push_back(new_sample);
-                ds.relative_times.push_back(new_rel_time);
-                ds.absolute_times.push_back(new_abs_time);
-                ds.y_values.push_back(new_y_value);
+                ds.append_raw_values(new_sample, new_rel_time, new_abs_time, new_y_value);
 
                 std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.timestamp / 1000.0 << "\n";
                 ds_found = true;

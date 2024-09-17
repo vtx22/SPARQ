@@ -45,6 +45,14 @@ struct sparq_dataset_t
         y_values_ip.push_back(first_y);
     }
 
+    void append_raw_values(double sample, double rel_time, double abs_time, double y_value)
+    {
+        samples.push_back(sample);
+        relative_times.push_back(rel_time);
+        absolute_times.push_back(abs_time);
+        y_values.push_back(y_value);
+    }
+
 } typedef sparq_dataset_t;
 
 struct sparq_message_header_t
