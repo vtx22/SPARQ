@@ -21,7 +21,7 @@ void DataWindow::update()
             int selected_index = _data_handler->x_axis_select;
             if (ImGui::BeginCombo("X View", x_axis_types[selected_index].dropdown_name))
             {
-                for (uint8_t n = 0; n < 3; n++)
+                for (uint8_t n = 0; n < x_axis_types.size(); n++)
                 {
                     bool is_selected = (selected_index == n);
 
