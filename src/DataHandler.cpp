@@ -246,27 +246,7 @@ uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
 
 std::tuple<std::vector<double>, std::vector<double>> DataHandler::interpolate(double x0, double y0, double x1, double y1, int steps)
 {
-    std::vector<double> x_values, y_values;
-
-    x_values.push_back(x0);
-    y_values.push_back(y0);
-
-    double m0 = 0;
-    double m1 = 0;
-
-    double d = y0;
-    double c = m0;
-    double b = 3 * (y1 - d) - 2 * c - m1;
-    double a = y1 - b - c - d;
-
-    for (uint8_t i = 1; i <= steps; i++)
-    {
-        double x = i * (x1 - x0) / steps;
-        x_values.push_back(x0 + x);
-        y_values.push_back(a * x * x * x + b * x * x + c * x + d);
-    }
-
-    return {x_values, y_values};
+    return {interpolate_x(x0, x1, steps), interpolate_y(y0, y1, steps)};
 }
 
 std::vector<double> DataHandler::interpolate_x(double x0, double x1, int steps)
@@ -279,4 +259,22 @@ std::vector<double> DataHandler::interpolate_x(double x0, double x1, int steps)
     }
 
     return x_values;
+}
+
+std::vector<double> DataHandler::interpolate_y(double y0, double y1, int steps)
+{
+    std::vector<double> y_values(steps + 1);
+
+    double d = y0;
+    double c = 0;
+    double b = 3 * (y1 - d) - 2 * c - 0;
+    double a = y1 - b - c - d;
+
+    for (uint8_t i = 0; i <= steps; i++)
+    {
+        double x = i / (double)steps;
+        y_values[i] = a * x * x * x + b * x * x + c * x + d;
+    }
+
+    return y_values;
 }

@@ -37,6 +37,7 @@ public:
 
     static std::tuple<std::vector<double>, std::vector<double>> interpolate(double x0, double y0, double x1, double y1, int steps);
     static std::vector<double> interpolate_x(double x0, double x1, int steps);
+    static std::vector<double> interpolate_y(double y0, double y1, int steps);
 
 private:
     uint32_t current_absolute_sample = 0;
