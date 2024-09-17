@@ -47,7 +47,7 @@ void DataWindow::update()
             ImGui::Text("Fit");
             ImGui::SameLine();
             ImGui::SetCursorPosX(text_offset);
-            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::SetNextItemWidth(-200);
             if (ImGui::BeginCombo("##X Fit", x_axis_fits[_data_handler->x_fit_select]))
             {
                 for (uint8_t n = 0; n < x_axis_fits.size(); n++)
@@ -66,6 +66,25 @@ void DataWindow::update()
                     }
                 }
                 ImGui::EndCombo();
+            }
+
+            ImGui::SameLine();
+
+            if (_data_handler->x_fit_select != 2)
+            {
+                ImGui::BeginDisabled();
+            }
+
+            ImGui::SetNextItemWidth(-210);
+            ImGui::Text("N =");
+            ImGui::SameLine();
+            static int last_n = 10;
+            ImGui::SetNextItemWidth(160);
+            ImGui::InputInt("##LastN", &last_n, 1, 10);
+
+            if (_data_handler->x_fit_select != 2)
+            {
+                ImGui::EndDisabled();
             }
 
             ImGui::SeparatorText("Y Axis");
