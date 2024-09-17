@@ -123,6 +123,7 @@ bool DataHandler::delete_dataset(uint8_t id)
             if (_datasets.size() == 0)
             {
                 first_receive_timestamp = 0;
+                current_absolute_sample = 0;
             }
 
             return true;
