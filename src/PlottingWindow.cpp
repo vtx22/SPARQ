@@ -85,19 +85,33 @@ void PlottingWindow::update_axes()
 
     switch (_data_handler->x_fit_select)
     {
+    // Manual
+    case 0:
+        ImPlot::SetupAxis(ImAxis_X1, x_axis_label, 0);
+        break;
     // Fit all
     default:
-    case 0:
+    case 1:
         ImPlot::SetupAxis(ImAxis_X1, x_axis_label, ImPlotAxisFlags_AutoFit);
         break;
     // Last N values
-    case 1:
+    case 2:
         config_limits_n_values();
         break;
     }
 
     // Y Axis Setup
-    ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
+    switch (_data_handler->y_fit_select)
+    {
+    // Manual
+    case 0:
+        ImPlot::SetupAxis(ImAxis_Y1, nullptr, 0);
+        break;
+    // Fit all
+    case 1:
+        ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
+        break;
+    }
 }
 
 void PlottingWindow::config_limits_n_values()

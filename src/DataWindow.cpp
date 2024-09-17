@@ -68,6 +68,31 @@ void DataWindow::update()
                 ImGui::EndCombo();
             }
 
+            ImGui::SeparatorText("Y Axis");
+            ImGui::Text("Fit");
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(text_offset);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::BeginCombo("##Y Fit", y_axis_fits[_data_handler->y_fit_select]))
+            {
+                for (uint8_t n = 0; n < y_axis_fits.size(); n++)
+                {
+                    bool is_selected = (_data_handler->y_fit_select == n);
+
+                    if (ImGui::Selectable(y_axis_fits[n], is_selected))
+                    {
+                        _data_handler->y_fit_select = n;
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
+            }
+
             ImGui::SeparatorText("Other");
             ImGui::Checkbox("Interpolation", &_data_handler->interpolation);
         }

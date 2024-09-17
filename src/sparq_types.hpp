@@ -136,4 +136,5 @@ const sparq_axis_t X_AX_REL_TIME = {.dropdown_name = "Relative Time", .axis_labe
 const sparq_axis_t X_AX_ABS_TIME = {.dropdown_name = "Date Time", .axis_label = "Date"};
 
 const std::array<sparq_axis_t, 3> x_axis_types = {X_AX_SAMPLES, X_AX_REL_TIME, X_AX_ABS_TIME};
-const std::array<const char *, 2> x_axis_fits = {"Fit All", "Last N"};
+const std::array<const char *, 3> x_axis_fits = {"Manual", "Fit All", "Last N"};
+const std::array<const char *, 2> y_axis_fits = {"Manual", "Fit All"};

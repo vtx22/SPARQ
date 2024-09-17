@@ -33,6 +33,7 @@ public:
 
     uint8_t x_axis_select = 0;
     uint8_t x_fit_select = 0;
+    uint8_t y_fit_select = 0;
 
     bool interpolation = false;
     int ip_values_per_step = 20;
