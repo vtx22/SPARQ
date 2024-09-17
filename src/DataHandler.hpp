@@ -39,6 +39,9 @@ public:
     static std::vector<double> interpolate_x(double x0, double x1, int steps);
     static std::vector<double> interpolate_y(double y0, double y1, int steps);
 
+    static std::vector<double> &add_value_interpolated_x(std::vector<double> &data, double new_value, int steps);
+    static std::vector<double> &add_value_interpolated_y(std::vector<double> &data, double new_value, int steps);
+
 private:
     uint32_t current_absolute_sample = 0;
     uint64_t first_receive_timestamp = 0;

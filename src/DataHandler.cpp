@@ -39,25 +39,11 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
                 double new_abs_time = message.timestamp / 1000.0;
                 double new_y_value = message.values[i];
 
-                // Interpolate between old and new sample
-                auto ip_x_sample = interpolate_x(ds.samples_ip.back(), new_sample, ip_values_per_step);
-                ds.samples_ip.pop_back();
-                ds.samples_ip.insert(ds.samples_ip.end(), ip_x_sample.begin(), ip_x_sample.end());
-
-                // Interpolate between old and new rel time
-                auto ip_x_rel_time = interpolate_x(ds.relative_times_ip.back(), new_rel_time, ip_values_per_step);
-                ds.relative_times_ip.pop_back();
-                ds.relative_times_ip.insert(ds.relative_times_ip.end(), ip_x_rel_time.begin(), ip_x_rel_time.end());
-
-                // Interpolate between old and new abs time
-                auto ip_x_abs_time = interpolate_x(ds.absolute_times_ip.back(), new_abs_time, ip_values_per_step);
-                ds.absolute_times_ip.pop_back();
-                ds.absolute_times_ip.insert(ds.absolute_times_ip.end(), ip_x_abs_time.begin(), ip_x_abs_time.end());
-
-                // Interpolate between old and new y value
-                auto ip_y_values = interpolate_y(ds.y_values_ip.back(), new_y_value, ip_values_per_step);
-                ds.y_values_ip.pop_back();
-                ds.y_values_ip.insert(ds.y_values_ip.end(), ip_y_values.begin(), ip_y_values.end());
+                // Add interpolated values from last value to new value
+                add_value_interpolated_x(ds.samples_ip, new_sample, ip_values_per_step);
+                add_value_interpolated_x(ds.relative_times_ip, new_rel_time, ip_values_per_step);
+                add_value_interpolated_x(ds.absolute_times_ip, new_abs_time, ip_values_per_step);
+                add_value_interpolated_y(ds.y_values_ip, new_y_value, ip_values_per_step);
 
                 // Add uninterpolated values
                 ds.samples.push_back(new_sample);
@@ -289,4 +275,30 @@ std::vector<double> DataHandler::interpolate_y(double y0, double y1, int steps)
     }
 
     return y_values;
+}
+
+std::vector<double> &DataHandler::add_value_interpolated_x(std::vector<double> &data, double new_value, int steps)
+{
+    if (data.size() == 0)
+    {
+        return data;
+    }
+
+    auto interpolated = interpolate_x(data.back(), new_value, steps);
+    data.pop_back();
+    data.insert(data.end(), interpolated.begin(), interpolated.end());
+    return data;
+}
+
+std::vector<double> &DataHandler::add_value_interpolated_y(std::vector<double> &data, double new_value, int steps)
+{
+    if (data.size() == 0)
+    {
+        return data;
+    }
+
+    auto interpolated = interpolate_y(data.back(), new_value, steps);
+    data.pop_back();
+    data.insert(data.end(), interpolated.begin(), interpolated.end());
+    return data;
 }
