@@ -33,26 +33,37 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         {
             if (ds.id == message.ids[i])
             {
-                auto interpolated = interpolate(ds.samples_ip.back(), ds.y_values.back(), ds.samples_ip.back() + 1, message.values[i], ip_values_per_step);
+                // All new x and y values
+                double new_sample = ds.samples_ip.back() + 1;
+                double new_rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
+                double new_abs_time = message.timestamp / 1000.0;
+                double new_y_value = message.values[i];
 
+                // Interpolate between old and new sample
+                auto ip_x_sample = interpolate_x(ds.samples_ip.back(), new_sample, ip_values_per_step);
                 ds.samples_ip.pop_back();
-                ds.y_values_ip.pop_back();
+                ds.samples_ip.insert(ds.samples_ip.end(), ip_x_sample.begin(), ip_x_sample.end());
 
-                ds.samples_ip.insert(ds.samples_ip.end(), std::get<0>(interpolated).begin(), std::get<0>(interpolated).end());
-                ds.y_values_ip.insert(ds.y_values_ip.end(), std::get<1>(interpolated).begin(), std::get<1>(interpolated).end());
-
-                auto ip_x_abs_time = interpolate_x(ds.absolute_times_ip.back(), message.timestamp / 1000.0, ip_values_per_step);
-                ds.absolute_times_ip.pop_back();
-                ds.absolute_times_ip.insert(ds.absolute_times_ip.end(), ip_x_abs_time.begin(), ip_x_abs_time.end());
-
-                auto ip_x_rel_time = interpolate_x(ds.relative_times_ip.back(), (message.timestamp - first_receive_timestamp) / 1000.0, ip_values_per_step);
+                // Interpolate between old and new rel time
+                auto ip_x_rel_time = interpolate_x(ds.relative_times_ip.back(), new_rel_time, ip_values_per_step);
                 ds.relative_times_ip.pop_back();
                 ds.relative_times_ip.insert(ds.relative_times_ip.end(), ip_x_rel_time.begin(), ip_x_rel_time.end());
 
-                ds.samples.push_back(ds.samples.back() + 1);
-                ds.relative_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
-                ds.absolute_times.push_back(message.timestamp / 1000.0);
-                ds.y_values.push_back(message.values[i]);
+                // Interpolate between old and new abs time
+                auto ip_x_abs_time = interpolate_x(ds.absolute_times_ip.back(), new_abs_time, ip_values_per_step);
+                ds.absolute_times_ip.pop_back();
+                ds.absolute_times_ip.insert(ds.absolute_times_ip.end(), ip_x_abs_time.begin(), ip_x_abs_time.end());
+
+                // Interpolate between old and new y value
+                auto ip_y_values = interpolate_y(ds.y_values_ip.back(), new_y_value, ip_values_per_step);
+                ds.y_values_ip.pop_back();
+                ds.y_values_ip.insert(ds.y_values_ip.end(), ip_y_values.begin(), ip_y_values.end());
+
+                // Add uninterpolated values
+                ds.samples.push_back(new_sample);
+                ds.relative_times.push_back(new_rel_time);
+                ds.absolute_times.push_back(new_abs_time);
+                ds.y_values.push_back(new_y_value);
 
                 std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.timestamp / 1000.0 << "\n";
                 ds_found = true;
