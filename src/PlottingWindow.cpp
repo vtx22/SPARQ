@@ -42,10 +42,10 @@ void PlottingWindow::update()
                     x_values = _data_handler->interpolation ? &ds.samples_ip : &ds.samples;
                     break;
                 case 1:
-                    x_values = &ds.relative_times;
+                    x_values = _data_handler->interpolation ? &ds.relative_times_ip : &ds.relative_times;
                     break;
                 case 2:
-                    x_values = &ds.absolute_times;
+                    x_values = _data_handler->interpolation ? &ds.absolute_times_ip : &ds.absolute_times;
                     break;
                 }
 

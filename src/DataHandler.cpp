@@ -41,10 +41,17 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
                 ds.samples_ip.insert(ds.samples_ip.end(), std::get<0>(interpolated).begin(), std::get<0>(interpolated).end());
                 ds.y_values_ip.insert(ds.y_values_ip.end(), std::get<1>(interpolated).begin(), std::get<1>(interpolated).end());
 
+                auto ip_x_abs_time = interpolate_x(ds.absolute_times_ip.back(), message.timestamp / 1000.0, ip_values_per_step);
+                ds.absolute_times_ip.pop_back();
+                ds.absolute_times_ip.insert(ds.absolute_times_ip.end(), ip_x_abs_time.begin(), ip_x_abs_time.end());
+
+                auto ip_x_rel_time = interpolate_x(ds.relative_times_ip.back(), (message.timestamp - first_receive_timestamp) / 1000.0, ip_values_per_step);
+                ds.relative_times_ip.pop_back();
+                ds.relative_times_ip.insert(ds.relative_times_ip.end(), ip_x_rel_time.begin(), ip_x_rel_time.end());
+
                 ds.samples.push_back(ds.samples.back() + 1);
                 ds.relative_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
                 ds.absolute_times.push_back(message.timestamp / 1000.0);
-
                 ds.y_values.push_back(message.values[i]);
 
                 std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.timestamp / 1000.0 << "\n";
@@ -260,4 +267,16 @@ std::tuple<std::vector<double>, std::vector<double>> DataHandler::interpolate(do
     }
 
     return {x_values, y_values};
+}
+
+std::vector<double> DataHandler::interpolate_x(double x0, double x1, int steps)
+{
+    std::vector<double> x_values(steps + 1);
+    for (uint8_t i = 0; i <= steps; i++)
+    {
+        double x = i * (x1 - x0) / steps;
+        x_values[i] = x0 + x;
+    }
+
+    return x_values;
 }

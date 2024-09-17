@@ -25,6 +25,8 @@ struct sparq_dataset_t
     std::vector<double> samples;
     std::vector<double> y_values;
 
+    std::vector<double> absolute_times_ip;
+    std::vector<double> relative_times_ip;
     std::vector<double> samples_ip;
     std::vector<double> y_values_ip;
 
@@ -32,8 +34,12 @@ struct sparq_dataset_t
     {
         samples.push_back(first_sample);
         samples_ip.push_back(first_sample);
+
         relative_times.push_back(rel_time);
+        relative_times_ip.push_back(rel_time);
+
         absolute_times.push_back(abs_time);
+        absolute_times_ip.push_back(abs_time);
 
         y_values.push_back(first_y);
         y_values_ip.push_back(first_y);
