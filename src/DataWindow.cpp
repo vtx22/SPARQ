@@ -39,6 +39,27 @@ void DataWindow::update()
                 ImGui::EndCombo();
             }
 
+            static int fit_select = 0;
+            if (ImGui::BeginCombo("X Fit", x_axis_fits[fit_select]))
+            {
+                for (uint8_t n = 0; n < x_axis_fits.size(); n++)
+                {
+                    bool is_selected = (fit_select == n);
+
+                    if (ImGui::Selectable(x_axis_fits[n], is_selected))
+                    {
+                        fit_select = n;
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
+            }
+
             ImGui::Checkbox("Interpolation", &_data_handler->interpolation);
         }
 
