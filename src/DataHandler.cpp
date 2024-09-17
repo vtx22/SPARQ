@@ -67,7 +67,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
 
         sparq_dataset_t ds;
         ds.id = message.ids[i];
-        ds.color = ImPlot::GetColormapColor(ds.id);
+        ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + _datasets.size());
 
         double rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
         double abs_time = message.timestamp / 1000.0;
