@@ -15,10 +15,16 @@ void DataWindow::update()
 {
     if (ImGui::Begin("Data & View"))
     {
-
+        int text_offset = 90;
         if (ImGui::CollapsingHeader("View"))
         {
-            if (ImGui::BeginCombo("X View", x_axis_types[_data_handler->x_axis_select].dropdown_name))
+            ImGui::SeparatorText("X Axis");
+
+            ImGui::Text("Axis Unit");
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(text_offset);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::BeginCombo("##X View", x_axis_types[_data_handler->x_axis_select].dropdown_name))
             {
                 for (uint8_t n = 0; n < x_axis_types.size(); n++)
                 {
@@ -38,7 +44,11 @@ void DataWindow::update()
                 ImGui::EndCombo();
             }
 
-            if (ImGui::BeginCombo("X Fit", x_axis_fits[_data_handler->x_fit_select]))
+            ImGui::Text("Fit");
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(text_offset);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::BeginCombo("##X Fit", x_axis_fits[_data_handler->x_fit_select]))
             {
                 for (uint8_t n = 0; n < x_axis_fits.size(); n++)
                 {
@@ -58,6 +68,7 @@ void DataWindow::update()
                 ImGui::EndCombo();
             }
 
+            ImGui::SeparatorText("Other");
             ImGui::Checkbox("Interpolation", &_data_handler->interpolation);
         }
 
