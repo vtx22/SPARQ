@@ -80,6 +80,10 @@ void DataWindow::update()
             ImGui::SameLine();
             ImGui::SetNextItemWidth(160);
             ImGui::InputInt("##LastN", &_data_handler->last_n, 1, 10);
+            if (_data_handler->last_n < 2)
+            {
+                _data_handler->last_n = 2;
+            }
 
             if (_data_handler->x_fit_select != 2)
             {
