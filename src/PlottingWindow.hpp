@@ -11,6 +11,7 @@
 #include <string>
 #include <cstdint>
 #include <tuple>
+#include <cmath>
 
 class PlottingWindow
 {
@@ -20,9 +21,13 @@ public:
     ~PlottingWindow();
 
     void update();
+    void update_axes();
+    void config_limits_n_values();
 
     std::tuple<std::vector<double> *, std::vector<double> *> get_xy_values(sparq_dataset_t &dataset);
 
 private:
+    uint32_t _last_n = 10;
+
     DataHandler *_data_handler;
 };

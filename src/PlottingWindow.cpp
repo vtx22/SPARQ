@@ -15,11 +15,7 @@ void PlottingWindow::update()
     {
         if (ImPlot::BeginPlot("##Data", ImVec2(-1, -1)))
         {
-            ImPlot::SetupAxes(x_axis_types[_data_handler->x_axis_select].axis_label, "", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
-            if (_data_handler->x_axis_select == 2)
-            {
-                ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
-            }
+            update_axes();
 
             ImPlotContext *ctx = ImPlot::GetCurrentContext();
             ImPlotPlot *plot = ctx->CurrentPlot;
@@ -73,4 +69,85 @@ std::tuple<std::vector<double> *, std::vector<double> *> PlottingWindow::get_xy_
     }
 
     return {x_values, y_values};
+}
+
+void PlottingWindow::update_axes()
+{
+
+    // X Axis Setup
+    const char *x_axis_label = x_axis_types[_data_handler->x_axis_select].axis_label;
+    ImPlot::SetupAxis(ImAxis_X1, x_axis_label, ImPlotAxisFlags_AutoFit);
+
+    if (_data_handler->x_axis_select == 2)
+    {
+        ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
+    }
+
+    switch (_data_handler->x_fit_select)
+    {
+    // Fit all
+    default:
+    case 0:
+        ImPlot::SetupAxis(ImAxis_X1, x_axis_label, ImPlotAxisFlags_AutoFit);
+        break;
+    // Last N values
+    case 1:
+        config_limits_n_values();
+        break;
+    }
+
+    // Y Axis Setup
+    ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
+}
+
+void PlottingWindow::config_limits_n_values()
+{
+
+    switch (_data_handler->x_axis_select)
+    {
+    // Last N Samples
+    case 0:
+    {
+        int max_sample = round(_data_handler->get_max_sample()) - 1;
+        int min_sample = max_sample - _last_n;
+
+        if (min_sample < 0)
+        {
+            min_sample = 0;
+        }
+
+        ImPlot::SetupAxisLimits(ImAxis_X1, min_sample, max_sample, ImPlotCond_Always);
+        break;
+    }
+
+    // Last N relative seconds
+    case 1:
+    {
+        double max_rel_time = _data_handler->get_max_rel_time();
+        double min_rel_time = max_rel_time - _last_n;
+
+        if (min_rel_time < 0)
+        {
+            min_rel_time = 0;
+        }
+
+        ImPlot::SetupAxisLimits(ImAxis_X1, min_rel_time, max_rel_time, ImPlotCond_Always);
+        break;
+    }
+
+        // Last N absolute seconds
+    case 2:
+    {
+        double max_abs_time = _data_handler->get_max_abs_time();
+        double min_abs_time = max_abs_time - _last_n;
+
+        if (min_abs_time < 0)
+        {
+            min_abs_time = 0;
+        }
+
+        ImPlot::SetupAxisLimits(ImAxis_X1, min_abs_time, max_abs_time, ImPlotCond_Always);
+        break;
+    }
+    }
 }
