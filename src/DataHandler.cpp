@@ -34,7 +34,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
             if (ds.id == message.ids[i])
             {
                 // All new x and y values
-                double new_sample = ds.samples_ip.back() + 1;
+                double new_sample = ds.samples.back() + 1;
                 double new_rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
                 double new_abs_time = message.timestamp / 1000.0;
                 double new_y_value = message.values[i];
