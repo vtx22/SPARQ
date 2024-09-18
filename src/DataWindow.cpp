@@ -16,7 +16,7 @@ void DataWindow::update()
     if (ImGui::Begin("Data & View"))
     {
         show_view_section();
-        show_view_section();
+        show_datasets_section();
     }
 
     ImGui::End();
