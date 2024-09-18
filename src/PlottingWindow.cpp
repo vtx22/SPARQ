@@ -13,7 +13,7 @@ void PlottingWindow::update()
     std::vector<sparq_dataset_t> &datasets = _data_handler->get_datasets_editable();
     if (ImGui::Begin("Plot"))
     {
-        if (ImPlot::BeginPlot("##Data", ImVec2(-1, -1)))
+        if (ImPlot::BeginPlot("##Data", ImVec2(-1, -1), ImPlotFlags_NoMenus))
         {
             update_axes();
 
