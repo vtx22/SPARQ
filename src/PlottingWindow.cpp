@@ -76,7 +76,6 @@ void PlottingWindow::update_axes()
 
     // X Axis Setup
     const char *x_axis_label = x_axis_types[_data_handler->x_axis_select].axis_label;
-    ImPlot::SetupAxis(ImAxis_X1, x_axis_label, ImPlotAxisFlags_AutoFit);
 
     if (_data_handler->x_axis_select == 2)
     {
