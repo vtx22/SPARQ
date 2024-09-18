@@ -123,7 +123,8 @@ void ConnectionWindow::update()
             ImGui::EndDisabled();
         }
 
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 1, 0, 1));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0.7, 0, 1));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0.3, 0, 1));
         if (ImGui::Button("Open"))
         {
             _signature = hex_chars_to_byte(_signature_chars[0], _signature_chars[1]);
@@ -139,7 +140,8 @@ void ConnectionWindow::update()
 
         ImGui::SameLine();
 
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1, 0, 0, 1));
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.7, 0, 0, 1));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3, 0, 0, 1));
         if (!_port_open)
         {
             ImGui::BeginDisabled();
@@ -154,7 +156,7 @@ void ConnectionWindow::update()
         {
             ImGui::EndDisabled();
         }
-        ImGui::PopStyleColor(2);
+        ImGui::PopStyleColor(4);
 
         ImGui::SeparatorText("Statistic");
 
