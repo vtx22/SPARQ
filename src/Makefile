@@ -1,14 +1,30 @@
-CCX = g++
-CFLAGS = -Wall
-
 NAME := SPARQ
 
+CCX = g++
+CFLAGS = -Wall -std=c++17
 
-all: compile link
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lOpengl32 -lDwmapi
 
-compile:
-	$(CCX) $(CFLAGS) -Isfml/include -I./imgui-sfml/ -I./imgui/ -I./implot/ -I./ImStyles/ -I./cpp-serial-win/src -c ./*.cpp imgui/*.cpp imgui-sfml/*.cpp implot/*.cpp cpp-serial-win/src/*.cpp ImStyles/*.cpp
+# Directories
+INCLUDE_DIRS = -I. -I./imgui-sfml/ -I./imgui/ -I./implot/ -I./sfml/include/ -I./ImStyles/ -I./cpp-serial-win/src
+SFML_LIB_DIR = -Lsfml/lib/ -Limgui-sfml/ -Limgui/ -Limplot/ -LImStyles/ -Lcpp-serial-win/ SPARQ.res
 
-link: 
-	$(CCX) *.o SPARQ.res -o $(NAME) -static -Lsfml/lib -Limgui-sfml/ -Limgui/ -Limplot/ -Lcpp-serial-win/ -LImStyles/ -lsfml-graphics -lsfml-window -lsfml-system -lOpengl32 -lDwmapi
+# Source and object files
+SRC_FILES = $(wildcard ./*.cpp imgui/*.cpp imgui-sfml/*.cpp implot/*.cpp ImStyles/*.cpp cpp-serial-win/src/*.cpp)
+OBJ_FILES = $(SRC_FILES:.cpp=.o)
 
+# Build targets
+all: $(NAME)
+
+# Link step
+$(NAME): $(OBJ_FILES)
+	$(CCX) $(OBJ_FILES) -o $(NAME) $(SFML_LIB_DIR) $(LIBS)
+	@echo Build complete!
+
+# Compile step
+%.o: %.cpp
+	$(CCX) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+
+# Clean up object files and binary
+clean:
+	del /Q $(subst /,\,$(OBJ_FILES))
