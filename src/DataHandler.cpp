@@ -118,9 +118,16 @@ bool DataHandler::delete_dataset(uint8_t id)
 
 void DataHandler::delete_all_datasets()
 {
-    for (const auto &ds : _datasets)
+    std::vector<uint8_t> ids(_datasets.size());
+
+    for (uint8_t i = 0; i < _datasets.size(); i++)
     {
-        delete_dataset(ds.id);
+        ids[i] = _datasets[i].id;
+    }
+
+    for (uint8_t i = 0; i < ids.size(); i++)
+    {
+        delete_dataset(ids[i]);
     }
 }
 
