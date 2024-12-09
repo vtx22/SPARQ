@@ -183,7 +183,9 @@ void DataWindow::show_view_section()
         }
 
         ImGui::SeparatorText("Other");
+        ImGui::BeginDisabled();
         ImGui::Checkbox("Interpolation", &_data_handler->interpolation);
+        ImGui::EndDisabled();
     }
 }
 

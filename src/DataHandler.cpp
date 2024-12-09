@@ -39,12 +39,6 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
                 double new_abs_time = message.timestamp / 1000.0;
                 double new_y_value = message.values[i];
 
-                // Add interpolated values from last value to new value
-                add_value_interpolated_x(ds.samples_ip, new_sample, ip_values_per_step);
-                add_value_interpolated_x(ds.relative_times_ip, new_rel_time, ip_values_per_step);
-                add_value_interpolated_x(ds.absolute_times_ip, new_abs_time, ip_values_per_step);
-                add_value_interpolated_y(ds.y_values_ip, new_y_value, ip_values_per_step);
-
                 // Add uninterpolated values
                 ds.append_raw_values(new_sample, new_rel_time, new_abs_time, new_y_value);
 

@@ -52,19 +52,19 @@ std::tuple<std::vector<double> *, std::vector<double> *> PlottingWindow::get_xy_
 {
     std::vector<double> *x_values, *y_values;
 
-    y_values = _data_handler->interpolation ? &dataset.y_values_ip : &dataset.y_values;
+    y_values = &dataset.y_values;
 
     switch (_data_handler->x_axis_select)
     {
     default:
     case 0:
-        x_values = _data_handler->interpolation ? &dataset.samples_ip : &dataset.samples;
+        x_values = &dataset.samples;
         break;
     case 1:
-        x_values = _data_handler->interpolation ? &dataset.relative_times_ip : &dataset.relative_times;
+        x_values = &dataset.relative_times;
         break;
     case 2:
-        x_values = _data_handler->interpolation ? &dataset.absolute_times_ip : &dataset.absolute_times;
+        x_values = &dataset.absolute_times;
         break;
     }
 
