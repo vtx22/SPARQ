@@ -127,17 +127,34 @@ void DataHandler::delete_all_datasets()
 
 bool DataHandler::clear_dataset(uint8_t id)
 {
+    bool ds_found = false;
     for (auto &ds : _datasets)
     {
         if (ds.id == id)
         {
             ds.clear();
+            ds_found = true;
+            break;
+        }
+    }
 
+    if (!ds_found)
+    {
+        return false;
+    }
+
+    // If all datasets are now empty, reset start time
+    for (auto &ds : _datasets)
+    {
+        if (ds.samples.size() > 0)
+        {
             return true;
         }
     }
 
-    return false;
+    first_receive_timestamp = 0;
+
+    return true;
 }
 
 void DataHandler::clear_all_datasets()
