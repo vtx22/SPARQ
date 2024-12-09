@@ -26,5 +26,5 @@ private:
     DataHandler *_data_handler;
     AssetHolder *_asset_holder;
 
-    ImTextureID _delete_icon_id, _hide_icon_id, _show_icon_id;
+    ImTextureID _delete_icon_id, _hide_icon_id, _show_icon_id, _clear_data_icon_id;
 };

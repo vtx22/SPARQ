@@ -131,6 +131,29 @@ void DataHandler::delete_all_datasets()
     }
 }
 
+bool DataHandler::clear_dataset(uint8_t id)
+{
+    for (auto &ds : _datasets)
+    {
+        if (ds.id == id)
+        {
+            ds.clear();
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void DataHandler::clear_all_datasets()
+{
+    for (const auto &ds : _datasets)
+    {
+        clear_dataset(ds.id);
+    }
+}
+
 sparq_message_t DataHandler::receive_message()
 {
     sparq_message_t message;

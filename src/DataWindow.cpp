@@ -5,6 +5,7 @@ DataWindow::DataWindow(DataHandler *data_handler, AssetHolder *asset_holder) : _
     _hide_icon_id = _asset_holder->add_asset("./assets/icon_visibility_off.png");
     _show_icon_id = _asset_holder->add_asset("./assets/icon_visibility_on.png");
     _delete_icon_id = _asset_holder->add_asset("./assets/icon_delete.png");
+    _clear_data_icon_id = _asset_holder->add_asset("./assets/icon_clear_data.png");
 }
 
 DataWindow::~DataWindow()
@@ -29,7 +30,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
         ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Data");
     }
 
-    if (ImGui::BeginTable("##DatasetEditorTable", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##DatasetEditorTable", 7, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
         std::vector<uint8_t> to_delete;
         for (uint8_t i = 0; i < datasets.size(); i++)
@@ -54,13 +55,19 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             }
 
             ImGui::TableSetColumnIndex(4);
+            if (ImGui::ImageButton(("CLEAR##" + i_str).c_str(), _clear_data_icon_id, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
+            {
+                _data_handler->clear_dataset(datasets[i].id);
+            }
+
+            ImGui::TableSetColumnIndex(5);
 
             if (ImGui::ImageButton(("DEL##" + i_str).c_str(), _delete_icon_id, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
             {
                 to_delete.push_back(datasets[i].id);
             }
 
-            ImGui::TableSetColumnIndex(5);
+            ImGui::TableSetColumnIndex(6);
             ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "%lld", datasets[i].y_values.size());
         }
 
@@ -198,8 +205,17 @@ void DataWindow::show_datasets_section()
         if (ImGui::Button("Export"))
         {
         }
+
         ImGui::SameLine();
+
         if (ImGui::Button("Clear All"))
+        {
+            _data_handler->clear_all_datasets();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Delete All"))
         {
             _data_handler->delete_all_datasets();
         }

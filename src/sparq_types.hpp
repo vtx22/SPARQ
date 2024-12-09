@@ -53,6 +53,19 @@ struct sparq_dataset_t
         y_values.push_back(y_value);
     }
 
+    void clear()
+    {
+        absolute_times.clear();
+        relative_times.clear();
+        samples.clear();
+        y_values.clear();
+
+        absolute_times_ip.clear();
+        relative_times_ip.clear();
+        samples_ip.clear();
+        y_values_ip.clear();
+    }
+
 } typedef sparq_dataset_t;
 
 struct sparq_message_header_t

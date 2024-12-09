@@ -29,6 +29,9 @@ public:
     bool delete_dataset(uint8_t id);
     void delete_all_datasets();
 
+    bool clear_dataset(uint8_t id);
+    void clear_all_datasets();
+
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
 
     uint8_t x_axis_select = 0;
