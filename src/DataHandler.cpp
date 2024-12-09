@@ -67,7 +67,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         double rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
         double abs_time = message.timestamp / 1000.0;
 
-        ds.append_start_values(current_absolute_sample, rel_time, abs_time, message.values[i]);
+        ds.append_raw_values(current_absolute_sample, rel_time, abs_time, message.values[i]);
 
         _datasets.push_back(ds);
     }
