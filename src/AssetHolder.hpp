@@ -4,6 +4,7 @@
 #include <array>
 #include <iostream>
 #include <cstdint>
+#include <filesystem>
 
 #include "SFML/Graphics.hpp"
 #include "SFML/OpenGL.hpp"
@@ -17,7 +18,8 @@ class AssetHolder
 public:
     AssetHolder();
 
-    ImTextureID add_asset(const char *path);
+    void add_all_assets();
+    void add_asset(const char *path);
     ImTextureID get_handle(std::string name);
 
     static ImTextureID gl_handle_to_imgui_id(GLuint gl_texture_handle);
@@ -27,5 +29,6 @@ private:
 
     std::array<sf::Texture, SPARQ_MAX_TEXTURES> _textures;
     std::array<std::string, SPARQ_MAX_TEXTURES> _names;
+    std::array<ImTextureID, SPARQ_MAX_TEXTURES> _texture_ids;
     int stored_textures = 0;
 };

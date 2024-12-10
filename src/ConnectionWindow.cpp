@@ -2,7 +2,7 @@
 
 ConnectionWindow::ConnectionWindow(Serial *sp, AssetHolder *asset_holder) : _sp(sp), _asset_holder(asset_holder)
 {
-    _refresh_icon = _asset_holder->add_asset("./assets/icon_refresh.png");
+    _refresh_icon = _asset_holder->get_handle("icon_refresh.png");
 }
 
 ConnectionWindow::~ConnectionWindow()

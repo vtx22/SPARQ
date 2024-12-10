@@ -2,10 +2,10 @@
 
 DataWindow::DataWindow(DataHandler *data_handler, AssetHolder *asset_holder) : _data_handler(data_handler), _asset_holder(asset_holder)
 {
-    _hide_icon_id = _asset_holder->add_asset("./assets/icon_visibility_off.png");
-    _show_icon_id = _asset_holder->add_asset("./assets/icon_visibility_on.png");
-    _delete_icon_id = _asset_holder->add_asset("./assets/icon_delete.png");
-    _clear_data_icon_id = _asset_holder->add_asset("./assets/icon_clear_data.png");
+    _show_icon_id = _asset_holder->get_handle("icon_visibility_on.png");
+    _hide_icon_id = _asset_holder->get_handle("icon_visibility_off.png");
+    _delete_icon_id = _asset_holder->get_handle("icon_delete.png");
+    _clear_data_icon_id = _asset_holder->get_handle("icon_clear_data.png");
 }
 
 DataWindow::~DataWindow()

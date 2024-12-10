@@ -1,6 +1,9 @@
 #include "AssetHolder.hpp"
 
-AssetHolder::AssetHolder() {}
+AssetHolder::AssetHolder()
+{
+    add_all_assets();
+}
 
 ImTextureID AssetHolder::gl_handle_to_imgui_id(GLuint gl_texture_handle)
 {
@@ -9,28 +12,47 @@ ImTextureID AssetHolder::gl_handle_to_imgui_id(GLuint gl_texture_handle)
     return textureID;
 }
 
-ImTextureID AssetHolder::add_asset(const char *path)
+void AssetHolder::add_all_assets()
+{
+    try
+    {
+        for (const auto &entry : std::filesystem::directory_iterator("./assets/"))
+        {
+            if (entry.is_regular_file() && entry.path().extension() == ".png")
+            {
+                std::cout << "Loading asset " << entry.path().string() << " ...\n";
+                add_asset(entry.path().string().c_str());
+            }
+        }
+    }
+    catch (const std::filesystem::filesystem_error &e)
+    {
+        std::cerr << "Error accessing assets: " << e.what() << '\n';
+    }
+}
+
+void AssetHolder::add_asset(const char *path)
 {
     sf::Texture texture;
     if (!texture.loadFromFile(path))
     {
         std::cout << "Could not load texture " << path << "\n";
-        return nullptr;
+        return;
     }
 
     if (stored_textures >= SPARQ_MAX_TEXTURES)
     {
         std::cout << "Could not load texture because maximum number of textures exceeded! Check sparq_config.h\n";
-        return nullptr;
+        return;
     }
 
     _names[stored_textures] = extract_filename(path);
     _textures[stored_textures] = texture;
     _textures[stored_textures].setSmooth(false); // Workaround to force OpenGL to load the texture for a valid handle
     GLuint handle = _textures[stored_textures].getNativeHandle();
+    _texture_ids[stored_textures] = gl_handle_to_imgui_id(handle);
 
     stored_textures++;
-    return gl_handle_to_imgui_id(handle);
 }
 
 ImTextureID AssetHolder::get_handle(std::string name)
@@ -39,8 +61,7 @@ ImTextureID AssetHolder::get_handle(std::string name)
     {
         if (_names[i] == name)
         {
-            GLuint handle = _textures[i].getNativeHandle();
-            return gl_handle_to_imgui_id(handle);
+            return _texture_ids[i];
         }
     }
 
