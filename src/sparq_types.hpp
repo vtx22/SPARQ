@@ -40,8 +40,7 @@ struct sparq_dataset_t
         samples.clear();
         y_values.clear();
     }
-
-} typedef sparq_dataset_t;
+};
 
 struct sparq_message_header_t
 {
@@ -74,8 +73,7 @@ struct sparq_message_header_t
         buffer[2] = nval;
         buffer[3] = checksum;
     }
-
-} typedef sparq_message_header_t;
+};
 
 struct sparq_message_t
 {
@@ -110,14 +108,13 @@ struct sparq_message_t
         uint16_t checksum_start = SPARQ_MESSAGE_HEADER_LENGTH + header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
         checksum = (data[checksum_start] << 8) + data[checksum_start + 1];
     }
-
-} typedef sparq_message_t;
+};
 
 struct sparq_axis_t
 {
     const char *dropdown_name;
     const char *axis_label;
-} typedef sparq_axis_t;
+};
 
 struct sparq_marker_t
 {
