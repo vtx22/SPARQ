@@ -119,6 +119,15 @@ struct sparq_axis_t
     const char *axis_label;
 } typedef sparq_axis_t;
 
+struct sparq_marker_t
+{
+    double x;
+    double y;
+    uint8_t ds_id;
+    bool hidden = false;
+    ImVec4 color = ImVec4(1, 0, 0, 1);
+};
+
 const sparq_axis_t X_AX_SAMPLES = {.dropdown_name = "Samples", .axis_label = "Samples"};
 const sparq_axis_t X_AX_REL_TIME = {.dropdown_name = "Relative Time", .axis_label = "Time [s]"};
 const sparq_axis_t X_AX_ABS_TIME = {.dropdown_name = "Date Time", .axis_label = "Date"};
