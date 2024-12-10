@@ -26,50 +26,50 @@ void DataHandler::update()
 
 void DataHandler::add_to_datasets(const sparq_message_t &message)
 {
+    if (first_receive_timestamp == 0)
+    {
+        first_receive_timestamp = message.timestamp;
+    }
+
     for (uint8_t i = 0; i < message.header.nval; i++)
     {
-        bool ds_found = false;
-        for (auto &ds : _datasets)
+        sparq_dataset_t *ds = nullptr;
+        for (uint8_t ds_index = 0; ds_index < _datasets.size(); ds_index++)
         {
-            if (ds.id == message.ids[i])
+            if (_datasets[ds_index].id == message.ids[i])
             {
-                // All new x and y values
-                double new_sample = ds.samples.back() + 1;
-                double new_rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
-                double new_abs_time = message.timestamp / 1000.0;
-                double new_y_value = message.values[i];
-
-                // Add uninterpolated values
-                ds.append_raw_values(new_sample, new_rel_time, new_abs_time, new_y_value);
-
-                std::cout << "Adding values: " << (ds.samples.back() + 1) << " " << message.timestamp / 1000.0 << "\n";
-                ds_found = true;
+                ds = &_datasets[ds_index];
                 break;
             }
         }
 
-        if (ds_found)
+        // The dataset does not exist, we have to create a new one
+        if (ds == nullptr)
         {
+            std::cout << "DS not found, creating new one! ID: " << (int)message.ids[i] << "\n";
+
+            sparq_dataset_t ds_new;
+
+            ds_new.id = message.ids[i];
+            ds_new.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + _datasets.size());
+
+            double rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
+            double abs_time = message.timestamp / 1000.0;
+
+            ds_new.append_raw_values(current_absolute_sample, rel_time, abs_time, message.values[i]);
+            
+            _datasets.push_back(ds_new);
+
             continue;
         }
 
-        if (first_receive_timestamp == 0)
-        {
-            first_receive_timestamp = message.timestamp;
-        }
+        // Dataset already exists but might be empty
+        double new_sample = (ds->samples.size() == 0) ? current_absolute_sample : (ds->samples.back() + 1);
+        double new_rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
+        double new_abs_time = message.timestamp / 1000.0;
+        double new_y_value = message.values[i];
 
-        std::cout << "DS not found, creating new one! " << (int)message.ids[i] << "\n";
-
-        sparq_dataset_t ds;
-        ds.id = message.ids[i];
-        ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + _datasets.size());
-
-        double rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
-        double abs_time = message.timestamp / 1000.0;
-
-        ds.append_raw_values(current_absolute_sample, rel_time, abs_time, message.values[i]);
-
-        _datasets.push_back(ds);
+        ds->append_raw_values(new_sample, new_rel_time, new_abs_time, new_y_value);
     }
 
     current_absolute_sample++;
@@ -153,6 +153,7 @@ bool DataHandler::clear_dataset(uint8_t id)
     }
 
     first_receive_timestamp = 0;
+    current_absolute_sample = 0;
 
     return true;
 }
