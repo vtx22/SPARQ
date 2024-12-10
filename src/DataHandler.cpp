@@ -269,6 +269,33 @@ std::vector<sparq_dataset_t> &DataHandler::get_datasets_editable()
     return _datasets;
 }
 
+void DataHandler::export_data_csv()
+{
+    for (const auto &ds : _datasets)
+    {
+        std::ofstream file(std::to_string(ds.id) + "_export.csv");
+
+        if (!file.is_open())
+        {
+            std::cerr << "Failed to create export.csv!\n";
+            continue;
+        }
+
+        file << "sample,timestamp,relative_time,value\n";
+
+        for (uint32_t i = 0; i < ds.samples.size(); i++)
+        {
+            file << std::to_string(ds.samples[i]) << ",";
+            file << std::to_string(ds.absolute_times[i]) << ",";
+            file << std::to_string(ds.relative_times[i]) << ",";
+            file << std::to_string(ds.y_values[i]);
+            file << "\n";
+        }
+
+        file.close();
+    }
+}
+
 uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
 {
     uint8_t cs = 0x00;

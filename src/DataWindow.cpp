@@ -206,6 +206,7 @@ void DataWindow::show_datasets_section()
 
         if (ImGui::Button("Export"))
         {
+            _data_handler->export_data_csv();
         }
 
         ImGui::SameLine();
