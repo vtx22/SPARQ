@@ -35,6 +35,7 @@ void MeasureWindow::update()
 
             if (ImGui::Button("Delete All"))
             {
+                markers.clear();
             }
 
             ImGui::Separator();
