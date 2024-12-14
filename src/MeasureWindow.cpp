@@ -29,6 +29,10 @@ void MeasureWindow::update()
 
             if (ImGui::Button("Hide All"))
             {
+                for (auto &m : markers)
+                {
+                    m.hidden = true;
+                }
             }
 
             ImGui::SameLine();
