@@ -58,7 +58,7 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
         ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Markers");
     }
 
-    if (ImGui::BeginTable("##MeasureMarkerTable", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##MeasureMarkerTable", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
         std::vector<uint32_t> to_delete;
         for (size_t i = 0; i < markers.size(); i++)
@@ -88,6 +88,9 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
             {
                 to_delete.push_back(i);
             }
+
+            ImGui::TableSetColumnIndex(5);
+            ImGui::Text((std::string("x: ") + std::to_string(markers[i].x)).c_str());
         }
 
         ImGui::EndTable();
