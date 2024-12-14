@@ -74,20 +74,32 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
 
             auto &datasets = _data_handler->get_datasets();
 
-            const char *ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1) ? "None Selected" : std::to_string(markers[i].ds_id).c_str();
+            std::string ds_selector_name = std::to_string(markers[i].ds_id);
+            if (markers[i].ds_id != -1 && datasets[markers[i].ds_index].name.length() > 0)
+            {
+                ds_selector_name += " [" + datasets[markers[i].ds_index].name + "]";
+            }
+
+            std::string ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1) ? "None Selected" : ds_selector_name;
 
             if (datasets.size() == 0)
             {
                 ImGui::BeginDisabled();
             }
 
-            if (ImGui::BeginCombo((std::string("###MarkerDatasetSelect") + i_str).c_str(), ds_selector_preview))
+            if (ImGui::BeginCombo((std::string("###MarkerDatasetSelect") + i_str).c_str(), ds_selector_preview.c_str()))
             {
                 for (uint8_t n = 0; n < datasets.size(); n++)
                 {
                     bool is_selected = (n == markers[i].ds_index);
 
-                    if (ImGui::Selectable(std::to_string(datasets[n].id).c_str(), is_selected))
+                    std::string selectable_name = std::to_string(datasets[n].id);
+                    if (datasets[n].name.length() > 0)
+                    {
+                        selectable_name += " [" + datasets[n].name + "]";
+                    }
+
+                    if (ImGui::Selectable(selectable_name.c_str(), is_selected))
                     {
                         markers[i].ds_index = n;
                         markers[i].ds_id = datasets[n].id;
