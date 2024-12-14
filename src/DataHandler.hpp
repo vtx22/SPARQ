@@ -26,6 +26,8 @@ public:
     const std::vector<sparq_dataset_t> &get_datasets();
     std::vector<sparq_dataset_t> &get_datasets_editable();
 
+    std::vector<sparq_marker_t> &get_markers();
+
     bool add_dataset(const sparq_dataset_t &dataset);
     bool delete_dataset(uint8_t id);
     void delete_all_datasets();
@@ -69,6 +71,8 @@ private:
     std::vector<sparq_dataset_t> _datasets;
     std::vector<uint64_t> _timestamps;
     std::vector<float> _rel_times;
+
+    std::vector<sparq_marker_t> _markers;
 
     void add_to_datasets(const sparq_message_t &message);
 };

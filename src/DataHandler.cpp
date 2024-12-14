@@ -274,6 +274,11 @@ std::vector<sparq_dataset_t> &DataHandler::get_datasets_editable()
     return _datasets;
 }
 
+std::vector<sparq_marker_t> &DataHandler::get_markers()
+{
+    return _markers;
+}
+
 void DataHandler::export_data_csv()
 {
 

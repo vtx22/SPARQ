@@ -12,15 +12,15 @@
 class MeasureWindow
 {
 public:
-    MeasureWindow(AssetHolder *asset_holder);
+    MeasureWindow(AssetHolder *asset_holder, DataHandler *data_handler);
     ~MeasureWindow();
 
     void update();
     void measure_markers();
 
 private:
-    std::vector<sparq_marker_t> _markers;
     AssetHolder *_asset_holder;
+    DataHandler *_data_handler;
 
     ImTextureID _show_icon_id, _hide_icon_id, _delete_icon_id;
 };
