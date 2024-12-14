@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "imgui.h"
 #include "implot.h"
 

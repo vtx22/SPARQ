@@ -86,8 +86,10 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
 
         ImGui::EndTable();
 
+        std::sort(to_delete.rbegin(), to_delete.rend());
         for (auto id : to_delete)
         {
+            markers.erase(markers.begin() + id);
         }
     }
 }
