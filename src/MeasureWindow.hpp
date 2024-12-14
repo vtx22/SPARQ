@@ -8,6 +8,7 @@
 #include "sparq_types.hpp"
 
 #include "AssetHolder.hpp"
+#include "DataHandler.hpp"
 
 class MeasureWindow
 {
@@ -16,7 +17,7 @@ public:
     ~MeasureWindow();
 
     void update();
-    void measure_markers();
+    void measure_markers_table(std::vector<sparq_marker_t> &markers);
 
 private:
     AssetHolder *_asset_holder;
