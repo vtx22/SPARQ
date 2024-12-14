@@ -78,7 +78,7 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
             ImTextureID hide_icon = markers[i].hidden ? _show_icon_id : _hide_icon_id;
             if (ImGui::ImageButton(("HIDE##" + i_str).c_str(), hide_icon, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
             {
-                markers[i].hidden != markers[i].hidden;
+                markers[i].hidden = !markers[i].hidden;
             }
 
             ImGui::TableSetColumnIndex(4);
