@@ -119,8 +119,8 @@ struct sparq_axis_t
 struct sparq_marker_t
 {
     std::string name = "M";
-    double x;
-    double y;
+    double x = 0;
+    double y = 0;
     uint8_t ds_id;
     bool hidden = false;
     ImVec4 color = ImVec4(1, 0, 0, 1);

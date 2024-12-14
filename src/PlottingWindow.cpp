@@ -17,6 +17,13 @@ void PlottingWindow::update()
         {
             update_axes();
 
+            auto &markers = _data_handler->get_markers();
+            for (uint32_t m = 0; m < markers.size(); m++)
+            {
+                ImPlot::DragLineX(m, &markers[m].x, ImVec4(1, 1, 1, 1), 2);
+                ImPlot::TagX(markers[m].x, ImVec4(1, 1, 1, 1), markers[m].name.c_str());
+            }
+
             ImPlotContext *ctx = ImPlot::GetCurrentContext();
             ImPlotPlot *plot = ctx->CurrentPlot;
 
