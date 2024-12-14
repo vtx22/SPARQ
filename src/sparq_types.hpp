@@ -118,6 +118,7 @@ struct sparq_axis_t
 
 struct sparq_marker_t
 {
+    std::string name = "M";
     double x;
     double y;
     uint8_t ds_id;

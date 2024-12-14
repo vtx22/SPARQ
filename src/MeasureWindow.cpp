@@ -60,7 +60,7 @@ void MeasureWindow::measure_markers()
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("M");
+            ImGui::Text(_markers[i].name.c_str());
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(150);
             ImGui::Text("Selector");
