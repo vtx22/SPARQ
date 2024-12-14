@@ -121,7 +121,8 @@ struct sparq_marker_t
     std::string name = "M";
     double x = 0;
     double y = 0;
-    uint8_t ds_id;
+    uint8_t ds_index;
+    int16_t ds_id = -1;
     bool hidden = false;
     ImVec4 color = ImVec4(1, 0, 0, 1);
 };

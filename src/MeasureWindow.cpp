@@ -70,8 +70,43 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
             ImGui::AlignTextToFramePadding();
             ImGui::Text(markers[i].name.c_str());
             ImGui::TableSetColumnIndex(1);
-            ImGui::SetNextItemWidth(150);
-            ImGui::Text("Selector");
+            ImGui::SetNextItemWidth(200);
+
+            auto &datasets = _data_handler->get_datasets();
+
+            const char *ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1) ? "None Selected" : std::to_string(markers[i].ds_id).c_str();
+
+            if (datasets.size() == 0)
+            {
+                ImGui::BeginDisabled();
+            }
+
+            if (ImGui::BeginCombo((std::string("###MarkerDatasetSelect") + i_str).c_str(), ds_selector_preview))
+            {
+                for (uint8_t n = 0; n < datasets.size(); n++)
+                {
+                    bool is_selected = (n == markers[i].ds_index);
+
+                    if (ImGui::Selectable(std::to_string(datasets[n].id).c_str(), is_selected))
+                    {
+                        markers[i].ds_index = n;
+                        markers[i].ds_id = datasets[n].id;
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
+            }
+
+            if (datasets.size() == 0)
+            {
+                ImGui::EndDisabled();
+            }
+
             ImGui::TableSetColumnIndex(2);
             ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float *)&markers[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
             ImGui::TableSetColumnIndex(3);
