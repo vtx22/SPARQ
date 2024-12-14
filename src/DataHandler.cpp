@@ -31,6 +31,9 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
         first_receive_timestamp = message.timestamp;
     }
 
+    _timestamps.push_back(message.timestamp);
+    _rel_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
+
     for (uint8_t i = 0; i < message.header.nval; i++)
     {
         sparq_dataset_t *ds = nullptr;
@@ -154,6 +157,8 @@ bool DataHandler::clear_dataset(uint8_t id)
 
     first_receive_timestamp = 0;
     current_absolute_sample = 0;
+    _timestamps.clear();
+    _rel_times.clear();
 
     return true;
 }
