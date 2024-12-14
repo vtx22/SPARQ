@@ -20,6 +20,11 @@ void PlottingWindow::update()
             auto &markers = _data_handler->get_markers();
             for (uint32_t m = 0; m < markers.size(); m++)
             {
+                if (markers[m].hidden)
+                {
+                    continue;
+                }
+
                 ImPlot::DragLineX(m, &markers[m].x, ImVec4(1, 1, 1, 1), 2);
                 ImPlot::TagX(markers[m].x, ImVec4(1, 1, 1, 1), markers[m].name.c_str());
             }
