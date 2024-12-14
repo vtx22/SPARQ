@@ -276,8 +276,12 @@ std::vector<sparq_dataset_t> &DataHandler::get_datasets_editable()
 
 void DataHandler::export_data_csv()
 {
+
+    std::cout << "Exporting data to csv...\n";
+
     if (_datasets.size() == 0)
     {
+        std::cout << "No data to export!\n";
         return;
     }
 
@@ -285,7 +289,7 @@ void DataHandler::export_data_csv()
 
     if (!file.is_open())
     {
-        std::cerr << "Failed to create export.csv!\n";
+        std::cerr << "Failed to create csv file!\n";
         return;
     }
 
@@ -324,6 +328,8 @@ void DataHandler::export_data_csv()
     }
 
     file.close();
+
+    std::cout << "Export successful!\n";
 }
 
 uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
