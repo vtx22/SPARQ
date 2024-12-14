@@ -22,6 +22,7 @@ void MeasureWindow::update()
             if (ImGui::Button("Add"))
             {
                 sparq_marker_t marker;
+                marker.name = std::string("M") + std::to_string(markers.size());
                 markers.push_back(marker);
             }
 
