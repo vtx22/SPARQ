@@ -25,8 +25,8 @@ void PlottingWindow::update()
                     continue;
                 }
 
-                ImPlot::DragLineX(m, &markers[m].x, ImVec4(1, 1, 1, 1), 2);
-                ImPlot::TagX(markers[m].x, ImVec4(1, 1, 1, 1), markers[m].name.c_str());
+                ImPlot::DragLineX(m, &markers[m].x, markers[m].color, 2);
+                ImPlot::TagX(markers[m].x, markers[m].color, markers[m].name.c_str());
             }
 
             ImPlotContext *ctx = ImPlot::GetCurrentContext();
