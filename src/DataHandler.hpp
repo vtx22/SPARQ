@@ -67,6 +67,8 @@ private:
     std::vector<uint8_t> _message_buffer;
 
     std::vector<sparq_dataset_t> _datasets;
+    std::vector<uint64_t> _timestamps;
+    std::vector<float> _rel_times;
 
     void add_to_datasets(const sparq_message_t &message);
 };
