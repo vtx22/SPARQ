@@ -49,21 +49,23 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float *)&datasets[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
             ImGui::TableSetColumnIndex(3);
 
-            ImTextureID hide_icon = datasets[i].hidden ? _show_icon_id : _hide_icon_id;
-            if (ImGui::ImageButton(("HIDE##" + i_str).c_str(), hide_icon, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
+            std::string hide_text = std::string(datasets[i].hidden ? ICON_FA_EYE_SLASH : ICON_FA_EYE) + "##HIDE" + i_str;
+            if (ImGui::Button(hide_text.c_str()))
             {
                 datasets[i].toggle_visibility = true;
             }
 
             ImGui::TableSetColumnIndex(4);
-            if (ImGui::ImageButton(("CLEAR##" + i_str).c_str(), _clear_data_icon_id, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
+            std::string clear_text = std::string(ICON_FA_SQUARE_XMARK) + "##CLEAR" + i_str;
+            if (ImGui::Button(clear_text.c_str()))
             {
                 _data_handler->clear_dataset(datasets[i].id);
             }
 
             ImGui::TableSetColumnIndex(5);
 
-            if (ImGui::ImageButton(("DEL##" + i_str).c_str(), _delete_icon_id, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
+            std::string del_text = std::string(ICON_FA_TRASH) + "##DEL" + i_str;
+            if (ImGui::Button(del_text.c_str()))
             {
                 to_delete.push_back(datasets[i].id);
             }

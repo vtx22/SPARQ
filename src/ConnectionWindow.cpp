@@ -47,7 +47,7 @@ void ConnectionWindow::update()
 
         ImGui::SameLine();
 
-        if (ImGui::ImageButton("##RefreshButton", _refresh_icon, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
+        if (ImGui::Button(ICON_FA_ARROWS_ROTATE "##RefreshButton"))
         {
             _com_ports = Serial::get_port_names();
 
