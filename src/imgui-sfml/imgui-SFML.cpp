@@ -1696,11 +1696,18 @@ void SFML_SetWindowPos(ImGuiViewport* viewport, ImVec2 pos) {
 ImVec2 SFML_GetWindowPos(ImGuiViewport* viewport) {
     WindowContext* wc = (WindowContext*)viewport->PlatformUserData;
 
-    // SFML window origin is top left corner of the title bar.
-    // This results in that main viewport's coordinates are offsetted
-    // in reference to MousePos, because ImGUi expects coordinates of
-    // client area.
+#if defined(_WIN32)
+    RECT clientAreaRect;
+    HWND hwnd = wc->window->getSystemHandle();
+    GetClientRect(hwnd, &clientAreaRect);
+    MapWindowPoints(hwnd, NULL, (LPPOINT)&clientAreaRect, 2);
+    return {(float)clientAreaRect.left, (float)clientAreaRect.top};
+#else
+    // Probably will give a bad result as sfml window origin is top left corner
+    // of the title bar. This results that main viewport's coordinates are offsetted
+    // in reference to MousePos.
     return wc->window->getPosition() + sf::Vector2i(0, wc->titleBarHeight);
+#endif
 }
 
 void SFML_SetWindowSize(ImGuiViewport* viewport, ImVec2 size) {
