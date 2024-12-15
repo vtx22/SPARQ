@@ -125,7 +125,7 @@ struct sparq_marker_t
     uint8_t ds_index;
     int16_t ds_id = -1;
     bool hidden = false;
-    ImVec4 color = ImVec4(1, 0, 0, 1);
+    ImVec4 color = ImVec4(1, 1, 1, 1);
 };
 
 const sparq_axis_t X_AX_SAMPLES = {.dropdown_name = "Samples", .axis_label = "Samples"};
