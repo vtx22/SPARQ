@@ -50,6 +50,10 @@ int SPARQ::window_init()
     {
         window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     }
+    else
+    {
+        ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Failed to load icon.png!"});
+    }
 
     window.setFramerateLimit(SPARQ_MAX_FPS);
     window.setVerticalSyncEnabled(SPARQ_VSYNC);

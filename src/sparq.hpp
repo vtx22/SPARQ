@@ -10,6 +10,7 @@
 
 #include "IconsFontAwesome6.h"
 #include "fa-solid-900.h"
+#include "ImGuiNotify.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
