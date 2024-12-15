@@ -1,7 +1,7 @@
 NAME := SPARQ
 
 CCX = g++
-CFLAGS = -Wall -std=c++17
+CFLAGS = -Wall -std=c++17 -D IMGUI_SFML_VIEWPORTS_ENABLE
 
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lOpengl32 -lDwmapi
 

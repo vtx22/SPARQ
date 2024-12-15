@@ -65,7 +65,7 @@ int SPARQ::window_init()
     }
 
     ImGuiIO &io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
     io.Fonts->Clear();
     io.Fonts->AddFontFromFileTTF("./assets/opensans.ttf", 20);
 
@@ -121,6 +121,12 @@ int SPARQ::run()
 
         _window->clear(sf::Color(20, 20, 20));
         ImGui::SFML::Render(*_window);
+
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
         _window->display();
     }
 
