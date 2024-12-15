@@ -8,6 +8,9 @@
 #include <windows.h>
 #include <dwmapi.h>
 
+#include "IconsFontAwesome6.h"
+#include "fa-solid-900.h"
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Event.hpp>
