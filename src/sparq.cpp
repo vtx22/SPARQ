@@ -120,7 +120,7 @@ int SPARQ::run()
         ImGui::SFML::Update(*_window, deltaClock.restart());
 
         // == DRAWING == //
-        ImGui::DockSpaceOverViewport();
+        ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
 
         _data_handler->update();
         _plotting_window->update();
@@ -137,7 +137,7 @@ int SPARQ::run()
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor(1);
 
-        _window->clear(sf::Color(20, 20, 20));
+        _window->clear(sf::Color(20, 20, 20, 255));
         ImGui::SFML::Render(*_window);
 
         if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
