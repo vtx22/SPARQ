@@ -13,7 +13,7 @@ ConsoleWindow::ConsoleWindow()
     Commands.push_back("CLASSIFY");
     AutoScroll = true;
     ScrollToBottom = false;
-    add_log("Welcome to SPARQ!");
+    add_log("SPARQ - %s", SPARQ_VERSION);
 }
 
 ConsoleWindow::~ConsoleWindow()

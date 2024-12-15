@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "serial.hpp"
+#include "sparq_config.h"
 
 #include "IconsFontAwesome6.h"
 
