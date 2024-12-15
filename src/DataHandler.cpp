@@ -13,15 +13,52 @@ DataHandler::~DataHandler()
 void DataHandler::update()
 {
     sparq_message_t message = receive_message();
-    if (!message.valid)
+    if (message.valid)
     {
-        return;
+        add_to_datasets(message);
     }
 
-    // Received complete message
-    std::cout << "Received message! First value: " << message.values[0] << "\n";
+    update_markers();
+}
 
-    add_to_datasets(message);
+void DataHandler::update_markers()
+{
+    for (auto &m : _markers)
+    {
+        if (m.ds_id == -1)
+        {
+            continue;
+        }
+
+        auto &ds = _datasets[m.ds_index];
+
+        if (ds.samples.size() < 2)
+        {
+            continue;
+        }
+
+        uint32_t si = 0;
+        for (si = 0; si < ds.samples.size(); si++)
+        {
+            if (ds.samples[si] > m.x)
+            {
+                break;
+            }
+        }
+
+        if (si == 0)
+        {
+            m.y = 0;
+            continue;
+        }
+
+        uint32_t s_upper = ds.samples[si];
+        uint32_t s_lower = ds.samples[si - 1];
+        double y_upper = ds.y_values[si];
+        double y_lower = ds.y_values[si - 1];
+
+        m.y = y_lower + (y_upper - y_lower) / (double)(s_upper - s_lower) * (m.x - s_lower);
+    }
 }
 
 void DataHandler::add_to_datasets(const sparq_message_t &message)
@@ -60,7 +97,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
             double abs_time = message.timestamp / 1000.0;
 
             ds_new.append_raw_values(current_absolute_sample, rel_time, abs_time, message.values[i]);
-            
+
             _datasets.push_back(ds_new);
 
             continue;

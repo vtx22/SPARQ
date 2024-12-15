@@ -27,6 +27,7 @@ public:
     std::vector<sparq_dataset_t> &get_datasets_editable();
 
     std::vector<sparq_marker_t> &get_markers();
+    void update_markers();
 
     bool add_dataset(const sparq_dataset_t &dataset);
     bool delete_dataset(uint8_t id);
