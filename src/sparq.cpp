@@ -79,7 +79,7 @@ int SPARQ::window_init()
     iconsConfig.MergeMode = true;
     iconsConfig.PixelSnapH = true;
     iconsConfig.GlyphMinAdvanceX = 16.f;
-    iconsConfig.GlyphOffset = ImVec2(1.f, -1.f);
+    iconsConfig.GlyphOffset = ImVec2(1.f, 0);
     io.Fonts->AddFontFromMemoryCompressedTTF(fa_solid_900_compressed_data, fa_solid_900_compressed_size, iconFontSize, &iconsConfig, iconsRanges);
 
     if (!ImGui::SFML::UpdateFontTexture())
