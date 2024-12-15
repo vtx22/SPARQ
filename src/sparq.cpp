@@ -129,6 +129,14 @@ int SPARQ::run()
         _data_window->update();
         _measure_window->update();
 
+        // Render Notifications
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 1.00f));
+        ImGui::RenderNotifications();
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(1);
+
         _window->clear(sf::Color(20, 20, 20));
         ImGui::SFML::Render(*_window);
 
