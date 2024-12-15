@@ -3,6 +3,7 @@
 ConnectionWindow::ConnectionWindow(Serial *sp, AssetHolder *asset_holder) : _sp(sp), _asset_holder(asset_holder)
 {
     _refresh_icon = _asset_holder->get_handle("icon_refresh.png");
+    _com_ports.push_back("COM-");
 }
 
 ConnectionWindow::~ConnectionWindow()
@@ -14,11 +15,6 @@ void ConnectionWindow::update()
     if (ImGui::Begin("Connection"))
     {
         ImGui::SeparatorText("Settings");
-
-        if (_com_ports.size() == 0)
-        {
-            _com_ports.push_back("COM-");
-        }
 
         if (_port_open)
         {
@@ -54,6 +50,11 @@ void ConnectionWindow::update()
         if (ImGui::ImageButton("##RefreshButton", _refresh_icon, ImVec2(20, 20), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
         {
             _com_ports = Serial::get_port_names();
+
+            if (_com_ports.size() == 0)
+            {
+                _com_ports.push_back("COM-");
+            }
         }
 
         ImGui::SetNextItemWidth(-spacing_right);
@@ -127,10 +128,13 @@ void ConnectionWindow::update()
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0.3, 0, 1));
         if (ImGui::Button("Open"))
         {
-            _signature = hex_chars_to_byte(_signature_chars[0], _signature_chars[1]);
-            if (_sp->open(_com_ports[_current_id].c_str(), _baud_rate) == SERIAL_ERR::OK)
+            if (!(_com_ports.size() == 1 && _com_ports[0] == "COM-"))
             {
-                _port_open = true;
+                _signature = hex_chars_to_byte(_signature_chars[0], _signature_chars[1]);
+                if (_sp->open(_com_ports[_current_id].c_str(), _baud_rate) == SERIAL_ERR::OK)
+                {
+                    _port_open = true;
+                }
             }
         }
         else if (_port_open)
