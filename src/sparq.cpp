@@ -67,11 +67,11 @@ int SPARQ::window_init()
         return -1;
     }
 
-    float baseFontSize = 22.f;
+    float baseFontSize = 18.f;
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
     io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF("./assets/opensans.ttf", baseFontSize);
+    io.Fonts->AddFontFromFileTTF(SPARQ_FONT, baseFontSize);
 
     float iconFontSize = 16.f;
     static constexpr ImWchar iconsRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
