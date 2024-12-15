@@ -36,13 +36,13 @@ void AssetHolder::add_asset(const char *path)
     sf::Texture texture;
     if (!texture.loadFromFile(path))
     {
-        std::cout << "Could not load texture " << path << "\n";
+        std::cerr << "Could not load texture " << path << "\n";
         return;
     }
 
     if (stored_textures >= SPARQ_MAX_TEXTURES)
     {
-        std::cout << "Could not load texture because maximum number of textures exceeded! Check sparq_config.h\n";
+        std::cerr << "Could not load texture because maximum number of textures exceeded! Check sparq_config.h\n";
         return;
     }
 

@@ -283,7 +283,7 @@ sparq_message_t DataHandler::receive_message()
 
     if (!message.valid)
     {
-        std::cout << "Message Checksum is wrong!\n";
+        std::cerr << "Message Checksum is wrong!\n";
     }
 
     message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
@@ -313,7 +313,7 @@ void DataHandler::export_data_csv()
 
     if (_datasets.size() == 0)
     {
-        std::cout << "No data to export!\n";
+        std::cerr << "No data to export!\n";
         return;
     }
 

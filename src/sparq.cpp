@@ -60,7 +60,7 @@ int SPARQ::window_init()
 
     if (!ImGui::SFML::Init(window))
     {
-        std::cout << "IMGUI SFML Window Init failed!" << std::endl;
+        std::cerr << "IMGUI SFML Window Init failed!\n";
         return -1;
     }
 
@@ -71,7 +71,7 @@ int SPARQ::window_init()
 
     if (!ImGui::SFML::UpdateFontTexture())
     {
-        std::cout << "Could not load font!\n";
+        std::cerr << "Could not load font!\n";
         return -1;
     }
 
