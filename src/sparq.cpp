@@ -68,19 +68,19 @@ int SPARQ::window_init()
         return -1;
     }
 
-    float baseFontSize = 20.0f;
+    float baseFontSize = 22.f;
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
     io.Fonts->Clear();
     io.Fonts->AddFontFromFileTTF("./assets/opensans.ttf", baseFontSize);
 
-    float iconFontSize = baseFontSize * 2.0f / 3.0f; // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
-
+    float iconFontSize = 16.f;
     static constexpr ImWchar iconsRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
     ImFontConfig iconsConfig;
     iconsConfig.MergeMode = true;
     iconsConfig.PixelSnapH = true;
-    iconsConfig.GlyphMinAdvanceX = iconFontSize;
+    iconsConfig.GlyphMinAdvanceX = 16.f;
+    iconsConfig.GlyphOffset = ImVec2(1.f, -1.f);
     io.Fonts->AddFontFromMemoryCompressedTTF(fa_solid_900_compressed_data, fa_solid_900_compressed_size, iconFontSize, &iconsConfig, iconsRanges);
 
     if (!ImGui::SFML::UpdateFontTexture())
