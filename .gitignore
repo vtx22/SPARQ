@@ -3,3 +3,4 @@ imgui.ini
 *.zip
 *.o
 *.exe
+*.csv
