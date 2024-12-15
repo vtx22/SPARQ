@@ -261,7 +261,6 @@ sparq_message_t DataHandler::receive_message()
     if (message.header.checksum != DataHandler::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
     {
         // Header checksum is wrong, clear the message buffer from that part
-        std::cout << "Message Header Checksum is wrong!\n";
         _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
         in_message = false;
         return message;
@@ -275,13 +274,6 @@ sparq_message_t DataHandler::receive_message()
         return message;
     }
 
-    // std::cout << std::hex << std::setfill('0') << std::setw(2);
-    // for (auto b : _message_buffer)
-    // {
-    //     std::cout << (int)b << " ";
-    // }
-    // std::cout << "\n";
-
     // Finally we got a full message
     message.from_array(_message_buffer.data());
 
@@ -293,8 +285,6 @@ sparq_message_t DataHandler::receive_message()
     {
         std::cout << "Message Checksum is wrong!\n";
     }
-    std::cout << "TML: " << total_message_length << " NVAL: " << (int)message.header.nval << "\n";
-    std::cout << "Values: " << message.values[0] << " " << message.values[1] << "\n\n";
 
     message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
