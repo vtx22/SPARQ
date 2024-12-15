@@ -5,4 +5,3 @@
 #define SPARQ_MAX_FPS 0
 #define SPARQ_VSYNC false
 #define SPARQ_ANTIALIASING 8
-#define SPARQ_MAX_TEXTURES 10
