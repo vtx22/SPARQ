@@ -20,14 +20,13 @@ int SPARQ::init()
 
 void SPARQ::object_init()
 {
-    static AssetHolder asset_holder;
     static Serial serial_port;
     static ConsoleWindow console_window;
     static DataHandler data_handler(&serial_port, &console_window);
-    static ConnectionWindow connection_window(&serial_port, &asset_holder);
+    static ConnectionWindow connection_window(&serial_port);
     static PlottingWindow plotting_window(&data_handler);
-    static DataWindow data_window(&data_handler, &asset_holder);
-    static MeasureWindow measure_window(&asset_holder, &data_handler);
+    static DataWindow data_window(&data_handler);
+    static MeasureWindow measure_window(&data_handler);
 
     _sp = &serial_port;
     _data_handler = &data_handler;

@@ -26,7 +26,6 @@
 #include "sparq_config.h"
 #include "sparq_types.hpp"
 
-#include "AssetHolder.hpp"
 #include "DataHandler.hpp"
 
 #include "ConsoleWindow.hpp"

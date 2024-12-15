@@ -1,8 +1,7 @@
 #include "ConnectionWindow.hpp"
 
-ConnectionWindow::ConnectionWindow(Serial *sp, AssetHolder *asset_holder) : _sp(sp), _asset_holder(asset_holder)
+ConnectionWindow::ConnectionWindow(Serial *sp) : _sp(sp)
 {
-    _refresh_icon = _asset_holder->get_handle("icon_refresh.png");
     _com_ports.push_back("COM-");
 }
 

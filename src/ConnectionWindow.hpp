@@ -8,8 +8,6 @@
 #include <vector>
 #include <cmath>
 
-#include "AssetHolder.hpp"
-
 #include "ImGuiNotify.hpp"
 #include "IconsFontAwesome6.h"
 
@@ -17,7 +15,7 @@ class ConnectionWindow
 {
 
 public:
-    ConnectionWindow(Serial *sp, AssetHolder *asset_holder);
+    ConnectionWindow(Serial *sp);
     ~ConnectionWindow();
 
     void update();
@@ -40,7 +38,6 @@ private:
     uint8_t hex_chars_to_byte(char high, char low);
 
     Serial *_sp;
-    AssetHolder *_asset_holder;
 
     ImTextureID _refresh_icon;
 };

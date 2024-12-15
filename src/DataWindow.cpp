@@ -1,11 +1,7 @@
 #include "DataWindow.hpp"
 
-DataWindow::DataWindow(DataHandler *data_handler, AssetHolder *asset_holder) : _data_handler(data_handler), _asset_holder(asset_holder)
+DataWindow::DataWindow(DataHandler *data_handler) : _data_handler(data_handler)
 {
-    _show_icon_id = _asset_holder->get_handle("icon_visibility_on.png");
-    _hide_icon_id = _asset_holder->get_handle("icon_visibility_off.png");
-    _delete_icon_id = _asset_holder->get_handle("icon_delete.png");
-    _clear_data_icon_id = _asset_holder->get_handle("icon_clear_data.png");
 }
 
 DataWindow::~DataWindow()

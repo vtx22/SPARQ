@@ -7,14 +7,13 @@
 
 #include "sparq_types.hpp"
 #include "DataHandler.hpp"
-#include "AssetHolder.hpp"
 
 #include "IconsFontAwesome6.h"
 
 class DataWindow
 {
 public:
-    DataWindow(DataHandler *data_handler, AssetHolder *asset_holder);
+    DataWindow(DataHandler *data_handler);
     ~DataWindow();
 
     void update();
@@ -26,7 +25,6 @@ private:
     void show_datasets_section();
 
     DataHandler *_data_handler;
-    AssetHolder *_asset_holder;
 
     ImTextureID _delete_icon_id, _hide_icon_id, _show_icon_id, _clear_data_icon_id;
 };
