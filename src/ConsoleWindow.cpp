@@ -13,6 +13,7 @@ ConsoleWindow::ConsoleWindow()
     Commands.push_back("CLASSIFY");
     AutoScroll = true;
     ScrollToBottom = false;
+    TextOnly = true;
     add_log("SPARQ - %s", SPARQ_VERSION);
 }
 
@@ -62,42 +63,24 @@ void ConsoleWindow::add_data_to_log(const uint8_t *ids, const float *values, uin
 
 void ConsoleWindow::draw(const char *title)
 {
-    // ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
     if (!ImGui::Begin(title))
     {
         ImGui::End();
         return;
     }
 
-    // TODO: display items starting from the bottom
-
-    /*if (ImGui::SmallButton("Add Debug Text"))
-    {
-       add_log("%d some text", Items.Size);
-       add_log("some more text");
-       add_log("display very important message here!");
-    }
+    ImGui::Checkbox("Text only", &TextOnly);
     ImGui::SameLine();
-    if (ImGui::SmallButton("Add Debug Error"))
-    {
-       add_log("[error] something went wrong");
-    }
+    ImGui::Checkbox("Auto-scroll", &AutoScroll);
     ImGui::SameLine();
-    */
     if (ImGui::Button("Clear"))
     {
         clear_log();
     }
-    ImGui::SameLine();
-    bool copy_to_clipboard = ImGui::Button("Copy");
-    // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); add_log("Spam %f", t); }
-    ImGui::SameLine();
-    ImGui::Checkbox("Auto-scroll", &AutoScroll);
-
     ImGui::Separator();
 
-    Filter.Draw("Filter", 180);
-    ImGui::Separator();
+    // Filter.Draw("Filter", 180);
+    // ImGui::Separator();
 
     // Reserve enough left-over height for 1 separator + 1 input text
     const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
@@ -135,8 +118,6 @@ void ConsoleWindow::draw(const char *title)
         // - Split them into same height items would be simpler and facilitate random-seeking into your list.
         // - Consider using manual call to IsRectVisible() and skipping extraneous decoration from your items.
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
-        if (copy_to_clipboard)
-            ImGui::LogToClipboard();
         for (const char *item : Items)
         {
             if (!Filter.PassFilter(item))
@@ -162,8 +143,6 @@ void ConsoleWindow::draw(const char *title)
             if (has_color)
                 ImGui::PopStyleColor();
         }
-        if (copy_to_clipboard)
-            ImGui::LogFinish();
 
         // Keep up at the bottom of the scroll region if we were already at the bottom at the beginning of the frame.
         // Using a scrollbar or mouse-wheel will take away from the bottom edge.

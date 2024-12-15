@@ -73,4 +73,5 @@ private:
     ImGuiTextFilter Filter;
     bool AutoScroll;
     bool ScrollToBottom;
+    bool TextOnly;
 };
