@@ -9,6 +9,8 @@
 #include "DataHandler.hpp"
 #include "AssetHolder.hpp"
 
+#include "IconsFontAwesome6.h"
+
 class DataWindow
 {
 public:

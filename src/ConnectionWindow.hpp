@@ -11,6 +11,7 @@
 #include "AssetHolder.hpp"
 
 #include "ImGuiNotify.hpp"
+#include "IconsFontAwesome6.h"
 
 class ConnectionWindow
 {

@@ -3,6 +3,8 @@
 #include "imgui.h"
 #include "serial.hpp"
 
+#include "IconsFontAwesome6.h"
+
 class ConsoleWindow
 {
 public:

@@ -12,6 +12,8 @@
 #include "AssetHolder.hpp"
 #include "DataHandler.hpp"
 
+#include "IconsFontAwesome6.h"
+
 class MeasureWindow
 {
 public:

@@ -14,7 +14,7 @@ DataWindow::~DataWindow()
 
 void DataWindow::update()
 {
-    if (ImGui::Begin("Data & View"))
+    if (ImGui::Begin(ICON_FA_DATABASE "  Data & View"))
     {
         show_view_section();
         show_datasets_section();

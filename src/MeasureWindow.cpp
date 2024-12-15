@@ -15,7 +15,7 @@ void MeasureWindow::update()
 {
     auto &markers = _data_handler->get_markers();
 
-    if (ImGui::Begin("Measure"))
+    if (ImGui::Begin(ICON_FA_RULER_HORIZONTAL "  Measure"))
     {
         if (ImGui::CollapsingHeader("Markers"))
         {

@@ -13,6 +13,8 @@
 #include <tuple>
 #include <cmath>
 
+#include "IconsFontAwesome6.h"
+
 class PlottingWindow
 {
 

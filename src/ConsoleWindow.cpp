@@ -27,7 +27,7 @@ ConsoleWindow::~ConsoleWindow()
 
 void ConsoleWindow::update()
 {
-    draw("Console");
+    draw(ICON_FA_TERMINAL "  Console");
 }
 
 void ConsoleWindow::clear_log()

@@ -12,7 +12,7 @@ ConnectionWindow::~ConnectionWindow()
 
 void ConnectionWindow::update()
 {
-    if (ImGui::Begin("Connection"))
+    if (ImGui::Begin(ICON_FA_NETWORK_WIRED "  Connection"))
     {
         ImGui::SeparatorText("Settings");
 
