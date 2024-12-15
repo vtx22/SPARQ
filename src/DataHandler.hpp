@@ -12,6 +12,8 @@
 #include "serial.hpp"
 #include "implot.h"
 
+#include "ImGuiNotify.hpp"
+
 using namespace std::chrono;
 
 class DataHandler

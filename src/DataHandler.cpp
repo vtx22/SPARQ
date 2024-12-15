@@ -314,6 +314,7 @@ void DataHandler::export_data_csv()
     if (_datasets.size() == 0)
     {
         std::cerr << "No data to export!\n";
+        ImGui::InsertNotification({ImGuiToastType::Error, 5000, "No data to export!"});
         return;
     }
 
@@ -322,6 +323,7 @@ void DataHandler::export_data_csv()
     if (!file.is_open())
     {
         std::cerr << "Failed to create csv file!\n";
+        ImGui::InsertNotification({ImGuiToastType::Error, 5000, "Failed to create export.csv!"});
         return;
     }
 
@@ -362,6 +364,7 @@ void DataHandler::export_data_csv()
     file.close();
 
     std::cout << "Export successful!\n";
+    ImGui::InsertNotification({ImGuiToastType::Success, 5000, "Data exported to export.csv"});
 }
 
 uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
