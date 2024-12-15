@@ -48,7 +48,7 @@ void AssetHolder::add_asset(const char *path)
 
     _names[stored_textures] = extract_filename(path);
     _textures[stored_textures] = texture;
-    _textures[stored_textures].setSmooth(false); // Workaround to force OpenGL to load the texture for a valid handle
+    _textures[stored_textures].setSmooth(true); // Workaround to force OpenGL to load the texture for a valid handle
     GLuint handle = _textures[stored_textures].getNativeHandle();
     _texture_ids[stored_textures] = gl_handle_to_imgui_id(handle);
 
