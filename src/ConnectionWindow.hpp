@@ -10,6 +10,8 @@
 
 #include "AssetHolder.hpp"
 
+#include "ImGuiNotify.hpp"
+
 class ConnectionWindow
 {
 

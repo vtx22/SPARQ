@@ -134,7 +134,16 @@ void ConnectionWindow::update()
                 if (_sp->open(_com_ports[_current_id].c_str(), _baud_rate) == SERIAL_ERR::OK)
                 {
                     _port_open = true;
+                    ImGui::InsertNotification({ImGuiToastType::Success, 5000, "COM port opened successfully!"});
                 }
+                else
+                {
+                    ImGui::InsertNotification({ImGuiToastType::Error, 5000, "Could not open COM port!"});
+                }
+            }
+            else
+            {
+                ImGui::InsertNotification({ImGuiToastType::Error, 5000, "No COM port selected!"});
             }
         }
         else if (_port_open)
@@ -154,6 +163,7 @@ void ConnectionWindow::update()
         if (ImGui::Button("Close"))
         {
             _sp->close();
+            ImGui::InsertNotification({ImGuiToastType::Success, 5000, "COM port closed successfully!"});
             _port_open = false;
         }
         else if (!_port_open)
