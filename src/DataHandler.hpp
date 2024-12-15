@@ -14,12 +14,14 @@
 
 #include "ImGuiNotify.hpp"
 
+#include "ConsoleWindow.hpp"
+
 using namespace std::chrono;
 
 class DataHandler
 {
 public:
-    DataHandler(Serial *sp);
+    DataHandler(Serial *sp, ConsoleWindow *console_window);
     ~DataHandler();
 
     void update();
@@ -67,6 +69,7 @@ private:
     uint64_t first_receive_timestamp = 0;
 
     Serial *_sp;
+    ConsoleWindow *_console_window;
 
     std::vector<uint8_t> _serial_buffer;
     std::vector<uint8_t> _message_buffer;

@@ -52,6 +52,14 @@ void ConsoleWindow::add_log(const char *fmt, ...) // IM_FMTARGS(2)
     Items.push_back(Strdup(buf));
 }
 
+void ConsoleWindow::add_data_to_log(const uint8_t *ids, const float *values, uint32_t length)
+{
+    for (uint32_t i = 0; i < length; i++)
+    {
+        add_log("%d: %.5f", ids[i], values[i]);
+    }
+}
+
 void ConsoleWindow::draw(const char *title)
 {
     // ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
