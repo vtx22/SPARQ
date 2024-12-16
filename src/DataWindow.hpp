@@ -21,7 +21,6 @@ public:
     void dataset_entries(std::vector<sparq_dataset_t> &datasets);
 
 private:
-    void show_view_section();
     void show_datasets_section();
 
     DataHandler *_data_handler;

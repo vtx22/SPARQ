@@ -33,6 +33,7 @@
 #include "PlottingWindow.hpp"
 #include "DataWindow.hpp"
 #include "MeasureWindow.hpp"
+#include "ViewWindow.hpp"
 
 class SPARQ
 {
@@ -53,6 +54,7 @@ private:
     PlottingWindow *_plotting_window;
     DataWindow *_data_window;
     MeasureWindow *_measure_window;
+    ViewWindow *_view_window;
 
     sf::RenderWindow *_window;
 };
