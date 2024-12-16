@@ -40,7 +40,14 @@ void PlottingWindow::update()
 
                 auto [x_values, y_values] = get_xy_values(ds);
 
-                ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
+                if (ds.display_square)
+                {
+                    ImPlot::PlotStairs((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
+                }
+                else
+                {
+                    ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
+                }
 
                 ImPlotItem *item = plot->Items.GetLegendItem(i);
                 if (ds.toggle_visibility)

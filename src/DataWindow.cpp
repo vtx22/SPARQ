@@ -25,7 +25,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
         ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Data");
     }
 
-    if (ImGui::BeginTable("##DatasetEditorTable", 7, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##DatasetEditorTable", 8, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
         std::vector<uint8_t> to_delete;
         for (uint8_t i = 0; i < datasets.size(); i++)
@@ -51,13 +51,20 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             }
 
             ImGui::TableSetColumnIndex(4);
+            std::string wave_type_text = std::string(datasets[i].display_square ? ICON_FA_WAVE_SQUARE : ICON_FA_MINUS) + "##WAVE" + i_str;
+            if (ImGui::Button(wave_type_text.c_str()))
+            {
+                datasets[i].display_square = !datasets[i].display_square;
+            }
+
+            ImGui::TableSetColumnIndex(5);
             std::string clear_text = std::string(ICON_FA_SQUARE_XMARK) + "##CLEAR" + i_str;
             if (ImGui::Button(clear_text.c_str()))
             {
                 _data_handler->clear_dataset(datasets[i].id);
             }
 
-            ImGui::TableSetColumnIndex(5);
+            ImGui::TableSetColumnIndex(6);
 
             std::string del_text = std::string(ICON_FA_TRASH) + "##DEL" + i_str;
             if (ImGui::Button(del_text.c_str()))
@@ -65,7 +72,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
                 to_delete.push_back(datasets[i].id);
             }
 
-            ImGui::TableSetColumnIndex(6);
+            ImGui::TableSetColumnIndex(7);
             ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "%lld", datasets[i].y_values.size());
         }
 

@@ -20,6 +20,7 @@ struct sparq_dataset_t
     ImVec4 color = ImVec4(1, 0, 0, 1);
     bool toggle_visibility = false;
     bool hidden = false;
+    bool display_square = false;
 
     std::vector<double> absolute_times;
     std::vector<double> relative_times;
