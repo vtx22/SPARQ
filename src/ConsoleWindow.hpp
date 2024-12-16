@@ -63,6 +63,7 @@ public:
             str_end--;
         *str_end = 0;
     }
+    bool TextOnly;
 
 private:
     char InputBuf[256];
@@ -73,5 +74,5 @@ private:
     ImGuiTextFilter Filter;
     bool AutoScroll;
     bool ScrollToBottom;
-    bool TextOnly;
+
 };

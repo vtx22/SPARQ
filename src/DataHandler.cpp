@@ -71,8 +71,10 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
     _timestamps.push_back(message.timestamp);
     _rel_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
 
-    _console_window->add_data_to_log(message.ids.data(), message.values.data(), message.header.nval);
-
+    if (!_console_window->TextOnly)
+    {
+        _console_window->add_data_to_log(message.ids.data(), message.values.data(), message.header.nval);
+    }
     for (uint8_t i = 0; i < message.header.nval; i++)
     {
         sparq_dataset_t *ds = nullptr;
