@@ -85,8 +85,9 @@ void ConnectionWindow::update()
 
         ImGui::SetNextItemWidth(-spacing_right - 50 - ImGui::GetStyle().ItemInnerSpacing.x);
 
-        const char *comm_modes[2] = {"SPARQ", "ASCII"};
+        ImGui::BeginDisabled();
 
+        const char *comm_modes[2] = {"SPARQ", "ASCII"};
         if (ImGui::BeginCombo("###CommModeSelect", comm_modes[_selected_comm_mode]))
         {
             for (uint8_t n = 0; n < 2; n++)
@@ -122,6 +123,8 @@ void ConnectionWindow::update()
         {
             ImGui::EndDisabled();
         }
+
+        ImGui::EndDisabled();
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0.7, 0, 1));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0.3, 0, 1));
