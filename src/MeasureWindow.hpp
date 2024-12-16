@@ -24,6 +24,4 @@ public:
 
 private:
     DataHandler *_data_handler;
-
-    ImTextureID _show_icon_id, _hide_icon_id, _delete_icon_id;
 };

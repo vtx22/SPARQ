@@ -38,6 +38,4 @@ private:
     uint8_t hex_chars_to_byte(char high, char low);
 
     Serial *_sp;
-
-    ImTextureID _refresh_icon;
 };

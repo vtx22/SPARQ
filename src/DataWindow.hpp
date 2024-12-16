@@ -25,6 +25,4 @@ private:
     void show_datasets_section();
 
     DataHandler *_data_handler;
-
-    ImTextureID _delete_icon_id, _hide_icon_id, _show_icon_id, _clear_data_icon_id;
 };
