@@ -5,7 +5,6 @@
 #include <iostream>
 #include <chrono>
 #include <iomanip>
-#include <tuple>
 #include <fstream>
 
 #include "sparq_types.hpp"
@@ -48,17 +47,7 @@ public:
 
     int last_n = 10;
 
-    bool interpolation = false;
-    int ip_values_per_step = 20;
-
     void export_data_csv();
-
-    static std::tuple<std::vector<double>, std::vector<double>> interpolate(double x0, double y0, double x1, double y1, int steps);
-    static std::vector<double> interpolate_x(double x0, double x1, int steps);
-    static std::vector<double> interpolate_y(double y0, double y1, int steps);
-
-    static std::vector<double> &add_value_interpolated_x(std::vector<double> &data, double new_value, int steps);
-    static std::vector<double> &add_value_interpolated_y(std::vector<double> &data, double new_value, int steps);
 
     double get_max_sample() const;
     double get_max_rel_time() const;

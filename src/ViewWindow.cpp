@@ -109,11 +109,6 @@ void ViewWindow::update()
             }
             ImGui::EndCombo();
         }
-
-        ImGui::SeparatorText("Other");
-        ImGui::BeginDisabled();
-        ImGui::Checkbox("Interpolation", &_data_handler->interpolation);
-        ImGui::EndDisabled();
     }
 
     ImGui::End();
