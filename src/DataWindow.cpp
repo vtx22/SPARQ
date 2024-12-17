@@ -87,7 +87,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
 
 void DataWindow::show_datasets_section()
 {
-    if (ImGui::CollapsingHeader("Datasets"))
+    if (ImGui::CollapsingHeader("Serial Datasets"))
     {
 
         if (ImGui::Button("Import"))
@@ -126,5 +126,17 @@ void DataWindow::show_datasets_section()
         ImGui::Separator();
 
         dataset_entries(_data_handler->get_datasets_editable());
+    }
+
+    if (ImGui::CollapsingHeader("Synthetic Datasets"))
+    {
+    }
+
+    if (ImGui::CollapsingHeader("Data Manipulators"))
+    {
+    }
+
+    if (ImGui::CollapsingHeader("Math Functions"))
+    {
     }
 }
