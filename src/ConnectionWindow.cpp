@@ -173,6 +173,8 @@ void ConnectionWindow::update()
             ImGui::EndDisabled();
         }
         ImGui::PopStyleColor(4);
+
+        ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(-FLT_MIN, 0.0f), "Receiving");
     }
     ImGui::End();
 }
