@@ -20,7 +20,7 @@ void ConnectionWindow::update()
             ImGui::BeginDisabled();
         }
 
-        int spacing_right = 80;
+        float spacing_right = 4.5f * ImGui::GetFontSize();
         ImGui::SetNextItemWidth(-spacing_right);
 
         // COM Port selection
