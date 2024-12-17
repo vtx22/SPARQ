@@ -173,10 +173,6 @@ void ConnectionWindow::update()
             ImGui::EndDisabled();
         }
         ImGui::PopStyleColor(4);
-
-        ImGui::SeparatorText("Statistic");
-
-        ImGui::Text("FPS: %d", (int)round(ImGui::GetIO().Framerate));
     }
     ImGui::End();
 }
