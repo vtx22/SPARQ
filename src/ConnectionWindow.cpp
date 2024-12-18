@@ -174,7 +174,12 @@ void ConnectionWindow::update()
         }
         ImGui::PopStyleColor(4);
 
-        ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(-FLT_MIN, 0.0f), "Receiving");
+        if (_port_open)
+        {
+            ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0, 0.6, 1, 1));
+            ImGui::ProgressBar(-0.6f * (float)ImGui::GetTime(), ImVec2(-FLT_MIN, 0.5f * ImGui::GetFontSize()), "");
+            ImGui::PopStyleColor();
+        }
     }
     ImGui::End();
 }
