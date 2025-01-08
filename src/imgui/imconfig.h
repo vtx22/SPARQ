@@ -130,6 +130,8 @@ namespace ImGui
 }
 */
 
+#define ImDrawIdx unsigned int
+
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
 
