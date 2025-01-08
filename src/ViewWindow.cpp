@@ -13,6 +13,39 @@ void ViewWindow::update()
     int text_offset = 90;
     if (ImGui::Begin(ICON_FA_SLIDERS "  View"))
     {
+
+        const char *plot_types[2] = {"Line", "Heatmap"};
+        if (ImGui::BeginCombo("##PLOT TYPE", plot_types[(int)_data_handler->plot_settings.type]))
+        {
+            for (uint8_t n = 0; n < 2; n++)
+            {
+                bool is_selected = ((uint8_t)_data_handler->plot_settings.type == n);
+
+                if (ImGui::Selectable(plot_types[n], is_selected))
+                {
+                    _data_handler->plot_settings.type = (sparq_plot_t)n;
+                }
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+
+        if (_data_handler->plot_settings.type == sparq_plot_t::HEATMAP)
+        {
+            auto &hms = _data_handler->plot_settings.heatmap_settings;
+            ImGui::Checkbox("Equal", &hms.equal);
+            ImGui::InputInt("##HMI_R", &hms.rows);
+            ImGui::SameLine();
+            ImGui::Text("x");
+            ImGui::SameLine();
+            ImGui::InputInt("###HMI_C", &hms.cols);
+        }
+
         ImGui::SeparatorText("X Axis");
 
         ImGui::Text("Axis Unit");

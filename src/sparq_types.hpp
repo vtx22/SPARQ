@@ -129,6 +129,29 @@ struct sparq_marker_t
     ImVec4 color = ImVec4(1, 1, 1, 1);
 };
 
+struct sparq_heatmap_settings_t
+{
+    bool normalize_xy = false;
+    bool equal = false;
+    bool show_values = false;
+    float scale_min = 0;
+    float scale_max = 100;
+    int rows = 1;
+    int cols = 1;
+};
+
+enum class sparq_plot_t
+{
+    LINE,
+    HEATMAP,
+};
+
+struct sparq_plot_settings_t
+{
+    sparq_plot_t type = sparq_plot_t::LINE;
+    sparq_heatmap_settings_t heatmap_settings;
+};
+
 const sparq_axis_t X_AX_SAMPLES = {.dropdown_name = "Samples", .axis_label = "Samples"};
 const sparq_axis_t X_AX_REL_TIME = {.dropdown_name = "Relative Time", .axis_label = "Time [s]"};
 const sparq_axis_t X_AX_ABS_TIME = {.dropdown_name = "Date Time", .axis_label = "Date"};

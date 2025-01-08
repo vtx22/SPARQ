@@ -53,6 +53,8 @@ public:
     double get_max_rel_time() const;
     double get_max_abs_time() const;
 
+    sparq_plot_settings_t plot_settings;
+
 private:
     uint32_t current_absolute_sample = 0;
     uint64_t first_receive_timestamp = 0;

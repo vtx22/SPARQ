@@ -13,7 +13,14 @@ void PlottingWindow::update()
     std::vector<sparq_dataset_t> &datasets = _data_handler->get_datasets_editable();
     if (ImGui::Begin(ICON_FA_CHART_LINE "  Plot"))
     {
-        if (ImPlot::BeginPlot("##Data", ImVec2(-1, -1), ImPlotFlags_NoMenus))
+        ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
+
+        if (_data_handler->plot_settings.type == sparq_plot_t::HEATMAP && _data_handler->plot_settings.heatmap_settings.equal)
+        {
+            plot_flags |= ImPlotFlags_Equal;
+        }
+
+        if (ImPlot::BeginPlot("##Data", ImVec2(-1, -1), plot_flags))
         {
             update_axes();
 
@@ -32,38 +39,67 @@ void PlottingWindow::update()
             ImPlotContext *ctx = ImPlot::GetCurrentContext();
             ImPlotPlot *plot = ctx->CurrentPlot;
 
-            uint8_t i = 0;
-            for (auto &ds : datasets)
+            switch (_data_handler->plot_settings.type)
             {
-                std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
-                ImPlot::SetNextLineStyle(ds.color, 3);
-
-                auto [x_values, y_values] = get_xy_values(ds);
-
-                if (ds.display_square)
+            case sparq_plot_t::LINE:
+            {
+                uint8_t i = 0;
+                for (auto &ds : datasets)
                 {
-                    ImPlot::PlotStairs((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
-                }
-                else
-                {
-                    ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
-                }
+                    std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
+                    ImPlot::SetNextLineStyle(ds.color, 3);
 
-                ImPlotItem *item = plot->Items.GetLegendItem(i);
-                if (ds.toggle_visibility)
-                {
-                    item->Show = !item->Show;
-                    ds.toggle_visibility = false;
+                    auto [x_values, y_values] = get_xy_values(ds);
+
+                    if (ds.display_square)
+                    {
+                        ImPlot::PlotStairs((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
+                    }
+                    else
+                    {
+                        ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
+                    }
+
+                    ImPlotItem *item = plot->Items.GetLegendItem(i);
+                    if (ds.toggle_visibility)
+                    {
+                        item->Show = !item->Show;
+                        ds.toggle_visibility = false;
+                    }
+
+                    ds.hidden = !item->Show;
+
+                    i++;
                 }
-
-                ds.hidden = !item->Show;
-
-                i++;
+                break;
             }
+            case sparq_plot_t::HEATMAP:
+            {
+                sparq_heatmap_settings_t &hms = _data_handler->plot_settings.heatmap_settings;
 
-            ImPlot::EndPlot();
+                std::vector<float> values(hms.cols * hms.rows);
+
+                for (uint32_t i = 0; i < hms.cols * hms.rows; i++)
+                {
+                    if (i >= datasets.size())
+                    {
+                        break;
+                    }
+                    values[i] = datasets[i].y_values.back();
+                }
+
+                uint32_t bounds_max_x = hms.normalize_xy ? 1 : hms.cols;
+                uint32_t bounds_max_y = hms.normalize_xy ? 1 : hms.rows;
+
+                ImPlot::PlotHeatmap("Heatmap", values.data(), hms.rows, hms.cols, hms.scale_min, hms.scale_max, hms.show_values ? "%.1f" : "", {0, 0}, {bounds_max_x, bounds_max_y});
+                break;
+            }
+            }
         }
+
+        ImPlot::EndPlot();
     }
+
     ImGui::End();
 }
 
