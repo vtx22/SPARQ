@@ -156,6 +156,8 @@ void ConsoleWindow::draw(const char *title)
     ImGui::Separator();
 
     // Command-line
+    float spacing_right = 3.f * ImGui::GetFontSize();
+    ImGui::SetNextItemWidth(-spacing_right);
     bool reclaim_focus = false;
     ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
     if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &text_edit_callbackStub, (void *)this))
