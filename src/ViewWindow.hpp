@@ -16,6 +16,10 @@ public:
     ~ViewWindow();
     void update();
 
+    void menu_plot_type();
+    void menu_x_axis();
+    void menu_y_axis();
+
 private:
     DataHandler *_data_handler;
 };
