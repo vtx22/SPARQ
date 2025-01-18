@@ -156,6 +156,8 @@ void ConsoleWindow::draw(const char *title)
     ImGui::Separator();
 
     // Command-line
+    ImGui::BeginDisabled();
+
     float spacing_right = 3.f * ImGui::GetFontSize();
     ImGui::SetNextItemWidth(-spacing_right);
     bool reclaim_focus = false;
@@ -175,6 +177,7 @@ void ConsoleWindow::draw(const char *title)
     if (reclaim_focus)
         ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 
+    ImGui::EndDisabled();
     ImGui::End();
 }
 
