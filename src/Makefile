@@ -1,13 +1,11 @@
 NAME := SPARQ
 
-CCX = g++
-CFLAGS = -Wall -std=c++17 -D IMGUI_SFML_VIEWPORTS_ENABLE -Os
-
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lOpengl32 -lDwmapi
-
+CCX = g++ 
+CFLAGS = -Wall -std=c++17 -DIMGUI_SFML_VIEWPORTS_ENABLE -DSFML_STATIC -DSFML_USE_STATIC_STD_LIBS -Os --static
+LIBS = -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -static-libstdc++ -static-libgcc -lwinmm -lopengl32 -lgdi32 -lfreetype -ldwmapi --static
 # Directories
 INCLUDE_DIRS = -I. -I./imgui-sfml/ -I./imgui/ -I./implot/ -I./sfml/include/ -I./ImStyles/ -I./cpp-serial-win/src
-SFML_LIB_DIR = -Lsfml/lib/ -Limgui-sfml/ -Limgui/ -Limplot/ -LImStyles/ -Lcpp-serial-win/ SPARQ.res
+SFML_LIB_DIR = -Lsfml/lib -Limgui-sfml/ -Limgui/ -Limplot/ -LImStyles/ -Lcpp-serial-win/ SPARQ.res
 
 # Source and object files
 SRC_FILES = $(wildcard ./*.cpp imgui/*.cpp imgui-sfml/*.cpp implot/*.cpp ImStyles/*.cpp cpp-serial-win/src/*.cpp)
