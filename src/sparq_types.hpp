@@ -12,6 +12,13 @@
 #define SPARQ_MIN_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_BYTES_PER_VALUE_PAIR + 2)
 #define SPARQ_DEFAULT_SIGNATURE 0xFF
 
+enum class sparq_header_control_t : uint8_t
+{
+    LSB_FIRST = (1 << 7),
+    CRC_CS = (1 << 6),
+    STRING = (1 << 4),
+};
+
 struct sparq_dataset_t
 {
     int16_t id = 0;
@@ -85,26 +92,37 @@ struct sparq_message_t
     uint16_t checksum;
     bool valid = false;
     uint64_t timestamp;
+    bool is_string = false;
+    std::string string_data;
 
     void from_array(const uint8_t *data)
     {
         header.from_array(data);
 
-        ids.reserve(header.nval);
-        values.reserve(header.nval);
+        is_string = header.control & (uint8_t)sparq_header_control_t::STRING;
 
-        for (uint8_t pair = 0; pair < header.nval; pair++)
+        if (is_string)
         {
-            uint16_t pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
+            string_data = std::string((char *)&data[SPARQ_MESSAGE_HEADER_LENGTH], header.nval * SPARQ_BYTES_PER_VALUE_PAIR);
+        }
+        else
+        {
+            ids.reserve(header.nval);
+            values.reserve(header.nval);
 
-            ids[pair] = data[pair_index];
-            uint8_t v3 = data[pair_index + 1];
-            uint8_t v2 = data[pair_index + 2];
-            uint8_t v1 = data[pair_index + 3];
-            uint8_t v0 = data[pair_index + 4];
+            for (uint8_t pair = 0; pair < header.nval; pair++)
+            {
+                uint16_t pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
 
-            uint32_t value = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
-            values.push_back(*(float *)&value);
+                ids[pair] = data[pair_index];
+                uint8_t v3 = data[pair_index + 1];
+                uint8_t v2 = data[pair_index + 2];
+                uint8_t v1 = data[pair_index + 3];
+                uint8_t v0 = data[pair_index + 4];
+
+                uint32_t value = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
+                values.push_back(*(float *)&value);
+            }
         }
 
         uint16_t checksum_start = SPARQ_MESSAGE_HEADER_LENGTH + header.nval * SPARQ_BYTES_PER_VALUE_PAIR;

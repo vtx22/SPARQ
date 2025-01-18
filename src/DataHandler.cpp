@@ -15,7 +15,14 @@ void DataHandler::update()
     sparq_message_t message = receive_message();
     if (message.valid)
     {
-        add_to_datasets(message);
+        if (message.is_string)
+        {
+            _console_window->add_log(message.string_data.c_str());
+        }
+        else
+        {
+            add_to_datasets(message);
+        }
     }
 
     update_markers();
@@ -291,6 +298,7 @@ sparq_message_t DataHandler::receive_message()
     }
 
     message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
     return message;
 }
