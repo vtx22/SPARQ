@@ -16,7 +16,7 @@ enum class sparq_header_control_t : uint8_t
 {
     LSB_FIRST = (1 << 7),
     CRC_CS = (1 << 6),
-    STRING = (1 << 4),
+    STRING = (1 << 2),
 };
 
 struct sparq_dataset_t
