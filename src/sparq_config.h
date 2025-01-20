@@ -6,3 +6,5 @@
 #define SPARQ_VSYNC false
 #define SPARQ_ANTIALIASING 8
 #define SPARQ_FONT "./assets/roboto.ttf"
+
+constexpr bool SPARQ_PLATFORM_LITTLE_ENDIAN = true;
