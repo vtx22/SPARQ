@@ -6,6 +6,8 @@
 #include <array>
 #include "imgui.h"
 
+#include "sparq_config.h"
+
 #define SPARQ_MESSAGE_HEADER_LENGTH 4
 #define SPARQ_BYTES_PER_VALUE_PAIR 5
 #define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 255 * SPARQ_BYTES_PER_VALUE_PAIR + 2)
@@ -120,7 +122,18 @@ struct sparq_message_t
                 uint8_t v1 = data[pair_index + 3];
                 uint8_t v0 = data[pair_index + 4];
 
-                uint32_t value = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
+                bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
+
+                uint32_t value = 0;
+                if (lsb_first == SPARQ_PLATFORM_LITTLE_ENDIAN)
+                {
+                    value = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
+                }
+                else
+                {
+                    value = (v0 << 24) + (v1 << 16) + (v2 << 8) + v3;
+                }
+
                 values.push_back(*(float *)&value);
             }
         }
