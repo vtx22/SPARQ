@@ -15,7 +15,7 @@ public:
     void update();
     void clear_log();
     void add_log(const char *fmt, ...); // IM_FMTARGS(2);
-    void add_data_to_log(const uint8_t *ids, const float *values, uint32_t length);
+    void add_data_to_log(const uint8_t *ids, const double *values, uint32_t length);
 
     void draw(const char *title);
     void exec_command(const char *command_line);
@@ -74,5 +74,4 @@ private:
     ImGuiTextFilter Filter;
     bool AutoScroll;
     bool ScrollToBottom;
-
 };

@@ -19,6 +19,8 @@ enum class sparq_header_control_t : uint8_t
     LSB_FIRST = (1 << 7),
     CRC_CS = (1 << 6),
     STRING = (1 << 2),
+    SIGNED = (1 << 1),
+    INTEGER = (1 << 0),
 };
 
 struct sparq_dataset_t
@@ -90,7 +92,7 @@ struct sparq_message_t
 {
     sparq_message_header_t header;
     std::vector<uint8_t> ids;
-    std::vector<float> values;
+    std::vector<double> values;
     uint16_t checksum;
     bool valid = false;
     uint64_t timestamp;
@@ -134,7 +136,21 @@ struct sparq_message_t
                     value = (v0 << 24) + (v1 << 16) + (v2 << 8) + v3;
                 }
 
-                values.push_back(*(float *)&value);
+                if (header.control & (uint8_t)sparq_header_control_t::INTEGER)
+                {
+                    if (header.control & (uint8_t)sparq_header_control_t::SIGNED)
+                    {
+                        values.push_back(*(int32_t *)&value);
+                    }
+                    else
+                    {
+                        values.push_back(*(uint32_t *)&value);
+                    }
+                }
+                else
+                {
+                    values.push_back(*(float *)&value);
+                }
             }
         }
 
