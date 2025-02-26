@@ -28,7 +28,7 @@ private:
     std::vector<std::string> _com_ports;
 
     int _baud_rate = 115200;
-    const std::array<int, 6> _available_baud_rates = {9600, 19200, 38400, 57600, 115200, 230400};
+    const std::array<int, 9> _available_baud_rates = {4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
     char _signature_chars[3] = {'F', 'F', 0};
     uint8_t _signature = 0xFF;
 
