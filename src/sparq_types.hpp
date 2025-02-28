@@ -4,23 +4,31 @@
 #include <cstdint>
 #include <string>
 #include <array>
+
 #include "imgui.h"
 
 #include "sparq_config.h"
 
-#define SPARQ_MESSAGE_HEADER_LENGTH 4
+#define SPARQ_MESSAGE_HEADER_LENGTH 5
 #define SPARQ_BYTES_PER_VALUE_PAIR 5
-#define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 255 * SPARQ_BYTES_PER_VALUE_PAIR + 2)
 #define SPARQ_MIN_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_BYTES_PER_VALUE_PAIR + 2)
+#define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 0xFFFF + 2)
 #define SPARQ_DEFAULT_SIGNATURE 0xFF
 
 enum class sparq_header_control_t : uint8_t
 {
     LSB_FIRST = (1 << 7),
     CRC_CS = (1 << 6),
-    STRING = (1 << 2),
+    MSG_TYPE = (1 << 2) + (1 << 3),
     SIGNED = (1 << 1),
     INTEGER = (1 << 0),
+};
+
+enum class sparq_message_type_t : uint8_t
+{
+    ID_PAIR = 0b00,
+    STRING = 0b01,
+    BULK_SINGLE_ID = 0b10,
 };
 
 struct sparq_dataset_t
@@ -59,7 +67,7 @@ struct sparq_message_header_t
 {
     uint8_t signature;
     uint8_t control;
-    uint8_t nval;
+    uint16_t payload_length;
     uint8_t checksum;
 
     sparq_message_header_t()
@@ -75,16 +83,17 @@ struct sparq_message_header_t
     {
         signature = buffer[0];
         control = buffer[1];
-        nval = buffer[2];
-        checksum = buffer[3];
+        payload_length = (buffer[2] << 8) + buffer[3];
+        checksum = buffer[4];
     }
 
     void to_array(uint8_t *buffer)
     {
         buffer[0] = signature;
         buffer[1] = control;
-        buffer[2] = nval;
-        buffer[3] = checksum;
+        buffer[2] = payload_length >> 8;
+        buffer[3] = payload_length & 0xFF;
+        buffer[4] = checksum;
     }
 };
 
@@ -96,25 +105,27 @@ struct sparq_message_t
     uint16_t checksum;
     bool valid = false;
     uint64_t timestamp;
-    bool is_string = false;
     std::string string_data;
+    sparq_message_type_t message_type;
 
     void from_array(const uint8_t *data)
     {
         header.from_array(data);
 
-        is_string = header.control & (uint8_t)sparq_header_control_t::STRING;
+        message_type = (sparq_message_type_t)((header.control >> 2) & 0b11);
+        const uint16_t nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
 
-        if (is_string)
+        if (message_type == sparq_message_type_t::STRING)
         {
-            string_data = std::string((char *)&data[SPARQ_MESSAGE_HEADER_LENGTH], header.nval * SPARQ_BYTES_PER_VALUE_PAIR);
+            string_data = std::string((char *)&data[SPARQ_MESSAGE_HEADER_LENGTH], header.payload_length);
         }
-        else
+        else if (message_type == sparq_message_type_t::ID_PAIR)
         {
-            ids.reserve(header.nval);
-            values.reserve(header.nval);
 
-            for (uint8_t pair = 0; pair < header.nval; pair++)
+            ids.reserve(nval);
+            values.reserve(nval);
+
+            for (uint8_t pair = 0; pair < nval; pair++)
             {
                 uint16_t pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
 
@@ -154,7 +165,7 @@ struct sparq_message_t
             }
         }
 
-        uint16_t checksum_start = SPARQ_MESSAGE_HEADER_LENGTH + header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
+        uint16_t checksum_start = SPARQ_MESSAGE_HEADER_LENGTH + nval * SPARQ_BYTES_PER_VALUE_PAIR;
         checksum = (data[checksum_start] << 8) + data[checksum_start + 1];
     }
 };

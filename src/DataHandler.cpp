@@ -26,7 +26,7 @@ void DataHandler::receiver_loop()
         {
             std::lock_guard<std::mutex> lock(_data_mutex);
 
-            if (message.is_string)
+            if (message.message_type == sparq_message_type_t::STRING)
             {
                 _console_window->add_log(message.string_data.c_str());
             }
@@ -97,9 +97,9 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
 
     if (!_console_window->TextOnly)
     {
-        _console_window->add_data_to_log(message.ids.data(), message.values.data(), message.header.nval);
+        _console_window->add_data_to_log(message.ids.data(), message.values.data(), message.header.payload_length / 5);
     }
-    for (uint8_t i = 0; i < message.header.nval; i++)
+    for (uint16_t i = 0; i < message.header.payload_length / 5; i++)
     {
         sparq_dataset_t *ds = nullptr;
         for (uint8_t ds_index = 0; ds_index < _datasets.size(); ds_index++)
@@ -294,7 +294,7 @@ sparq_message_t DataHandler::receive_message()
         return message;
     }
 
-    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + 2 + message.header.nval * SPARQ_BYTES_PER_VALUE_PAIR;
+    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + 2 + message.header.payload_length;
 
     if (_message_buffer.size() < total_message_length)
     {
