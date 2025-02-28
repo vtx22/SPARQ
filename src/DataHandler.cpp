@@ -5,7 +5,7 @@ DataHandler::DataHandler(Serial *sp, ConsoleWindow *console_window) : _sp(sp), _
     _sp->set_timeouts(0xFFFFFFFF, 0, 0, 0, 0);
     _serial_buffer.reserve(SPARQ_MAX_MESSAGE_LENGTH * 2);
 
-    _receive_thread = std::thread(&DataHandler::update, this);
+    _receive_thread = std::thread(&DataHandler::receiver_loop, this);
     _receive_thread.detach();
 }
 
@@ -18,7 +18,7 @@ DataHandler::~DataHandler()
     }
 }
 
-void DataHandler::update()
+void DataHandler::receiver_loop()
 {
     while (_running)
     {
@@ -36,13 +36,18 @@ void DataHandler::update()
                 add_to_datasets(message);
             }
         }
-
-        // update_markers();
     }
+}
+
+void DataHandler::update()
+{
+    update_markers();
 }
 
 void DataHandler::update_markers()
 {
+    std::lock_guard<std::mutex> lock(_data_mutex);
+
     for (auto &m : _markers)
     {
         if (m.ds_id == -1)

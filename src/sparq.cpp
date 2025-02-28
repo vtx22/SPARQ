@@ -129,7 +129,7 @@ int SPARQ::run()
         // == DRAWING == //
         ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
 
-        //_data_handler->update();
+        _data_handler->update();
         _plotting_window->update();
         _console_window->update();
         _connection_window->update();

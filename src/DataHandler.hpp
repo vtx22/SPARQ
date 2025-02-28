@@ -27,6 +27,7 @@ public:
     ~DataHandler();
 
     void update();
+    void receiver_loop();
     sparq_message_t receive_message();
 
     const std::vector<sparq_dataset_t> &get_datasets();
