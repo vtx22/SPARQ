@@ -11,7 +11,7 @@
 
 #define SPARQ_MESSAGE_HEADER_LENGTH 5
 #define SPARQ_BYTES_PER_VALUE_PAIR 5
-#define SPARQ_CHECKSUM_LENGTH 2
+#define SPARQ_CHECKSUM_LENGTH 1
 #define SPARQ_MAX_PAYLOAD_LENGTH 0xFFFF
 #define SPARQ_MIN_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 1 + SPARQ_CHECKSUM_LENGTH)
 #define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_MAX_PAYLOAD_LENGTH + SPARQ_CHECKSUM_LENGTH)
@@ -20,7 +20,7 @@
 enum class sparq_header_control_t : uint8_t
 {
     LSB_FIRST = (1 << 7),
-    CRC_CS = (1 << 6),
+    CS_EN = (1 << 6),
     MSG_TYPE = (1 << 2) + (1 << 3),
     SIGNED = (1 << 1),
     INTEGER = (1 << 0),
@@ -166,8 +166,7 @@ struct sparq_message_t
             }
         }
 
-        uint16_t checksum_start = SPARQ_MESSAGE_HEADER_LENGTH + nval * SPARQ_BYTES_PER_VALUE_PAIR;
-        checksum = (data[checksum_start] << 8) + data[checksum_start + 1];
+        checksum = data[SPARQ_MESSAGE_HEADER_LENGTH + header.payload_length];
     }
 };
 

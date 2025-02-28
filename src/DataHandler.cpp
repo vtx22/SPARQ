@@ -294,7 +294,7 @@ sparq_message_t DataHandler::receive_message()
         return message;
     }
 
-    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + 2 + message.header.payload_length;
+    uint32_t total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_CHECKSUM_LENGTH + message.header.payload_length;
 
     if (_message_buffer.size() < total_message_length)
     {
@@ -307,7 +307,15 @@ sparq_message_t DataHandler::receive_message()
 
     in_message = false;
 
-    message.valid = message.checksum == (uint16_t)DataHandler::xor8_cs(_message_buffer.data(), total_message_length - 2);
+    if (message.header.control & (uint8_t)sparq_header_control_t::CS_EN)
+    {
+        std::cout << total_message_length << "\n";
+        message.valid = (message.checksum == DataHandler::xor8_cs(_message_buffer.data(), total_message_length - 1));
+    }
+    else
+    {
+        message.valid = true;
+    }
 
     if (!message.valid)
     {
