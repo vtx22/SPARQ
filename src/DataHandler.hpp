@@ -6,6 +6,9 @@
 #include <chrono>
 #include <iomanip>
 #include <fstream>
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 #include "sparq_types.hpp"
 #include "serial.hpp"
@@ -55,6 +58,8 @@ public:
 
     sparq_plot_settings_t plot_settings;
 
+    std::mutex &get_data_mutex() { return _data_mutex; }
+
 private:
     uint32_t current_absolute_sample = 0;
     uint64_t first_receive_timestamp = 0;
@@ -72,4 +77,8 @@ private:
     std::vector<sparq_marker_t> _markers;
 
     void add_to_datasets(const sparq_message_t &message);
+
+    std::thread _receive_thread;
+    std::atomic<bool> _running = true;
+    std::mutex _data_mutex;
 };

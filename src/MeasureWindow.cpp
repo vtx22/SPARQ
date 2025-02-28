@@ -57,6 +57,8 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
 
     if (ImGui::BeginTable("##MeasureMarkerTable", 7, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
+        std::lock_guard<std::mutex> lock(_data_handler->get_data_mutex());
+
         std::vector<uint32_t> to_delete;
         for (size_t i = 0; i < markers.size(); i++)
         {
