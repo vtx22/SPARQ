@@ -89,6 +89,7 @@ void DataWindow::show_datasets_section()
 {
     if (ImGui::CollapsingHeader("Serial Datasets"))
     {
+        std::lock_guard<std::mutex> lock(_data_handler->get_data_mutex());
 
         if (ImGui::Button("Import"))
         {

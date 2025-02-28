@@ -10,6 +10,7 @@ PlottingWindow::~PlottingWindow()
 
 void PlottingWindow::update()
 {
+    std::lock_guard<std::mutex> lock(_data_handler->get_data_mutex());
     std::vector<sparq_dataset_t> &datasets = _data_handler->get_datasets_editable();
     if (ImGui::Begin(ICON_FA_CHART_LINE "  Plot"))
     {

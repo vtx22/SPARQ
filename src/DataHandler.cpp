@@ -4,32 +4,49 @@ DataHandler::DataHandler(Serial *sp, ConsoleWindow *console_window) : _sp(sp), _
 {
     _sp->set_timeouts(0xFFFFFFFF, 0, 0, 0, 0);
     _serial_buffer.reserve(SPARQ_MAX_MESSAGE_LENGTH * 2);
+
+    _receive_thread = std::thread(&DataHandler::receiver_loop, this);
 }
 
 DataHandler::~DataHandler()
 {
+    _running = false;
+    if (_receive_thread.joinable())
+    {
+        _receive_thread.join();
+    }
+}
+
+void DataHandler::receiver_loop()
+{
+    while (_running)
+    {
+        sparq_message_t message = receive_message();
+        if (message.valid)
+        {
+            std::lock_guard<std::mutex> lock(_data_mutex);
+
+            if (message.is_string)
+            {
+                _console_window->add_log(message.string_data.c_str());
+            }
+            else
+            {
+                add_to_datasets(message);
+            }
+        }
+    }
 }
 
 void DataHandler::update()
 {
-    sparq_message_t message = receive_message();
-    if (message.valid)
-    {
-        if (message.is_string)
-        {
-            _console_window->add_log(message.string_data.c_str());
-        }
-        else
-        {
-            add_to_datasets(message);
-        }
-    }
-
     update_markers();
 }
 
 void DataHandler::update_markers()
 {
+    std::lock_guard<std::mutex> lock(_data_mutex);
+
     for (auto &m : _markers)
     {
         if (m.ds_id == -1)
