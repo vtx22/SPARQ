@@ -11,8 +11,10 @@
 
 #define SPARQ_MESSAGE_HEADER_LENGTH 5
 #define SPARQ_BYTES_PER_VALUE_PAIR 5
-#define SPARQ_MIN_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_BYTES_PER_VALUE_PAIR + 2)
-#define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 0xFFFF + 2)
+#define SPARQ_CHECKSUM_LENGTH 2
+#define SPARQ_MAX_PAYLOAD_LENGTH 0xFFFF
+#define SPARQ_MIN_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 1 + SPARQ_CHECKSUM_LENGTH)
+#define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_MAX_PAYLOAD_LENGTH + SPARQ_CHECKSUM_LENGTH)
 #define SPARQ_DEFAULT_SIGNATURE 0xFF
 
 enum class sparq_header_control_t : uint8_t
@@ -121,7 +123,6 @@ struct sparq_message_t
         }
         else if (message_type == sparq_message_type_t::ID_PAIR)
         {
-
             ids.reserve(nval);
             values.reserve(nval);
 
