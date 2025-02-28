@@ -6,7 +6,6 @@ DataHandler::DataHandler(Serial *sp, ConsoleWindow *console_window) : _sp(sp), _
     _serial_buffer.reserve(SPARQ_MAX_MESSAGE_LENGTH * 2);
 
     _receive_thread = std::thread(&DataHandler::receiver_loop, this);
-    _receive_thread.detach();
 }
 
 DataHandler::~DataHandler()
