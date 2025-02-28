@@ -298,7 +298,7 @@ sparq_message_t DataHandler::receive_message()
 
     if (_message_buffer.size() < total_message_length)
     {
-        // Message is not complete yet, we are expecting nval id/value pairs
+        // Message is not complete yet
         return message;
     }
 
@@ -307,9 +307,9 @@ sparq_message_t DataHandler::receive_message()
 
     in_message = false;
 
+    // Check message checksum if enabled, otherwise assume message valid
     if (message.header.control & (uint8_t)sparq_header_control_t::CS_EN)
     {
-        std::cout << total_message_length << "\n";
         message.valid = (message.checksum == DataHandler::xor8_cs(_message_buffer.data(), total_message_length - 1));
     }
     else
@@ -322,8 +322,10 @@ sparq_message_t DataHandler::receive_message()
         std::cerr << "Message Checksum is wrong!\n";
     }
 
+    // Save current timestep
     message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
+    // Clear the message from the buffer
     _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
     return message;
 }
