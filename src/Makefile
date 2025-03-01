@@ -1,7 +1,7 @@
 NAME := SPARQ
 
 CCX = g++ 
-CFLAGS = -Wall -std=c++17 -DIMGUI_SFML_VIEWPORTS_ENABLE -DSFML_STATIC -DSFML_USE_STATIC_STD_LIBS --static
+CFLAGS = -Wall -std=c++17 -DIMGUI_SFML_VIEWPORTS_ENABLE -DSFML_STATIC -DSFML_USE_STATIC_STD_LIBS
 LIBS = -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -static-libstdc++ -static-libgcc -lwinmm -lopengl32 -lgdi32 -lfreetype -ldwmapi --static
 # Directories
 INCLUDE_DIRS = -I. -I./imgui-sfml/ -I./imgui/ -I./implot/ -I./sfml/include/ -I./ImStyles/ -I./cpp-serial-win/src
