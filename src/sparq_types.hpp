@@ -110,60 +110,87 @@ struct sparq_message_t
     std::string string_data;
     sparq_message_type_t message_type;
 
+    uint32_t buffer_to_uint32(const uint8_t *data, bool lsb_first)
+    {
+        uint8_t v3 = data[0];
+        uint8_t v2 = data[1];
+        uint8_t v1 = data[2];
+        uint8_t v0 = data[3];
+
+        uint32_t value = 0;
+        if (lsb_first == SPARQ_PLATFORM_LITTLE_ENDIAN)
+        {
+            value = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
+        }
+        else
+        {
+            value = (v0 << 24) + (v1 << 16) + (v2 << 8) + v3;
+        }
+
+        return value;
+    }
+
+    void parse_msg_id_pair(const uint8_t *data)
+    {
+        const uint16_t nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
+        ids.reserve(nval);
+        values.reserve(nval);
+
+        for (uint8_t pair = 0; pair < nval; pair++)
+        {
+            uint16_t pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
+
+            ids[pair] = data[pair_index];
+
+            bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
+            uint32_t value = buffer_to_uint32(&data[pair_index + 1], lsb_first);
+
+            if (header.control & (uint8_t)sparq_header_control_t::INTEGER)
+            {
+                if (header.control & (uint8_t)sparq_header_control_t::SIGNED)
+                {
+                    values.push_back(*(int32_t *)&value);
+                }
+                else
+                {
+                    values.push_back(*(uint32_t *)&value);
+                }
+            }
+            else
+            {
+                values.push_back(*(float *)&value);
+            }
+        }
+    }
+
+    void parse_msg_bulk_single_id(const uint8_t *data)
+    {
+    }
+
     void from_array(const uint8_t *data)
     {
         header.from_array(data);
 
-        message_type = (sparq_message_type_t)((header.control >> 2) & 0b11);
-        const uint16_t nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
-
-        if (message_type == sparq_message_type_t::STRING)
+        if (header.payload_length == 0)
         {
-            string_data = std::string((char *)&data[SPARQ_MESSAGE_HEADER_LENGTH], header.payload_length);
+            return;
         }
-        else if (message_type == sparq_message_type_t::ID_PAIR)
+
+        message_type = (sparq_message_type_t)((header.control >> 2) & 0b11);
+
+        switch (message_type)
         {
-            ids.reserve(nval);
-            values.reserve(nval);
-
-            for (uint8_t pair = 0; pair < nval; pair++)
-            {
-                uint16_t pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
-
-                ids[pair] = data[pair_index];
-                uint8_t v3 = data[pair_index + 1];
-                uint8_t v2 = data[pair_index + 2];
-                uint8_t v1 = data[pair_index + 3];
-                uint8_t v0 = data[pair_index + 4];
-
-                bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
-
-                uint32_t value = 0;
-                if (lsb_first == SPARQ_PLATFORM_LITTLE_ENDIAN)
-                {
-                    value = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
-                }
-                else
-                {
-                    value = (v0 << 24) + (v1 << 16) + (v2 << 8) + v3;
-                }
-
-                if (header.control & (uint8_t)sparq_header_control_t::INTEGER)
-                {
-                    if (header.control & (uint8_t)sparq_header_control_t::SIGNED)
-                    {
-                        values.push_back(*(int32_t *)&value);
-                    }
-                    else
-                    {
-                        values.push_back(*(uint32_t *)&value);
-                    }
-                }
-                else
-                {
-                    values.push_back(*(float *)&value);
-                }
-            }
+        case sparq_message_type_t::STRING:
+            string_data = std::string((char *)&data[SPARQ_MESSAGE_HEADER_LENGTH], header.payload_length);
+            break;
+        case sparq_message_type_t::ID_PAIR:
+            parse_msg_id_pair(data);
+            break;
+        case sparq_message_type_t::BULK_SINGLE_ID:
+            parse_msg_bulk_single_id(data);
+            break;
+        default:
+            break;
         }
 
         checksum = data[SPARQ_MESSAGE_HEADER_LENGTH + header.payload_length];
