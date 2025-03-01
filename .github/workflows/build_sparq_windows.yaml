@@ -49,3 +49,4 @@ jobs:
         path: |
             ./src/assets/
             ./src/SPARQ.exe
+            ./src/imgui.ini
