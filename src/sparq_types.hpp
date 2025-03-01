@@ -111,21 +111,40 @@ struct sparq_message_t
     sparq_message_type_t message_type;
     uint16_t nval = 0;
 
-    uint32_t buffer_to_uint32(const uint8_t *data, bool lsb_first)
+    double buffer_to_double(const uint8_t *data)
     {
         uint8_t v3 = data[0];
         uint8_t v2 = data[1];
         uint8_t v1 = data[2];
         uint8_t v0 = data[3];
 
-        uint32_t value = 0;
+        uint32_t value32 = 0;
+
+        bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
         if (lsb_first == SPARQ_PLATFORM_LITTLE_ENDIAN)
         {
-            value = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
+            value32 = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
         }
         else
         {
-            value = (v0 << 24) + (v1 << 16) + (v2 << 8) + v3;
+            value32 = (v0 << 24) + (v1 << 16) + (v2 << 8) + v3;
+        }
+
+        double value = 0;
+        if (header.control & (uint8_t)sparq_header_control_t::INTEGER)
+        {
+            if (header.control & (uint8_t)sparq_header_control_t::SIGNED)
+            {
+                value = *(int32_t *)&value32;
+            }
+            else
+            {
+                value = *(uint32_t *)&value32;
+            }
+        }
+        else
+        {
+            value = *(float *)&value32;
         }
 
         return value;
@@ -143,24 +162,7 @@ struct sparq_message_t
 
             ids[pair] = data[pair_index];
 
-            bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
-            uint32_t value = buffer_to_uint32(&data[pair_index + 1], lsb_first);
-
-            if (header.control & (uint8_t)sparq_header_control_t::INTEGER)
-            {
-                if (header.control & (uint8_t)sparq_header_control_t::SIGNED)
-                {
-                    values.push_back(*(int32_t *)&value);
-                }
-                else
-                {
-                    values.push_back(*(uint32_t *)&value);
-                }
-            }
-            else
-            {
-                values.push_back(*(float *)&value);
-            }
+            values.push_back(buffer_to_double(&data[pair_index + 1]));
         }
     }
 
@@ -173,25 +175,7 @@ struct sparq_message_t
 
         for (uint16_t i = 0; i < nval; i++)
         {
-
-            bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
-            uint32_t value = buffer_to_uint32(&data[SPARQ_MESSAGE_HEADER_LENGTH + 1 + i * 4], lsb_first);
-
-            if (header.control & (uint8_t)sparq_header_control_t::INTEGER)
-            {
-                if (header.control & (uint8_t)sparq_header_control_t::SIGNED)
-                {
-                    values.push_back(*(int32_t *)&value);
-                }
-                else
-                {
-                    values.push_back(*(uint32_t *)&value);
-                }
-            }
-            else
-            {
-                values.push_back(*(float *)&value);
-            }
+            values.push_back(buffer_to_double(&data[SPARQ_MESSAGE_HEADER_LENGTH + 1 + i * 4]));
         }
     }
 
