@@ -8,8 +8,12 @@ INCLUDE_DIRS = -I. -I./imgui-sfml/ -I./imgui/ -I./implot/ -I./sfml/include/ -I./
 SFML_LIB_DIR = -Lsfml/lib -Limgui-sfml/ -Limgui/ -Limplot/ -LImStyles/ -Lcpp-serial-win/ SPARQ.res
 
 # Source and object files
-SRC_FILES = $(wildcard ./*.cpp imgui/*.cpp imgui-sfml/*.cpp implot/*.cpp ImStyles/*.cpp cpp-serial-win/src/*.cpp)
-OBJ_FILES = $(SRC_FILES:.cpp=.o)
+OWN_SRC_FILES = $(wildcard ./*.cpp)
+EXT_SRC_FILES = $(wildcard imgui/*.cpp imgui-sfml/*.cpp implot/*.cpp ImStyles/*.cpp cpp-serial-win/src/*.cpp)
+
+OWN_OBJ_FILES = $(OWN_SRC_FILES:.cpp=.o)
+EXT_OBJ_FILES = $(EXT_SRC_FILES:.cpp=.o)
+OBJ_FILES = $(OWN_OBJ_FILES) $(EXT_OBJ_FILES)
 
 ifdef release
     LIBS += -mwindows
@@ -29,4 +33,8 @@ $(NAME): $(OBJ_FILES)
 
 # Clean up object files and binary
 clean:
+	del /Q $(subst /,\,$(OWN_OBJ_FILES))
+
+clean_all:
 	del /Q $(subst /,\,$(OBJ_FILES))
+	@echo Cleaned all object files.
