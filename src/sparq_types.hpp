@@ -109,6 +109,7 @@ struct sparq_message_t
     uint64_t timestamp;
     std::string string_data;
     sparq_message_type_t message_type;
+    uint16_t nval = 0;
 
     uint32_t buffer_to_uint32(const uint8_t *data, bool lsb_first)
     {
@@ -132,7 +133,7 @@ struct sparq_message_t
 
     void parse_msg_id_pair(const uint8_t *data)
     {
-        const uint16_t nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
+        nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
         ids.reserve(nval);
         values.reserve(nval);
 
@@ -165,6 +166,33 @@ struct sparq_message_t
 
     void parse_msg_bulk_single_id(const uint8_t *data)
     {
+        nval = (header.payload_length - 1) / 4;
+
+        ids = std::vector<uint8_t>(nval, data[SPARQ_MESSAGE_HEADER_LENGTH]);
+        values.reserve(nval);
+
+        for (uint16_t i = 0; i < nval; i++)
+        {
+
+            bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
+            uint32_t value = buffer_to_uint32(&data[SPARQ_MESSAGE_HEADER_LENGTH + 1 + i * 4], lsb_first);
+
+            if (header.control & (uint8_t)sparq_header_control_t::INTEGER)
+            {
+                if (header.control & (uint8_t)sparq_header_control_t::SIGNED)
+                {
+                    values.push_back(*(int32_t *)&value);
+                }
+                else
+                {
+                    values.push_back(*(uint32_t *)&value);
+                }
+            }
+            else
+            {
+                values.push_back(*(float *)&value);
+            }
+        }
     }
 
     void from_array(const uint8_t *data)

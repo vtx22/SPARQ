@@ -97,9 +97,10 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
 
     if (!_console_window->TextOnly)
     {
-        _console_window->add_data_to_log(message.ids.data(), message.values.data(), message.header.payload_length / 5);
+        _console_window->add_data_to_log(message.ids.data(), message.values.data(), message.nval);
     }
-    for (uint16_t i = 0; i < message.header.payload_length / 5; i++)
+
+    for (uint16_t i = 0; i < message.nval; i++)
     {
         sparq_dataset_t *ds = nullptr;
         for (uint8_t ds_index = 0; ds_index < _datasets.size(); ds_index++)
