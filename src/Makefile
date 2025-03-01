@@ -11,6 +11,10 @@ SFML_LIB_DIR = -Lsfml/lib -Limgui-sfml/ -Limgui/ -Limplot/ -LImStyles/ -Lcpp-ser
 SRC_FILES = $(wildcard ./*.cpp imgui/*.cpp imgui-sfml/*.cpp implot/*.cpp ImStyles/*.cpp cpp-serial-win/src/*.cpp)
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
 
+ifdef release
+    LIBS += -mwindows
+endif
+
 # Build targets
 all: $(NAME)
 
