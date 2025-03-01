@@ -1,6 +1,6 @@
 #pragma once
 
-#define SPARQ_VERSION "v0.1.0"
+#define SPARQ_VERSION "v0.2.0"
 
 #define SPARQ_MAX_FPS 120
 #define SPARQ_VSYNC true
