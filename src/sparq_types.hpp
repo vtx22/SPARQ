@@ -153,16 +153,15 @@ struct sparq_message_t
     void parse_msg_id_pair(const uint8_t *data)
     {
         nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
-        ids.reserve(nval);
-        values.reserve(nval);
+        ids.resize(nval);
+        values.resize(nval);
 
         for (uint8_t pair = 0; pair < nval; pair++)
         {
             uint16_t pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
 
             ids[pair] = data[pair_index];
-
-            values.push_back(buffer_to_double(&data[pair_index + 1]));
+            values[pair] = buffer_to_double(&data[pair_index + 1]);
         }
     }
 
@@ -170,12 +169,14 @@ struct sparq_message_t
     {
         nval = (header.payload_length - 1) / 4;
 
-        ids = std::vector<uint8_t>(nval, data[SPARQ_MESSAGE_HEADER_LENGTH]);
-        values.reserve(nval);
+        ids.assign(nval, data[SPARQ_MESSAGE_HEADER_LENGTH]);
+        values.resize(nval);
 
-        for (uint16_t i = 0; i < nval; i++)
+        const uint8_t *ptr = data + SPARQ_MESSAGE_HEADER_LENGTH + 1;
+        for (double &value : values)
         {
-            values.push_back(buffer_to_double(&data[SPARQ_MESSAGE_HEADER_LENGTH + 1 + i * 4]));
+            value = buffer_to_double(ptr);
+            ptr += 4;
         }
     }
 
