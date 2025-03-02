@@ -50,15 +50,15 @@ void PlottingWindow::update()
                     std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
                     ImPlot::SetNextLineStyle(ds.color, 3);
 
-                    auto [x_values, y_values] = get_xy_values(ds);
+                    auto [x_values, y_values] = get_xy_downsampled(ds, 100000.0 / datasets.size(), ImPlot::GetPlotLimits().X.Min, ImPlot::GetPlotLimits().X.Max);
 
                     if (ds.display_square)
                     {
-                        ImPlot::PlotStairs((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
+                        ImPlot::PlotStairs((name + "###LP" + std::to_string(ds.id)).c_str(), x_values.data(), y_values.data(), y_values.size());
                     }
                     else
                     {
-                        ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values->data(), y_values->data(), y_values->size());
+                        ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values.data(), y_values.data(), y_values.size());
                     }
 
                     ImPlotItem *item = plot->Items.GetLegendItem(i);
@@ -104,27 +104,100 @@ void PlottingWindow::update()
     ImGui::End();
 }
 
-std::tuple<std::vector<double> *, std::vector<double> *> PlottingWindow::get_xy_values(sparq_dataset_t &dataset)
+std::pair<std::vector<double>, std::vector<double>> PlottingWindow::get_xy_downsampled(sparq_dataset_t &dataset, uint32_t max_samples, double x_min, double x_max)
 {
-    std::vector<double> *x_values, *y_values;
+    auto &d = dataset;
 
-    y_values = &dataset.y_values;
+    // No downsampling possible
+    if (d.samples.empty() || d.samples.size() < max_samples)
+    {
+        return {d.samples, d.y_values};
+    }
 
+    // All data out of view
+    if (d.samples.back() < x_min || d.samples.front() > x_max)
+    {
+        return {{}, {}};
+    }
+
+    // For FIT_ALL x axis we have to keep the whole data length so ImPlot AutoFit works
+    if (_data_handler->x_fit_select == 1)
+    {
+        x_min = -DBL_MAX;
+        x_max = DBL_MAX;
+    }
+
+    std::vector<double> *x_values;
     switch (_data_handler->x_axis_select)
     {
     default:
     case 0:
-        x_values = &dataset.samples;
+        x_values = &d.samples;
         break;
     case 1:
-        x_values = &dataset.relative_times;
+        x_values = &d.relative_times;
         break;
     case 2:
-        x_values = &dataset.absolute_times;
+        x_values = &d.absolute_times;
         break;
     }
 
-    return {x_values, y_values};
+    // Find the sample index for the x_value that is below x_min / above x_max
+    auto lower = std::lower_bound(x_values->begin(), x_values->end(), x_min);
+    auto upper = std::upper_bound(x_values->begin(), x_values->end(), x_max);
+
+    size_t min_index = std::distance(x_values->begin(), lower);
+    size_t max_index = std::distance(x_values->begin(), upper) + 1;
+
+    if (min_index > 0)
+    {
+        min_index--;
+    }
+    if (max_index >= x_values->size())
+    {
+        max_index = x_values->size() - 1;
+    }
+
+    size_t number_of_samples = max_index - min_index;
+
+    std::vector<double> x_in_view(number_of_samples);
+    std::vector<double> y_in_view(number_of_samples);
+
+    for (size_t i = min_index; i < max_index; i++)
+    {
+        x_in_view[i - min_index] = x_values->at(i);
+        y_in_view[i - min_index] = d.y_values[i];
+    }
+
+    // There are less than max_samples values in view
+    if (max_samples >= number_of_samples)
+    {
+        return {x_in_view, y_in_view};
+    }
+
+    std::vector<double> x_downsampled(max_samples);
+    std::vector<double> y_downsampled(max_samples);
+
+    x_downsampled[0] = x_in_view.front();
+    y_downsampled[0] = y_in_view.front();
+
+    double step = static_cast<double>(number_of_samples - 1) / (max_samples - 1);
+
+    // Start from the second value
+    double index = step;
+
+    for (size_t i = 1; i < max_samples - 1; ++i)
+    {
+        x_downsampled[i] = (x_in_view[static_cast<size_t>(index)]);
+        y_downsampled[i] = (y_in_view[static_cast<size_t>(index)]);
+        index += step;
+    }
+
+    // Always keep the last value
+    x_downsampled[max_samples - 1] = x_in_view.back();
+    y_downsampled[max_samples - 1] = y_in_view.back();
+
+    return {x_downsampled, y_downsampled};
 }
 
 void PlottingWindow::update_axes()

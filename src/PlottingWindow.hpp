@@ -12,6 +12,8 @@
 #include <cstdint>
 #include <tuple>
 #include <cmath>
+#include <utility>
+#include <algorithm>
 
 #include "IconsFontAwesome6.h"
 
@@ -26,7 +28,7 @@ public:
     void update_axes();
     void config_limits_n_values();
 
-    std::tuple<std::vector<double> *, std::vector<double> *> get_xy_values(sparq_dataset_t &dataset);
+    std::pair<std::vector<double>, std::vector<double>> get_xy_downsampled(sparq_dataset_t &dataset, uint32_t max_samples, double x_min, double x_max);
 
 private:
     DataHandler *_data_handler;
