@@ -4,7 +4,7 @@
 _SPARQ is a serial plotter with a focus on fast realtime plotting and the display of big datasets in different plot types_
 
 
-![sparq](img/sine_anim.gif)
+![sparq](img/sine_anim_com.gif)
 
 
 ## Main Features
