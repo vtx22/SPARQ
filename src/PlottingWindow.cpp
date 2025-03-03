@@ -104,7 +104,7 @@ void PlottingWindow::update()
     ImGui::End();
 }
 
-std::pair<std::vector<double>, std::vector<double>> PlottingWindow::get_xy_downsampled(sparq_dataset_t &dataset, uint32_t max_samples, double x_min, double x_max)
+std::pair<std::vector<double> &, std::vector<double> &> PlottingWindow::get_xy_downsampled(sparq_dataset_t &dataset, uint32_t max_samples, double x_min, double x_max)
 {
     auto &d = dataset;
 
@@ -117,7 +117,9 @@ std::pair<std::vector<double>, std::vector<double>> PlottingWindow::get_xy_downs
     // All data out of view
     if (d.samples.back() < x_min || d.samples.front() > x_max)
     {
-        return {{}, {}};
+        _x_downsampled.resize(0);
+        _y_downsampled.resize(0);
+        return {_x_downsampled, _y_downsampled};
     }
 
     // For FIT_ALL x axis we have to keep the whole data length so ImPlot AutoFit works
@@ -160,26 +162,23 @@ std::pair<std::vector<double>, std::vector<double>> PlottingWindow::get_xy_downs
 
     size_t number_of_samples = max_index - min_index;
 
-    std::vector<double> x_in_view(number_of_samples);
-    std::vector<double> y_in_view(number_of_samples);
+    // Keep only the values that are visible
+    _x_in_view.resize(number_of_samples);
+    _y_in_view.resize(number_of_samples);
+    std::copy(x_values->begin() + min_index, x_values->begin() + max_index, _x_in_view.begin());
+    std::copy(d.y_values.begin() + min_index, d.y_values.begin() + max_index, _y_in_view.begin());
 
-    for (size_t i = min_index; i < max_index; i++)
-    {
-        x_in_view[i - min_index] = x_values->at(i);
-        y_in_view[i - min_index] = d.y_values[i];
-    }
-
-    // There are less than max_samples values in view
+    // There are less than max_samples values in view, so no downsampling is needed
     if (max_samples >= number_of_samples)
     {
-        return {x_in_view, y_in_view};
+        return {_x_in_view, _y_in_view};
     }
 
-    std::vector<double> x_downsampled(max_samples);
-    std::vector<double> y_downsampled(max_samples);
+    _x_downsampled.resize(max_samples);
+    _y_downsampled.resize(max_samples);
 
-    x_downsampled[0] = x_in_view.front();
-    y_downsampled[0] = y_in_view.front();
+    _x_downsampled[0] = _x_in_view.front();
+    _y_downsampled[0] = _y_in_view.front();
 
     double step = static_cast<double>(number_of_samples - 1) / (max_samples - 1);
 
@@ -188,16 +187,16 @@ std::pair<std::vector<double>, std::vector<double>> PlottingWindow::get_xy_downs
 
     for (size_t i = 1; i < max_samples - 1; ++i)
     {
-        x_downsampled[i] = (x_in_view[static_cast<size_t>(index)]);
-        y_downsampled[i] = (y_in_view[static_cast<size_t>(index)]);
+        _x_downsampled[i] = (_x_in_view[static_cast<size_t>(index)]);
+        _y_downsampled[i] = (_y_in_view[static_cast<size_t>(index)]);
         index += step;
     }
 
     // Always keep the last value
-    x_downsampled[max_samples - 1] = x_in_view.back();
-    y_downsampled[max_samples - 1] = y_in_view.back();
+    _x_downsampled[max_samples - 1] = _x_in_view.back();
+    _y_downsampled[max_samples - 1] = _y_in_view.back();
 
-    return {x_downsampled, y_downsampled};
+    return {_x_downsampled, _y_downsampled};
 }
 
 void PlottingWindow::update_axes()
