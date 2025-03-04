@@ -39,9 +39,9 @@ void PlottingWindow::update_content()
 
             uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
 
-            if (_config_handler.ini["downsampling"]["max_samples_type"] == "Total" && datasets.size() != 0)
+            if (_config_handler.ini["downsampling"]["max_samples_type"] == "0" && datasets.size() != 0)
             {
-                max_samples = max_samples / datasets.size();
+                max_samples = static_cast<uint32_t>(round(max_samples / (double)datasets.size()));
             }
 
             for (auto &ds : datasets)
