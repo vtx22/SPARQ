@@ -1,5 +1,8 @@
 #pragma once
 
+#include <sstream>
+#include <string>
+
 #include "Window.hpp"
 
 class SettingsWindow : public Window
