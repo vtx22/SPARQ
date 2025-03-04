@@ -36,12 +36,20 @@ void PlottingWindow::update_content()
         case sparq_plot_t::LINE:
         {
             uint8_t i = 0;
+
+            uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
+
+            if (_config_handler.ini["downsampling"]["max_samples_type"] == "Total" && datasets.size() != 0)
+            {
+                max_samples = max_samples / datasets.size();
+            }
+
             for (auto &ds : datasets)
             {
                 std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
                 ImPlot::SetNextLineStyle(ds.color, 3);
 
-                auto [x_values, y_values] = get_xy_downsampled(ds, 50000, ImPlot::GetPlotLimits().X.Min, ImPlot::GetPlotLimits().X.Max);
+                auto [x_values, y_values] = get_xy_downsampled(ds, max_samples, ImPlot::GetPlotLimits().X.Min, ImPlot::GetPlotLimits().X.Max);
 
                 if (ds.display_square)
                 {
@@ -96,8 +104,11 @@ std::pair<std::vector<double> &, std::vector<double> &> PlottingWindow::get_xy_d
 {
     auto &d = dataset;
 
+    bool downsampling_enabled;
+    std::istringstream(_config_handler.ini["downsampling"]["enabled"]) >> std::boolalpha >> downsampling_enabled;
+
     // No downsampling possible
-    if (d.samples.empty() || d.samples.size() < max_samples)
+    if (d.samples.empty() || d.samples.size() < max_samples || !downsampling_enabled)
     {
         return {d.samples, d.y_values};
     }
