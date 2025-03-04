@@ -1,17 +1,11 @@
 #pragma once
 
-#include "imgui.h"
-#include "IconsFontAwesome6.h"
+#include "Window.hpp"
 
-#include "DataHandler.hpp"
-
-class StatisticsWindow
+class StatisticsWindow : public Window
 {
 public:
-    StatisticsWindow();
-    ~StatisticsWindow();
+    StatisticsWindow(DataHandler *data_handler) : Window(ICON_FA_MAGNIFYING_GLASS_CHART "  Statistics", data_handler) {};
 
-    void update();
-
-private:
+    void update_content();
 };

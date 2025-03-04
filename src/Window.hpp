@@ -21,9 +21,10 @@ public:
 
         ImGui::End();
     }
+    
     virtual void update_content() = 0;
 
 protected:
-    DataHandler *_data_handler;
     const char *_name;
+    DataHandler *_data_handler;
 };

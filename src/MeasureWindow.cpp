@@ -1,51 +1,39 @@
 #include "MeasureWindow.hpp"
 
-MeasureWindow::MeasureWindow(DataHandler *data_handler) : _data_handler(data_handler)
-{
-}
-
-MeasureWindow::~MeasureWindow()
-{
-}
-
-void MeasureWindow::update()
+void MeasureWindow::update_content()
 {
     auto &markers = _data_handler->get_markers();
 
-    if (ImGui::Begin(ICON_FA_RULER_HORIZONTAL "  Measure"))
+    if (ImGui::CollapsingHeader("Markers"))
     {
-        if (ImGui::CollapsingHeader("Markers"))
+        if (ImGui::Button("Add"))
         {
-            if (ImGui::Button("Add"))
-            {
-                sparq_marker_t marker;
-                marker.name = std::string("M") + std::to_string(markers.size());
-                markers.push_back(marker);
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Hide All"))
-            {
-                for (auto &m : markers)
-                {
-                    m.hidden = true;
-                }
-            }
-
-            ImGui::SameLine();
-
-            if (ImGui::Button("Delete All"))
-            {
-                markers.clear();
-            }
-
-            ImGui::Separator();
-
-            measure_markers_table(markers);
+            sparq_marker_t marker;
+            marker.name = std::string("M") + std::to_string(markers.size());
+            markers.push_back(marker);
         }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Hide All"))
+        {
+            for (auto &m : markers)
+            {
+                m.hidden = true;
+            }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Delete All"))
+        {
+            markers.clear();
+        }
+
+        ImGui::Separator();
+
+        measure_markers_table(markers);
     }
-    ImGui::End();
 }
 
 void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)

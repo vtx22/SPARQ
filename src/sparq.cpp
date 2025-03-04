@@ -23,16 +23,18 @@ void SPARQ::object_init()
     static Serial serial_port;
     static ConsoleWindow console_window;
     static DataHandler data_handler(&serial_port, &console_window);
+
     static ConnectionWindow connection_window(&serial_port);
     static PlottingWindow plotting_window(&data_handler);
     static DataWindow data_window(&data_handler);
     static MeasureWindow measure_window(&data_handler);
     static ViewWindow view_window(&data_handler);
-    static StatisticsWindow statistics_window;
+    static StatisticsWindow statistics_window(&data_handler);
     static SettingsWindow settings_window(&data_handler);
 
     _sp = &serial_port;
     _data_handler = &data_handler;
+
     _console_window = &console_window;
     _connection_window = &connection_window;
     _plotting_window = &plotting_window;
@@ -132,13 +134,14 @@ int SPARQ::run()
         ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
 
         _data_handler->update();
-        _plotting_window->update();
+
         _console_window->update();
-        _connection_window->update();
-        _data_window->update();
-        _measure_window->update();
-        _view_window->update();
-        _statistics_window->update();
+        _plotting_window->draw();
+        _connection_window->draw();
+        _data_window->draw();
+        _measure_window->draw();
+        _view_window->draw();
+        _statistics_window->draw();
         _settings_window->draw();
 
         // Render Notifications

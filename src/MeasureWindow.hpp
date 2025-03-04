@@ -1,27 +1,18 @@
 #pragma once
 
+#include "Window.hpp"
+
 #include <algorithm>
 
-#include "imgui.h"
 #include "implot.h"
-
 #include "imgui-SFML.h"
-
 #include "sparq_types.hpp"
 
-#include "DataHandler.hpp"
-
-#include "IconsFontAwesome6.h"
-
-class MeasureWindow
+class MeasureWindow : public Window
 {
 public:
-    MeasureWindow(DataHandler *data_handler);
-    ~MeasureWindow();
+    MeasureWindow(DataHandler *data_handler) : Window(ICON_FA_RULER_HORIZONTAL "  Measure", data_handler) {}
 
-    void update();
+    void update_content();
     void measure_markers_table(std::vector<sparq_marker_t> &markers);
-
-private:
-    DataHandler *_data_handler;
 };

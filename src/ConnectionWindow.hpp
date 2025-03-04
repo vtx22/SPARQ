@@ -1,24 +1,22 @@
 #pragma once
 
-#include <array>
-#include "imgui.h"
-#include "serial.hpp"
+#include "Window.hpp"
 
+#include <array>
 #include <string>
 #include <vector>
 #include <cmath>
 
+#include "serial.hpp"
+
 #include "ImGuiNotify.hpp"
-#include "IconsFontAwesome6.h"
 
-class ConnectionWindow
+class ConnectionWindow : public Window
 {
-
 public:
     ConnectionWindow(Serial *sp);
-    ~ConnectionWindow();
 
-    void update();
+    void update_content();
 
     std::string get_selected_port();
     int get_selected_index();

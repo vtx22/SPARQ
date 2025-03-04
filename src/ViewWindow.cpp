@@ -1,35 +1,21 @@
 #include "ViewWindow.hpp"
 
-ViewWindow::ViewWindow(DataHandler *data_handler) : _data_handler(data_handler)
+void ViewWindow::update_content()
 {
-}
-
-ViewWindow::~ViewWindow()
-{
-}
-
-void ViewWindow::update()
-{
-    if (ImGui::Begin(ICON_FA_SLIDERS "  View"))
+    if (ImGui::CollapsingHeader("Plot Type"))
     {
-
-        if (ImGui::CollapsingHeader("Plot Type"))
-        {
-            menu_plot_type();
-        }
-
-        if (ImGui::CollapsingHeader("X Axis"))
-        {
-            menu_x_axis();
-        }
-
-        if (ImGui::CollapsingHeader("Y Axis"))
-        {
-            menu_y_axis();
-        }
+        menu_plot_type();
     }
 
-    ImGui::End();
+    if (ImGui::CollapsingHeader("X Axis"))
+    {
+        menu_x_axis();
+    }
+
+    if (ImGui::CollapsingHeader("Y Axis"))
+    {
+        menu_y_axis();
+    }
 }
 
 void ViewWindow::menu_plot_type()

@@ -1,21 +1,8 @@
 #include "DataWindow.hpp"
 
-DataWindow::DataWindow(DataHandler *data_handler) : _data_handler(data_handler)
+void DataWindow::update_content()
 {
-}
-
-DataWindow::~DataWindow()
-{
-}
-
-void DataWindow::update()
-{
-    if (ImGui::Begin(ICON_FA_DATABASE "  Data"))
-    {
-        show_datasets_section();
-    }
-
-    ImGui::End();
+    show_datasets_section();
 }
 
 void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
