@@ -50,5 +50,6 @@ jobs:
             ./src/assets/
             ./src/SPARQ.exe
             ./src/imgui.ini
+            ./src/config.ini
             ./README.md
             ./FORMAT.md
