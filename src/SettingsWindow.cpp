@@ -6,8 +6,17 @@ SettingsWindow::SettingsWindow(DataHandler *data_handler) : Window(ICON_FA_GEAR 
 
 void SettingsWindow::update_content()
 {
-    bool settings_changed = false;
+    show_downsampling_settings();
 
+    if (_settings_changed)
+    {
+        _config_handler.write_config();
+        _settings_changed = false;
+    }
+}
+
+void SettingsWindow::show_downsampling_settings()
+{
     if (ImGui::CollapsingHeader("Downsampling"))
     {
         bool downsampling_enabled;
@@ -15,7 +24,7 @@ void SettingsWindow::update_content()
         if (ImGui::Checkbox("Enabled", &downsampling_enabled))
         {
             _config_handler.ini["downsampling"]["enabled"] = downsampling_enabled ? "true" : "false";
-            settings_changed = true;
+            _settings_changed = true;
         }
 
         ImGui::Text("Max Samples:");
@@ -34,7 +43,7 @@ void SettingsWindow::update_content()
             }
 
             _config_handler.ini["downsampling"]["max_samples"] = std::to_string(max_samples);
-            settings_changed = true;
+            _settings_changed = true;
         }
 
         ImGui::SameLine();
@@ -65,12 +74,7 @@ void SettingsWindow::update_content()
         if (max_samples_type != prev_max_samples_type)
         {
             _config_handler.ini["downsampling"]["max_samples_type"] = std::to_string(max_samples_type);
-            settings_changed = true;
+            _settings_changed = true;
         }
-    }
-
-    if (settings_changed)
-    {
-        _config_handler.write_config();
     }
 }

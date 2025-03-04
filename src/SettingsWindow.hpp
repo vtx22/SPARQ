@@ -11,4 +11,9 @@ public:
     SettingsWindow(DataHandler *data_handler);
 
     void update_content() override;
+
+    void show_downsampling_settings();
+
+private:
+    bool _settings_changed = false;
 };
