@@ -30,4 +30,5 @@ The custom SPARQ format is documented in this [Readme](https://github.com/vtx22/
 
 
 ## Credits :heart:
-This software was built using: [ImGui](https://github.com/ocornut/imgui) | [ImPlot](https://github.com/epezent/implot) | [ImGuiNotify](https://github.com/TyomaVader/ImGuiNotify) | [SFML](https://github.com/SFML/SFML) | [ImGui-SFML](https://github.com/SFML/imgui-sfml)
+This software was built using: [ImGui](https://github.com/ocornut/imgui) | [ImPlot](https://github.com/epezent/implot) | [ImGuiNotify](https://github.com/TyomaVader/ImGuiNotify) | [SFML](https://github.com/SFML/SFML) | [ImGui-SFML](https://github.com/SFML/imgui-sfml) 
+| [mINI](https://github.com/metayeti/mINI)
