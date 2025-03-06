@@ -6,6 +6,7 @@ DataHandler::DataHandler(Serial *sp, ConsoleWindow *console_window) : _sp(sp), _
     _serial_buffer.reserve(SPARQ_MAX_MESSAGE_LENGTH * 2);
 
     _receive_thread = std::thread(&DataHandler::receiver_loop, this);
+    std::cout << "Starting receiver thread\n";
 }
 
 DataHandler::~DataHandler()
@@ -348,7 +349,7 @@ std::vector<sparq_marker_t> &DataHandler::get_markers()
 
 void DataHandler::export_data_csv()
 {
-
+    std::lock_guard<std::mutex> lock(_data_mutex);
     std::cout << "Exporting data to csv...\n";
 
     if (_datasets.size() == 0)
@@ -419,13 +420,15 @@ uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
     return cs;
 }
 
-double DataHandler::get_max_sample() const
+double DataHandler::get_max_sample()
 {
+    std::lock_guard<std::mutex> lock(_data_mutex);
     return current_absolute_sample;
 }
 
-double DataHandler::get_max_rel_time() const
+double DataHandler::get_max_rel_time()
 {
+    std::lock_guard<std::mutex> lock(_data_mutex);
     double max_rel_time = 0;
 
     for (const auto &ds : _datasets)
@@ -439,8 +442,9 @@ double DataHandler::get_max_rel_time() const
     return max_rel_time;
 }
 
-double DataHandler::get_max_abs_time() const
+double DataHandler::get_max_abs_time()
 {
+    std::lock_guard<std::mutex> lock(_data_mutex);
     double max_abs_time = 0;
 
     for (const auto &ds : _datasets)

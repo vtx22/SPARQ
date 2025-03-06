@@ -53,9 +53,9 @@ public:
 
     void export_data_csv();
 
-    double get_max_sample() const;
-    double get_max_rel_time() const;
-    double get_max_abs_time() const;
+    double get_max_sample();
+    double get_max_rel_time();
+    double get_max_abs_time();
 
     sparq_plot_settings_t plot_settings;
 
