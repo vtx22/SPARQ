@@ -53,7 +53,7 @@ int SPARQ::window_init()
     static sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION, sf::Style::Default, settings);
 
     sf::Image icon;
-    if (icon.loadFromFile("./assets/icon.png"))
+    if (icon.loadFromFile(SPARQ_ICON_FILE))
     {
         window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     }
