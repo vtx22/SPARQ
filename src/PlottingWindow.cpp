@@ -17,15 +17,17 @@ void PlottingWindow::update_content()
         update_axes();
 
         auto &markers = _data_handler->get_markers();
-        for (uint32_t m = 0; m < markers.size(); m++)
+
+        size_t id = 0;
+        for (auto &m : markers)
         {
-            if (markers[m].hidden)
+            if (m.hidden)
             {
                 continue;
             }
 
-            ImPlot::DragLineX(m, &markers[m].x, markers[m].color, 2);
-            ImPlot::TagX(markers[m].x, markers[m].color, markers[m].name.c_str());
+            ImPlot::DragLineX(id++, &m.x, m.color, 2);
+            ImPlot::TagX(m.x, m.color, m.name.c_str());
         }
 
         ImPlotContext *ctx = ImPlot::GetCurrentContext();
