@@ -25,7 +25,7 @@ void DataHandler::receiver_loop()
         sparq_message_t message = receive_message();
         if (message.valid)
         {
-            std::lock_guard<std::mutex> lock(_data_mutex);
+            std::unique_lock<std::mutex> lock(_data_mutex);
 
             if (message.message_type == sparq_message_type_t::STRING)
             {
@@ -35,7 +35,11 @@ void DataHandler::receiver_loop()
             {
                 add_to_datasets(message);
             }
+
+            lock.unlock();
         }
+
+        std::this_thread::sleep_for(500us);
     }
 }
 
