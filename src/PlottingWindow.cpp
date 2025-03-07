@@ -104,9 +104,7 @@ std::pair<std::vector<double> &, std::vector<double> &> PlottingWindow::get_xy_d
 {
     auto &d = dataset;
 
-    bool downsampling_enabled;
-    std::istringstream(_config_handler.ini["downsampling"]["enabled"]) >> std::boolalpha >> downsampling_enabled;
-
+    bool downsampling_enabled = _config_handler.ini["downsampling"]["enabled"] == "1";
     // No downsampling possible
     if (d.samples.empty() || d.samples.size() < max_samples || !downsampling_enabled)
     {
