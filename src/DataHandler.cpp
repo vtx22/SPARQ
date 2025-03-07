@@ -39,7 +39,7 @@ void DataHandler::receiver_loop()
             lock.unlock();
         }
 
-        std::this_thread::sleep_for(500us);
+        std::this_thread::sleep_for(1ms);
     }
 }
 
