@@ -10,6 +10,7 @@
 #include <atomic>
 #include <mutex>
 
+#include "sparq_config.h"
 #include "sparq_types.hpp"
 #include "serial.hpp"
 #include "implot.h"

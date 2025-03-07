@@ -7,4 +7,6 @@
 #define SPARQ_CONFIG_FILE "config.ini"
 #define SPARQ_ICON_FILE "./assets/icon.png"
 
+#define SPARQ_RECEIVE_LOOP_DELAY 1ms
+
 constexpr bool SPARQ_PLATFORM_LITTLE_ENDIAN = true;
