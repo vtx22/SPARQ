@@ -6,6 +6,7 @@ SettingsWindow::SettingsWindow(DataHandler *data_handler) : Window(ICON_FA_GEAR 
 
 void SettingsWindow::update_content()
 {
+    show_graphics_settings();
     show_downsampling_settings();
 
     if (_settings_changed)
@@ -19,11 +20,10 @@ void SettingsWindow::show_downsampling_settings()
 {
     if (ImGui::CollapsingHeader("Downsampling"))
     {
-        bool downsampling_enabled;
-        std::istringstream(_config_handler.ini["downsampling"]["enabled"]) >> std::boolalpha >> downsampling_enabled;
+        bool downsampling_enabled = _config_handler.ini["downsampling"]["enabled"] == "1";
         if (ImGui::Checkbox("Enabled", &downsampling_enabled))
         {
-            _config_handler.ini["downsampling"]["enabled"] = downsampling_enabled ? "true" : "false";
+            _config_handler.ini["downsampling"]["enabled"] = downsampling_enabled ? "1" : "0";
             _settings_changed = true;
         }
 
@@ -74,6 +74,40 @@ void SettingsWindow::show_downsampling_settings()
         if (max_samples_type != prev_max_samples_type)
         {
             _config_handler.ini["downsampling"]["max_samples_type"] = std::to_string(max_samples_type);
+            _settings_changed = true;
+        }
+    }
+}
+
+void SettingsWindow::show_graphics_settings()
+{
+    if (ImGui::CollapsingHeader("Graphics"))
+    {
+        bool vsync_enabled = _config_handler.ini["graphics"]["vsync"] == "1";
+
+        if (ImGui::Checkbox("VSYNC", &vsync_enabled))
+        {
+            _config_handler.ini["graphics"]["vsync"] = vsync_enabled ? "1" : "0";
+            _settings_changed = true;
+        }
+
+        ImGui::Text("Antialiasing Level:");
+        ImGui::SameLine();
+
+        int antialiasing_level = std::stoi(_config_handler.ini["graphics"]["antialiasing"]);
+
+        if (ImGui::InputInt("##MaxSamples", &antialiasing_level, 0, 0))
+        {
+            if (antialiasing_level < 0)
+            {
+                antialiasing_level = 0;
+            }
+            if (antialiasing_level > 8)
+            {
+                antialiasing_level = 8;
+            }
+
+            _config_handler.ini["graphics"]["antialiasing"] = std::to_string(antialiasing_level);
             _settings_changed = true;
         }
     }

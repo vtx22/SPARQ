@@ -13,6 +13,7 @@ public:
     void update_content() override;
 
     void show_downsampling_settings();
+    void show_graphics_settings();
 
 private:
     bool _settings_changed = false;

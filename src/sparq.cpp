@@ -47,8 +47,10 @@ void SPARQ::object_init()
 
 int SPARQ::window_init()
 {
+    auto &config = ConfigHandler::get_instance();
+
     sf::ContextSettings settings;
-    settings.antialiasingLevel = SPARQ_ANTIALIASING;
+    settings.antialiasingLevel = std::stoi(config.ini["graphics"]["antialiasing"]);
 
     static sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION, sf::Style::Default, settings);
 
@@ -63,7 +65,13 @@ int SPARQ::window_init()
     }
 
     window.setFramerateLimit(SPARQ_MAX_FPS);
-    window.setVerticalSyncEnabled(SPARQ_VSYNC);
+    bool vsync_enabled = config.ini["graphics"]["vsync"] == "1";
+    window.setVerticalSyncEnabled(vsync_enabled);
+
+    std::cout << "Applied Graphics Settings:\n";
+    std::cout << "    Antialiasing Level: " << settings.antialiasingLevel << "\n";
+    std::cout << "    VSync: " << (vsync_enabled ? "Enabled" : "Disabled") << "\n";
+    std::cout << "    FPS Limit: " << SPARQ_MAX_FPS << "\n";
 
     BOOL USE_DARK_MODE = true;
     DwmSetWindowAttribute(window.getSystemHandle(), 20, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
