@@ -108,11 +108,12 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
     for (uint16_t i = 0; i < message.nval; i++)
     {
         sparq_dataset_t *ds = nullptr;
-        for (uint8_t ds_index = 0; ds_index < _datasets.size(); ds_index++)
+
+        for (auto &d : _datasets)
         {
-            if (_datasets[ds_index].id == message.ids[i])
+            if (d.id == message.ids[i])
             {
-                ds = &_datasets[ds_index];
+                ds = &d;
                 break;
             }
         }
@@ -193,9 +194,9 @@ void DataHandler::delete_all_datasets()
         ids[i] = _datasets[i].id;
     }
 
-    for (uint8_t i = 0; i < ids.size(); i++)
+    for (const auto &id : ids)
     {
-        delete_dataset(ids[i]);
+        delete_dataset(id);
     }
 }
 
@@ -261,7 +262,7 @@ sparq_message_t DataHandler::receive_message()
     if (!in_message)
     {
         // We are waiting for a new message, so check everything that we have for a signature
-        for (uint32_t i = 0; i < _message_buffer.size(); i++)
+        for (size_t i = 0; i < _message_buffer.size(); i++)
         {
             // TODO: Replace with set signature
             if (_message_buffer[i] == SPARQ_DEFAULT_SIGNATURE)
