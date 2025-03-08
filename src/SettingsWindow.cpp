@@ -8,6 +8,7 @@ void SettingsWindow::update_content()
 {
     show_graphics_settings();
     show_downsampling_settings();
+    show_color_settings();
 
     if (_settings_changed)
     {
@@ -108,6 +109,25 @@ void SettingsWindow::show_graphics_settings()
             }
 
             _config_handler.ini["graphics"]["antialiasing"] = std::to_string(antialiasing_level);
+            _settings_changed = true;
+        }
+    }
+}
+
+void SettingsWindow::show_color_settings()
+{
+    if (ImGui::CollapsingHeader("Color"))
+    {
+
+        ImGui::Text("Color Map:");
+        ImGui::SameLine();
+
+        ImPlotColormap cm_prev = ImPlot::GetStyle().Colormap;
+        ImPlot::ShowColormapSelector("##Colormap");
+
+        if (cm_prev != ImPlot::GetStyle().Colormap)
+        {
+            _config_handler.ini["color"]["colormap"] = std::to_string(ImPlot::GetStyle().Colormap);
             _settings_changed = true;
         }
     }

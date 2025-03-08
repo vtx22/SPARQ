@@ -30,3 +30,8 @@ void ConfigHandler::write_config()
         ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Failed to write config.ini!"});
     }
 }
+
+void ConfigHandler::apply_in_context_settings()
+{
+    ImPlot::GetStyle().Colormap = (ImPlotColormap)std::stoi(ini["color"]["colormap"]);
+}

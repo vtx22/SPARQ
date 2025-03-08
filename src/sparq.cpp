@@ -109,6 +109,8 @@ int SPARQ::window_init()
 
     _window = &window;
 
+    config.apply_in_context_settings();
+
     return 0;
 }
 

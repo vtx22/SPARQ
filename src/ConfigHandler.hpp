@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 
+#include "implot.h"
+
 #include "sparq_config.h"
 
 #include "mini/ini.h"
@@ -20,6 +22,8 @@ public:
 
     void read_config();
     void write_config();
+
+    void apply_in_context_settings();
 
 private:
     ConfigHandler();
