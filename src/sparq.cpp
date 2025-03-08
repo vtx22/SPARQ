@@ -6,6 +6,9 @@ SPARQ::SPARQ()
 
 int SPARQ::init()
 {
+    std::cout << "\n=== SPARQ " << SPARQ_VERSION << " ===\n\n";
+    std::cout << "Initializing ...\n\n";
+
     object_init();
 
     if (window_init() < 0)
@@ -20,6 +23,8 @@ int SPARQ::init()
 
 void SPARQ::object_init()
 {
+    std::cout << "Initializing objects ...\n";
+
     static Serial serial_port;
     static ConsoleWindow console_window;
     static DataHandler data_handler(&serial_port, &console_window);
@@ -49,11 +54,14 @@ int SPARQ::window_init()
 {
     auto &config = ConfigHandler::get_instance();
 
+    std::cout << "Initializing window ...\n";
+
     sf::ContextSettings settings;
     settings.antialiasingLevel = std::stoi(config.ini["graphics"]["antialiasing"]);
 
     static sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION, sf::Style::Default, settings);
 
+    std::cout << "Loading " << SPARQ_ICON_FILE << " ...\n";
     sf::Image icon;
     if (icon.loadFromFile(SPARQ_ICON_FILE))
     {
@@ -61,17 +69,13 @@ int SPARQ::window_init()
     }
     else
     {
+        std::cerr << "Failed to load " << SPARQ_ICON_FILE << "!\n";
         ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Failed to load icon.png!"});
     }
 
     window.setFramerateLimit(SPARQ_MAX_FPS);
     bool vsync_enabled = config.ini["graphics"]["vsync"] == "1";
     window.setVerticalSyncEnabled(vsync_enabled);
-
-    std::cout << "Applied Graphics Settings:\n";
-    std::cout << "    Antialiasing Level: " << settings.antialiasingLevel << "\n";
-    std::cout << "    VSync: " << (vsync_enabled ? "Enabled" : "Disabled") << "\n";
-    std::cout << "    FPS Limit: " << SPARQ_MAX_FPS << "\n";
 
     BOOL USE_DARK_MODE = true;
     DwmSetWindowAttribute(window.getSystemHandle(), 20, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
@@ -83,6 +87,7 @@ int SPARQ::window_init()
         return -1;
     }
 
+    std::cout << "Loading " << SPARQ_FONT << " ...\n";
     float baseFontSize = 18.f;
     ImGuiIO &io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
@@ -110,6 +115,8 @@ int SPARQ::window_init()
     _window = &window;
 
     config.apply_in_context_settings();
+
+    std::cout << "\nInitialization complete!\n\n";
 
     return 0;
 }

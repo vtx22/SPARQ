@@ -128,13 +128,21 @@ void ConnectionWindow::update_content()
         if (!(_com_ports.size() == 1 && _com_ports[0] == "COM-"))
         {
             _signature = hex_chars_to_byte(_signature_chars[0], _signature_chars[1]);
-            if (_sp->open(_com_ports[_current_id].c_str(), _baud_rate) == SERIAL_ERR::OK)
+
+            const char *selected_port = _com_ports[_current_id].c_str();
+            std::cout << "Opening Port: " << selected_port << " (" << _baud_rate << ") ..." << std::endl;
+
+            int rtn = _sp->open(selected_port, _baud_rate);
+
+            if (rtn == SERIAL_ERR::OK)
             {
+                std::cout << "Port opened successfully!\n";
                 _port_open = true;
                 ImGui::InsertNotification({ImGuiToastType::Success, 5000, "COM port opened successfully!"});
             }
             else
             {
+                std::cerr << "Failed to open port! Error: " << rtn << "\n";
                 ImGui::InsertNotification({ImGuiToastType::Error, 5000, "Could not open COM port!"});
             }
         }
@@ -159,6 +167,8 @@ void ConnectionWindow::update_content()
 
     if (ImGui::Button("Close"))
     {
+        std::cout << "Closing COM port ..." << std::endl;
+
         _sp->close();
         ImGui::InsertNotification({ImGuiToastType::Success, 5000, "COM port closed successfully!"});
         _port_open = false;
