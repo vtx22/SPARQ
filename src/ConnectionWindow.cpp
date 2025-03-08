@@ -138,17 +138,17 @@ void ConnectionWindow::update_content()
             {
                 std::cout << "Port opened successfully!\n";
                 _port_open = true;
-                ImGui::InsertNotification({ImGuiToastType::Success, 5000, "COM port opened successfully!"});
+                ImGui::InsertNotification({ImGuiToastType::Success, SPARQ_NOTIFY_DURATION_OK, "COM port opened successfully!"});
             }
             else
             {
                 std::cerr << "Failed to open port! Error: " << rtn << "\n";
-                ImGui::InsertNotification({ImGuiToastType::Error, 5000, "Could not open COM port!"});
+                ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Could not open COM port!"});
             }
         }
         else
         {
-            ImGui::InsertNotification({ImGuiToastType::Error, 5000, "No COM port selected!"});
+            ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "No COM port selected!"});
         }
     }
     else if (_port_open)
@@ -170,7 +170,7 @@ void ConnectionWindow::update_content()
         std::cout << "Closing COM port ..." << std::endl;
 
         _sp->close();
-        ImGui::InsertNotification({ImGuiToastType::Success, 5000, "COM port closed successfully!"});
+        ImGui::InsertNotification({ImGuiToastType::Success, SPARQ_NOTIFY_DURATION_OK, "COM port closed successfully!"});
         _port_open = false;
     }
     else if (!_port_open)

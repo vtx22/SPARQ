@@ -8,5 +8,7 @@
 #define SPARQ_ICON_FILE "./assets/icon.png"
 
 #define SPARQ_RECEIVE_LOOP_DELAY 1ms
+#define SPARQ_NOTIFY_DURATION_OK 3000
+#define SPARQ_NOTIFY_DURATION_ERR 5000
 
 constexpr bool SPARQ_PLATFORM_LITTLE_ENDIAN = true;

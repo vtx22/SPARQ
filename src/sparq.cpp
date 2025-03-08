@@ -70,7 +70,7 @@ int SPARQ::window_init()
     else
     {
         std::cerr << "Failed to load " << SPARQ_ICON_FILE << "!\n";
-        ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Failed to load icon.png!"});
+        ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Failed to load icon.png!"});
     }
 
     window.setFramerateLimit(SPARQ_MAX_FPS);

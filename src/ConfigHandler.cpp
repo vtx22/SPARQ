@@ -21,7 +21,7 @@ void ConfigHandler::read_config()
     if (!_ini_file.read(ini))
     {
         std::cerr << "Failed to load config.ini!" << std::endl;
-        ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Failed to read config.ini!"});
+        ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Failed to read config.ini!"});
     }
 
     std::cout << "Settings:\n";
@@ -51,7 +51,7 @@ void ConfigHandler::write_config()
     if (!_ini_file.write(ini))
     {
         std::cerr << "Failed to write config.ini!" << std::endl;
-        ImGui::InsertNotification({ImGuiToastType::Error, 3000, "Failed to write config.ini!"});
+        ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Failed to write config.ini!"});
     }
 }
 
