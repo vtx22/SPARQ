@@ -91,7 +91,15 @@ struct sparq_message_header_t
     {
         signature = buffer[0];
         control = buffer[1];
-        payload_length = (buffer[2] << 8) + buffer[3];
+        if ((bool)(control & (uint8_t)sparq_header_control_t::LSB_FIRST) == sparq_is_little_endian())
+        {
+            payload_length = (buffer[2] << 8) + buffer[3];
+        }
+        else
+        {
+            payload_length = (buffer[3] << 8) + buffer[2];
+        }
+
         checksum = buffer[4];
     }
 
