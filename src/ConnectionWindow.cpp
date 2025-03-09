@@ -1,14 +1,16 @@
 #include "ConnectionWindow.hpp"
 
-ConnectionWindow::ConnectionWindow(Serial *sp) : Window(ICON_FA_NETWORK_WIRED "  Connection", nullptr), _sp(sp)
+ConnectionWindow::ConnectionWindow(DataHandler *data_handler, Serial *sp) : Window(ICON_FA_NETWORK_WIRED "  Connection", data_handler), _sp(sp)
 {
     _com_ports.push_back("COM-");
 }
 
 void ConnectionWindow::update_content()
 {
+    std::lock_guard<std::mutex> lock(_data_handler->get_serial_mutex());
 
     ImGui::SeparatorText("Settings");
+    _port_open = _sp->get_open();
 
     if (_port_open)
     {
@@ -170,6 +172,7 @@ void ConnectionWindow::update_content()
         std::cout << "Closing COM port ..." << std::endl;
 
         _sp->close();
+
         ImGui::InsertNotification({ImGuiToastType::Success, SPARQ_NOTIFY_DURATION_OK, "COM port closed successfully!"});
         _port_open = false;
     }

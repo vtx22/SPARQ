@@ -14,7 +14,7 @@
 class ConnectionWindow : public Window
 {
 public:
-    ConnectionWindow(Serial *sp);
+    ConnectionWindow(DataHandler *data_handler, Serial *sp);
 
     void update_content();
 

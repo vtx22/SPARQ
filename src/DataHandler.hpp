@@ -61,6 +61,7 @@ public:
     sparq_plot_settings_t plot_settings;
 
     std::mutex &get_data_mutex() { return _data_mutex; }
+    std::mutex &get_serial_mutex() { return _serial_mutex; }
 
 private:
     uint32_t current_absolute_sample = 0;
@@ -82,5 +83,5 @@ private:
 
     std::thread _receive_thread;
     std::atomic<bool> _running = true;
-    std::mutex _data_mutex;
+    std::mutex _data_mutex, _serial_mutex;
 };
