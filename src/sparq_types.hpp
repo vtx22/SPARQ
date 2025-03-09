@@ -17,6 +17,12 @@
 #define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_MAX_PAYLOAD_LENGTH + SPARQ_CHECKSUM_LENGTH)
 #define SPARQ_DEFAULT_SIGNATURE 0xFF
 
+constexpr bool sparq_is_little_endian()
+{
+    constexpr uint32_t value = 0x01020304;
+    return reinterpret_cast<const uint8_t *>(&value)[0] == 0x04;
+}
+
 enum class sparq_header_control_t : uint8_t
 {
     LSB_FIRST = (1 << 7),
@@ -121,7 +127,7 @@ struct sparq_message_t
         uint32_t value32 = 0;
 
         bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
-        if (lsb_first == SPARQ_PLATFORM_LITTLE_ENDIAN)
+        if (lsb_first == sparq_is_little_endian())
         {
             value32 = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
         }
