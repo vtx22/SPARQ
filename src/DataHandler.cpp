@@ -266,7 +266,7 @@ sparq_message_t DataHandler::receive_message()
     // Read everything thats available
     int len = _sp->read(_serial_buffer.data(), SPARQ_MAX_MESSAGE_LENGTH * 2);
 
-    if (len <= 0)
+    if (len <= 0 && _message_buffer.size() == 0)
     {
         return message;
     }
