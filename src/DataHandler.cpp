@@ -44,7 +44,7 @@ void DataHandler::receiver_loop()
         // Add sleep only once per fixed interval
         static auto last_sleep_time = std::chrono::steady_clock::now();
         auto current_time = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_sleep_time).count() >= 100)
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_sleep_time).count() >= SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS)
         {
             std::this_thread::sleep_for(SPARQ_RECEIVE_LOOP_DELAY);
             last_sleep_time = current_time;
