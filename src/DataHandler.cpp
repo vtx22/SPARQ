@@ -23,12 +23,19 @@ void DataHandler::receiver_loop()
     while (_running)
     {
         std::unique_lock<std::mutex> serial_lock(_serial_mutex);
+
+        if (!_sp->get_open())
+        {
+            serial_lock.unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS));
+            continue;
+        }
+
         sparq_message_t message = receive_message();
         serial_lock.unlock();
 
         if (message.valid)
         {
-
             std::lock_guard<std::mutex> data_lock(_data_mutex);
 
             if (message.message_type == sparq_message_type_t::STRING)
@@ -255,12 +262,6 @@ void DataHandler::clear_all_datasets()
 sparq_message_t DataHandler::receive_message()
 {
     sparq_message_t message;
-
-    if (!_sp->get_open())
-    {
-        return message;
-    }
-
     static bool in_message = false;
 
     // Read everything thats available
