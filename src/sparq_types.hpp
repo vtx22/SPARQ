@@ -248,6 +248,8 @@ struct sparq_heatmap_settings_t
     bool show_values = false;
     float scale_min = 0;
     float scale_max = 100;
+    bool autoscale = false;
+    bool invert_scale = false;
     int rows = 1;
     int cols = 1;
 };

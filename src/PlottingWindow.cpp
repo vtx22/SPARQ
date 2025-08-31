@@ -93,7 +93,24 @@ void PlottingWindow::update_content()
             uint32_t bounds_max_x = hms.normalize_xy ? 1 : hms.cols;
             uint32_t bounds_max_y = hms.normalize_xy ? 1 : hms.rows;
 
-            ImPlot::PlotHeatmap("Heatmap", values.data(), hms.rows, hms.cols, hms.scale_min, hms.scale_max, hms.show_values ? "%.1f" : "", {0, 0}, {bounds_max_x, bounds_max_y});
+            float min_scale = hms.scale_min;
+            float max_scale = hms.scale_max;
+
+            if (hms.autoscale)
+            {
+                auto [min_it, max_it] = std::minmax_element(values.begin(), values.end());
+                min_scale = *min_it;
+                max_scale = *max_it;
+            }
+
+            if (hms.invert_scale)
+            {
+                float tmp = min_scale;
+                min_scale = max_scale;
+                max_scale = tmp;
+            }
+
+            ImPlot::PlotHeatmap("Heatmap", values.data(), hms.rows, hms.cols, min_scale, max_scale, hms.show_values ? "%.1f" : "", {0, 0}, {bounds_max_x, bounds_max_y}, 0);
             break;
         }
         }

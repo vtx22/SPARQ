@@ -44,12 +44,34 @@ void ViewWindow::menu_plot_type()
     if (_data_handler->plot_settings.type == sparq_plot_t::HEATMAP)
     {
         auto &hms = _data_handler->plot_settings.heatmap_settings;
-        ImGui::Checkbox("Equal", &hms.equal);
+
+        ImGui::SetNextItemWidth(100);
         ImGui::InputInt("##HMI_R", &hms.rows);
         ImGui::SameLine();
         ImGui::Text("x");
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
         ImGui::InputInt("###HMI_C", &hms.cols);
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
+        ImGui::Checkbox("Equal", &hms.equal);
+
+        ImGui::Checkbox("Autoscale", &hms.autoscale);
+        ImGui::SameLine();
+        ImGui::Checkbox("Invert", &hms.invert_scale);
+
+        if (hms.autoscale)
+        {
+            ImGui::BeginDisabled();
+        }
+
+        ImGui::InputFloat("Minimum Scale", &hms.scale_min);
+        ImGui::InputFloat("Maximum Scale", &hms.scale_max);
+
+        if (hms.autoscale)
+        {
+            ImGui::EndDisabled();
+        }
     }
 }
 
