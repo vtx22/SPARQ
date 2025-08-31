@@ -87,6 +87,7 @@ void PlottingWindow::update_content()
                 {
                     break;
                 }
+
                 values[i] = datasets[i].y_values.back();
             }
 
@@ -110,7 +111,19 @@ void PlottingWindow::update_content()
                 max_scale = tmp;
             }
 
-            ImPlot::PlotHeatmap("Heatmap", values.data(), hms.rows, hms.cols, min_scale, max_scale, hms.show_values ? "%.1f" : "", {0, 0}, {bounds_max_x, bounds_max_y}, 0);
+            int rows = hms.rows;
+            int cols = hms.cols;
+
+            if (hms.smooth)
+            {
+                values = bilinear_interpolate(values, hms.rows, hms.cols, hms.smoothing_factor);
+                rows = hms.rows * hms.smoothing_factor;
+                cols = hms.cols * hms.smoothing_factor;
+                bounds_max_x = cols;
+                bounds_max_y = rows;
+            }
+
+            ImPlot::PlotHeatmap("Heatmap", values.data(), rows, cols, min_scale, max_scale, hms.show_values ? "%.1f" : "", {0, 0}, {bounds_max_x, bounds_max_y}, 0);
             break;
         }
         }
@@ -307,4 +320,60 @@ void PlottingWindow::config_limits_n_values()
         break;
     }
     }
+}
+
+std::vector<float> PlottingWindow::bilinear_interpolate(const std::vector<float> &original_image, int original_rows, int original_cols, float scale_factor)
+{
+
+    int new_rows = static_cast<int>(original_rows * scale_factor);
+    int new_cols = static_cast<int>(original_cols * scale_factor);
+
+    std::vector<float> interpolated_image(new_rows * new_cols);
+
+    // Helper lambda to get pixel value with bounds checking
+    auto get_pixel = [&](int row, int col) -> float
+    {
+        if (row < 0 || row >= original_rows || col < 0 || col >= original_cols)
+        {
+            return 0.0f;
+        }
+        return original_image[row * original_cols + col];
+    };
+
+    // Perform bilinear interpolation
+    for (int new_row = 0; new_row < new_rows; ++new_row)
+    {
+        for (int new_col = 0; new_col < new_cols; ++new_col)
+        {
+
+            // Map new coordinates back to original image coordinates
+            float orig_row_f = (new_row + 0.5f) / scale_factor - 0.5f;
+            float orig_col_f = (new_col + 0.5f) / scale_factor - 0.5f;
+
+            // Get the four surrounding pixel coordinates
+            int row0 = static_cast<int>(std::floor(orig_row_f));
+            int row1 = row0 + 1;
+            int col0 = static_cast<int>(std::floor(orig_col_f));
+            int col1 = col0 + 1;
+
+            // Calculate interpolation weights
+            float row_weight = orig_row_f - row0;
+            float col_weight = orig_col_f - col0;
+
+            // Get the four corner pixel values
+            float top_left = get_pixel(row0, col0);
+            float top_right = get_pixel(row0, col1);
+            float bottom_left = get_pixel(row1, col0);
+            float bottom_right = get_pixel(row1, col1);
+
+            // Perform bilinear interpolation
+            float top_interp = top_left * (1.0f - col_weight) + top_right * col_weight;
+            float bottom_interp = bottom_left * (1.0f - col_weight) + bottom_right * col_weight;
+            float final_value = top_interp * (1.0f - row_weight) + bottom_interp * row_weight;
+
+            interpolated_image[new_row * new_cols + new_col] = final_value;
+        }
+    }
+
+    return interpolated_image;
 }

@@ -25,6 +25,8 @@ public:
     void update_axes();
     void config_limits_n_values();
 
+    std::vector<float> bilinear_interpolate(const std::vector<float> &original_image, int original_rows, int original_cols, float scale_factor);
+
     std::pair<std::vector<double> &, std::vector<double> &> get_xy_downsampled(sparq_dataset_t &dataset, uint32_t max_samples, double x_min, double x_max);
 
 private:

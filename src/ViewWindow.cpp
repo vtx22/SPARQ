@@ -56,10 +56,21 @@ void ViewWindow::menu_plot_type()
         ImGui::SetNextItemWidth(100);
         ImGui::Checkbox("Equal", &hms.equal);
 
+        ImGui::Checkbox("Values", &hms.show_values);
+        ImGui::SameLine();
+        ImGui::Checkbox("Smooth", &hms.smooth);
+        ImGui::SameLine();
+        if (ImGui::InputInt("Factor", &hms.smoothing_factor))
+        {
+            if (hms.smoothing_factor < 1)
+            {
+                hms.smoothing_factor = 1;
+            }
+        }
+
         ImGui::Checkbox("Autoscale", &hms.autoscale);
         ImGui::SameLine();
         ImGui::Checkbox("Invert", &hms.invert_scale);
-
         if (hms.autoscale)
         {
             ImGui::BeginDisabled();

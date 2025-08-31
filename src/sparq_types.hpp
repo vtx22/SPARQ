@@ -252,6 +252,8 @@ struct sparq_heatmap_settings_t
     bool invert_scale = false;
     int rows = 1;
     int cols = 1;
+    bool smooth = false;
+    int smoothing_factor = 5;
 };
 
 enum class sparq_plot_t
