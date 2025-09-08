@@ -21,6 +21,8 @@ public:
     std::string get_selected_port();
     int get_selected_index();
 
+    size_t update_com_ports_dropdown();
+
 private:
     int _current_id = 0;
     std::vector<std::string> _com_ports;

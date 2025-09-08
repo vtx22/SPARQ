@@ -2,7 +2,7 @@
 
 ConnectionWindow::ConnectionWindow(DataHandler *data_handler, Serial *sp) : Window(ICON_FA_NETWORK_WIRED "  Connection", data_handler), _sp(sp)
 {
-    _com_ports.push_back("COM-");
+    update_com_ports_dropdown();
 }
 
 void ConnectionWindow::update_content()
@@ -45,12 +45,7 @@ void ConnectionWindow::update_content()
 
     if (ImGui::Button(ICON_FA_ARROWS_ROTATE "##RefreshButton"))
     {
-        _com_ports = Serial::get_port_names();
-
-        if (_com_ports.size() == 0)
-        {
-            _com_ports.push_back("COM-");
-        }
+        update_com_ports_dropdown();
     }
 
     ImGui::SetNextItemWidth(-spacing_right);
@@ -227,4 +222,17 @@ uint8_t ConnectionWindow::hex_chars_to_byte(char high, char low)
     uint8_t low_value = char_to_hex_value(low);
 
     return (high_value << 4) | low_value;
+}
+
+size_t ConnectionWindow::update_com_ports_dropdown()
+{
+    _com_ports = Serial::get_port_names();
+
+    if (_com_ports.size() == 0)
+    {
+        _com_ports.push_back("COM-");
+        return 0;
+    }
+
+    return _com_ports.size();
 }
