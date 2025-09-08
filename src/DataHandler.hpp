@@ -9,6 +9,8 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <optional>
+#include <cstring>
 
 #include "sparq_config.h"
 #include "sparq_types.hpp"
@@ -43,6 +45,8 @@ public:
 
     bool clear_dataset(uint8_t id);
     void clear_all_datasets();
+
+    std::optional<std::reference_wrapper<sparq_dataset_t>> get_dataset(uint8_t id);
 
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
 
@@ -80,6 +84,7 @@ private:
     std::vector<sparq_marker_t> _markers;
 
     void add_to_datasets(const sparq_message_t &message);
+    void handle_command(const sparq_message_t &message);
 
     std::thread _receive_thread;
     std::atomic<bool> _running = true;

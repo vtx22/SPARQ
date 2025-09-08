@@ -38,13 +38,17 @@ void DataHandler::receiver_loop()
         {
             std::lock_guard<std::mutex> data_lock(_data_mutex);
 
-            if (message.message_type == sparq_message_type_t::STRING)
+            switch (message.message_type)
             {
+            case sparq_message_type_t::STRING:
                 _console_window->add_log(message.string_data.c_str());
-            }
-            else
-            {
+                break;
+            case sparq_message_type_t::SENDER_COMMAND:
+                handle_command(message);
+                break;
+            default:
                 add_to_datasets(message);
+                break;
             }
         }
 
@@ -166,6 +170,55 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
     current_absolute_sample++;
 }
 
+void DataHandler::handle_command(const sparq_message_t &message)
+{
+    switch (message.command_type)
+    {
+    case sparq_sender_command_t::CLEAR_CONSOLE:
+        _console_window->clear_log();
+        break;
+    case sparq_sender_command_t::SET_DATASET_NAME:
+    {
+        auto id = message.command_data[0];
+        auto ds = get_dataset(id);
+        auto new_name = std::string(reinterpret_cast<const char *>(&message.command_data[1]), message.command_data.size() - 1);
+
+        if (ds.has_value())
+        {
+            auto &ds_ref = ds.value().get();
+            ds_ref.name = new_name;
+            std::strncpy(ds_ref.name_buffer, new_name.c_str(), sizeof(ds_ref.name_buffer));
+        }
+        else
+        {
+            sparq_dataset_t new_ds;
+            new_ds.id = id;
+            new_ds.name = new_name;
+            new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + _datasets.size());
+            std::strncpy(new_ds.name_buffer, new_name.c_str(), sizeof(new_ds.name_buffer));
+
+            add_dataset(new_ds);
+        }
+
+        break;
+    }
+    case sparq_sender_command_t::CLEAR_ALL_DATASETS:
+        clear_all_datasets();
+        break;
+    case sparq_sender_command_t::DELETE_ALL_DATASETS:
+        delete_all_datasets();
+        break;
+    case sparq_sender_command_t::CLEAR_SINGLE_DATASET:
+        clear_dataset(message.command_data[0]);
+        break;
+    case sparq_sender_command_t::DELETE_SINGLE_DATASET:
+        delete_dataset(message.command_data[0]);
+        break;
+    default:
+        break;
+    }
+}
+
 bool DataHandler::add_dataset(const sparq_dataset_t &dataset)
 {
     for (const auto &ds : _datasets)
@@ -178,6 +231,19 @@ bool DataHandler::add_dataset(const sparq_dataset_t &dataset)
 
     _datasets.push_back(dataset);
     return true;
+}
+
+std::optional<std::reference_wrapper<sparq_dataset_t>> DataHandler::get_dataset(uint8_t id)
+{
+    for (auto &ds : _datasets)
+    {
+        if (ds.id == id)
+        {
+            return ds;
+        }
+    }
+
+    return std::nullopt;
 }
 
 bool DataHandler::delete_dataset(uint8_t id)
@@ -203,6 +269,7 @@ bool DataHandler::delete_dataset(uint8_t id)
 
 void DataHandler::delete_all_datasets()
 {
+    std::cout << "Deleting all datasets ...\n";
     std::vector<uint8_t> ids(_datasets.size());
 
     for (uint8_t i = 0; i < _datasets.size(); i++)
@@ -253,6 +320,7 @@ bool DataHandler::clear_dataset(uint8_t id)
 
 void DataHandler::clear_all_datasets()
 {
+    std::cout << "Clearing all datasets ...\n";
     for (const auto &ds : _datasets)
     {
         clear_dataset(ds.id);
@@ -370,8 +438,8 @@ std::vector<sparq_marker_t> &DataHandler::get_markers()
 
 void DataHandler::export_data_csv()
 {
-    std::lock_guard<std::mutex> lock(_data_mutex);
     std::cout << "Exporting data to csv...\n";
+    std::lock_guard<std::mutex> lock(_data_mutex);
 
     if (_datasets.size() == 0)
     {

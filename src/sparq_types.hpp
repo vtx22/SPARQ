@@ -37,6 +37,18 @@ enum class sparq_message_type_t : uint8_t
     ID_PAIR = 0b00,
     STRING = 0b01,
     BULK_SINGLE_ID = 0b10,
+    SENDER_COMMAND = 0b11,
+};
+
+enum class sparq_sender_command_t : uint8_t
+{
+    CLEAR_CONSOLE,         // Remote clear the console
+    CLEAR_ALL_DATASETS,    // Remote clear all datasets data but keep the settings
+    CLEAR_SINGLE_DATASET,  // Remote clear a single datasets data but keep the settings
+    DELETE_ALL_DATASETS,   // Remote delete all datasets
+    DELETE_SINGLE_DATASET, // Remote delete single dataset
+    SET_DATASET_NAME,      // Remote set the name of a given dataset
+    SWITCH_PLOT_TYPE,      // Remote switch the plot type (e.g. line, heatmap, etc.)
 };
 
 struct sparq_dataset_t
@@ -123,6 +135,8 @@ struct sparq_message_t
     uint64_t timestamp;
     std::string string_data;
     sparq_message_type_t message_type;
+    sparq_sender_command_t command_type;
+    std::vector<uint8_t> command_data;
     uint16_t nval = 0;
 
     double buffer_to_double(const uint8_t *data)
@@ -194,6 +208,22 @@ struct sparq_message_t
         }
     }
 
+    void parse_msg_sender_command(const uint8_t *data)
+    {
+        command_type = static_cast<sparq_sender_command_t>(data[SPARQ_MESSAGE_HEADER_LENGTH]);
+
+        if (header.payload_length <= 1)
+        {
+            return;
+        }
+
+        size_t additional_command_payload_length = header.payload_length - 1;
+        const uint8_t *first_payload_ptr = &data[SPARQ_MESSAGE_HEADER_LENGTH];
+
+        command_data.resize(additional_command_payload_length);
+        std::copy(first_payload_ptr + 1, first_payload_ptr + additional_command_payload_length + 1, command_data.begin());
+    }
+
     void from_array(const uint8_t *data)
     {
         header.from_array(data);
@@ -215,6 +245,9 @@ struct sparq_message_t
             break;
         case sparq_message_type_t::BULK_SINGLE_ID:
             parse_msg_bulk_single_id(data);
+            break;
+        case sparq_message_type_t::SENDER_COMMAND:
+            parse_msg_sender_command(data);
             break;
         default:
             break;
