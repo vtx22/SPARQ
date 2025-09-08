@@ -51,6 +51,12 @@ enum class sparq_sender_command_t : uint8_t
     SWITCH_PLOT_TYPE,      // Remote switch the plot type (e.g. line, heatmap, etc.)
 };
 
+enum class sparq_plot_t : uint8_t
+{
+    LINE,
+    HEATMAP,
+};
+
 struct sparq_dataset_t
 {
     int16_t id = 0;
@@ -287,12 +293,6 @@ struct sparq_heatmap_settings_t
     int cols = 1;
     bool smooth = false;
     int smoothing_factor = 5;
-};
-
-enum class sparq_plot_t
-{
-    LINE,
-    HEATMAP,
 };
 
 struct sparq_plot_settings_t
