@@ -1,4 +1,4 @@
-#include "SPARQ.hpp"
+#include "sparq.hpp"
 
 SPARQ::SPARQ()
 {
@@ -78,9 +78,11 @@ int SPARQ::window_init()
     bool vsync_enabled = config.ini["graphics"]["vsync"] == "1";
     window.setVerticalSyncEnabled(vsync_enabled);
 
+#ifdef BUILD_WINDOWS
     BOOL USE_DARK_MODE = true;
     DwmSetWindowAttribute(window.getSystemHandle(), 20, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
     ShowWindow(window.getSystemHandle(), SW_MAXIMIZE);
+#endif
 
     if (!ImGui::SFML::Init(window))
     {

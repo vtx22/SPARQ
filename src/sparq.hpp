@@ -5,8 +5,11 @@
 #include <string>
 #include <iostream>
 #include <stdint.h>
+
+#ifdef BUILD_WINDOWS
 #include <windows.h>
 #include <dwmapi.h>
+#endif
 
 #include "IconsFontAwesome6.h"
 #include "fa-solid-900.h"
