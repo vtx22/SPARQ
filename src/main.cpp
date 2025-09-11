@@ -1,4 +1,4 @@
-#include "SPARQ.hpp"
+#include "sparq.hpp"
 
 int main()
 {
