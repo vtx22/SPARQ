@@ -23,6 +23,8 @@ _SPARQ is a serial plotter with a focus on fast realtime plotting and the displa
 ## Installation
 Download the newest version for your operating system from the [Releases](https://github.com/vtx22/SPARQ/releases) and open the executable.
 
+On Linux, run SPARQ with `./run_linux.sh`. Make sure that your user is part of the `dialout` user group for serial port access or open SPARQ using `sudo`.
+
 ## Usage
 Open a COM port with the correct baud rate and transmit data from a place of your choice, for example a microcontroller.
 Currently only data transmitted in the custom SPARQ format can be interpreted by the plotter. An ASCII mode is planned and will be implemented in the future.
