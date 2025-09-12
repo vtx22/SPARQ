@@ -29,5 +29,6 @@ jobs:
                   ./src/imgui.ini
                   ./src/config.ini
                   ./src/run_linux.sh
+                  ./src/sfml-linux/
                   ./README.md
                   ./FORMAT.md
