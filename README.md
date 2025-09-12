@@ -1,4 +1,5 @@
 [![SPARQ (Windows)](https://github.com/vtx22/SPARQ/actions/workflows/build_sparq_windows.yaml/badge.svg)](https://github.com/vtx22/SPARQ/actions/)
+[![SPARQ (Linux)](https://github.com/vtx22/SPARQ/actions/workflows/build_sparq_linux.yaml/badge.svg)](https://github.com/vtx22/SPARQ/actions/)
 
 # SPARQ
 _SPARQ is a serial plotter with a focus on fast realtime plotting and the display of big datasets in different plot types_
