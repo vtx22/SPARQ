@@ -1,0 +1,33 @@
+name: "SPARQ (Linux)"
+on:
+    push:
+        paths:
+            - 'src/**'
+    workflow_dispatch:
+
+jobs: 
+    build-linux:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out repository
+              uses: actions/checkout/@v4
+              with: 
+                submodules: 'true'
+            - name: Install dependencies
+              run: sudo apt-get install g++ libgl1-mesa-dev make
+            - name: Build project
+              working-directory: ./src
+              run: |
+                make release=1
+            - name: Archive production artifacts
+              uses: actions/upload-artifact@v4
+              with: 
+                name: SPARQ_linux
+                path: |
+                  ./src/assets/
+                  ./src/SPARQ
+                  ./src/imgui.ini
+                  ./src/config.ini
+                  ./src/run_linux.sh
+                  ./README.md
+                  ./FORMAT.md
