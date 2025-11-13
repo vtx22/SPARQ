@@ -442,7 +442,7 @@ std::vector<sparq_marker_t> &DataHandler::get_markers()
 void DataHandler::export_data_csv()
 {
     std::cout << "Exporting data to csv...\n";
-    std::lock_guard<std::mutex> lock(_data_mutex);
+    // std::lock_guard<std::mutex> lock(_data_mutex);
 
     if (_datasets.size() == 0)
     {
@@ -476,13 +476,13 @@ void DataHandler::export_data_csv()
         uint8_t ds_count = 0;
         for (const auto &ds : _datasets)
         {
-            for (const auto &s : ds.samples)
+            const double eps = 1e-9;
+            auto it = std::lower_bound(ds.samples.begin(), ds.samples.end(), i - eps);
+
+            if (it != ds.samples.end() && std::fabs(*it - (double)i) <= eps)
             {
-                if (s == i)
-                {
-                    file << ds.y_values[i];
-                    break;
-                }
+                size_t idx = std::distance(ds.samples.begin(), it);
+                file << std::to_string(ds.y_values[idx]);
             }
 
             if (ds_count++ < _datasets.size() - 1)
