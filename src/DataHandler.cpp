@@ -465,6 +465,11 @@ void DataHandler::export_data_csv()
     for (const auto &ds : _datasets)
     {
         file << "," << std::to_string(ds.id);
+
+        if (!ds.name.empty())
+        {
+            file << " [" << ds.name << "]";
+        }
     }
 
     file << "\n";
