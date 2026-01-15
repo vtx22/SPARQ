@@ -64,6 +64,8 @@ struct sparq_dataset_t
     std::string name;
     ImVec4 color = ImVec4(1, 0, 0, 1);
     bool toggle_visibility = false;
+    bool show = false;
+    bool hide = false;
     bool hidden = false;
     bool display_square = false;
 

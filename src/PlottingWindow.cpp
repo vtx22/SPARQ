@@ -68,6 +68,16 @@ void PlottingWindow::update_content()
                     item->Show = !item->Show;
                     ds.toggle_visibility = false;
                 }
+                if (ds.hide)
+                {
+                    item->Show = false;
+                    ds.hide = false;
+                }
+                if (ds.show)
+                {
+                    item->Show = true;
+                    ds.show = false;
+                }
 
                 ds.hidden = !item->Show;
 

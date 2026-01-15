@@ -330,6 +330,22 @@ void DataHandler::clear_all_datasets()
     }
 }
 
+void DataHandler::hide_all_datasets()
+{
+    for (auto &ds : _datasets)
+    {
+        ds.hide = true;
+    }
+}
+
+void DataHandler::show_all_datasets()
+{
+    for (auto &ds : _datasets)
+    {
+        ds.show = true;
+    }
+}
+
 sparq_message_t DataHandler::receive_message()
 {
     sparq_message_t message;

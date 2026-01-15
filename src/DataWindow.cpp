@@ -103,14 +103,33 @@ void DataWindow::show_datasets_section()
 
         ImGui::SameLine();
 
+        bool just_deleted = false;
         if (ImGui::Button("Delete All"))
         {
             _data_handler->delete_all_datasets();
+            just_deleted = true;
         }
-        else if (_data_handler->get_datasets().size() == 0)
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Hide All"))
+        {
+            _data_handler->hide_all_datasets();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Show All"))
+        {
+            _data_handler->show_all_datasets();
+        }
+
+        if (!just_deleted && _data_handler->get_datasets().size() == 0)
         {
             ImGui::EndDisabled();
         }
+
+        just_deleted = false;
 
         ImGui::Separator();
 

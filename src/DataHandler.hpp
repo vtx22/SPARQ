@@ -46,6 +46,9 @@ public:
     bool clear_dataset(uint8_t id);
     void clear_all_datasets();
 
+    void hide_all_datasets();
+    void show_all_datasets();
+
     std::optional<std::reference_wrapper<sparq_dataset_t>> get_dataset(uint8_t id);
 
     static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
