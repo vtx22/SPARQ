@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <bit>
 #include <cstdint>
 #include <string>
 #include <array>
@@ -19,8 +20,7 @@
 
 constexpr bool sparq_is_little_endian()
 {
-    constexpr uint32_t value = 0x01020304;
-    return reinterpret_cast<const uint8_t *>(&value)[0] == 0x04;
+    return std::endian::native == std::endian::little;
 }
 
 enum class sparq_header_control_t : uint8_t
