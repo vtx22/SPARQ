@@ -68,8 +68,33 @@ if(WIN32)
         BUILD_WINDOWS
         IMGUI_SFML_VIEWPORTS_ENABLE
         SFML_STATIC
-        SFML_USE_STATIC_STD_LIBS
+        NOMINMAX
     )
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        opengl32
+        gdi32
+        winmm
+        dwmapi
+    )
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_definitions(${PROJECT_NAME} PRIVATE
+            SFML_USE_STATIC_STD_LIBS
+        )
+
+        target_link_options(${PROJECT_NAME} PRIVATE
+            -static-libstdc++
+            -static-libgcc
+            --static
+        )
+    endif()
+
+    if(SPARQ_RELEASE)
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+            WIN32_EXECUTABLE TRUE
+        )
+    endif()
 endif()
 
 if(UNIX AND NOT APPLE)
@@ -84,27 +109,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     sfml-window
     sfml-system
 )
-
-if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        opengl32
-        gdi32
-        winmm
-        dwmapi
-    )
-
-    target_link_options(${PROJECT_NAME} PRIVATE
-        -static-libstdc++
-        -static-libgcc
-        --static
-    )
-
-    if(SPARQ_RELEASE)
-        set_target_properties(${PROJECT_NAME} PROPERTIES
-            WIN32_EXECUTABLE TRUE
-        )
-    endif()
-endif()
 
 if(UNIX AND NOT APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE GL)
