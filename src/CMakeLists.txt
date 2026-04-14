@@ -90,12 +90,6 @@ if(WIN32)
             --static
         )
     endif()
-
-    if(SPARQ_RELEASE)
-        set_target_properties(${PROJECT_NAME} PROPERTIES
-            WIN32_EXECUTABLE TRUE
-        )
-    endif()
 endif()
 
 if(UNIX AND NOT APPLE)

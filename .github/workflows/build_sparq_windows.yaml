@@ -30,7 +30,6 @@ jobs:
           cmake -B build
           -G Ninja
           -DCMAKE_BUILD_TYPE=Release
-          -DSPARQ_RELEASE=ON
 
       - name: Build
         run: cmake --build build --config Release
