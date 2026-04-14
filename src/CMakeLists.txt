@@ -69,6 +69,7 @@ if(WIN32)
         IMGUI_SFML_VIEWPORTS_ENABLE
         SFML_STATIC
         NOMINMAX
+        WIN32_LEAN_AND_MEAN
     )
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
