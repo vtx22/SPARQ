@@ -25,7 +25,14 @@ else()
     set(BUILD_SHARED_LIBS     TRUE  CACHE BOOL "" FORCE)
 endif()
 
-add_subdirectory(src/sfml-source)
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.5.1
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM)
+FetchContent_MakeAvailable(SFML)
 
 # ─────────────────────────────────────────────
 #  Main sources
