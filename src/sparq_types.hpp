@@ -1,22 +1,22 @@
 #pragma once
 
-#include <vector>
+#include <array>
 #include <bit>
 #include <cstdint>
 #include <string>
-#include <array>
+#include <vector>
 
 #include "imgui.h"
 
 #include "sparq_config.h"
 
 #define SPARQ_MESSAGE_HEADER_LENGTH 5
-#define SPARQ_BYTES_PER_VALUE_PAIR 5
-#define SPARQ_CHECKSUM_LENGTH 1
-#define SPARQ_MAX_PAYLOAD_LENGTH 0xFFFF
-#define SPARQ_MIN_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + 1 + SPARQ_CHECKSUM_LENGTH)
-#define SPARQ_MAX_MESSAGE_LENGTH (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_MAX_PAYLOAD_LENGTH + SPARQ_CHECKSUM_LENGTH)
-#define SPARQ_DEFAULT_SIGNATURE 0xFF
+#define SPARQ_BYTES_PER_VALUE_PAIR  5
+#define SPARQ_CHECKSUM_LENGTH       1
+#define SPARQ_MAX_PAYLOAD_LENGTH    0xFFFF
+#define SPARQ_MIN_MESSAGE_LENGTH    (SPARQ_MESSAGE_HEADER_LENGTH + 1 + SPARQ_CHECKSUM_LENGTH)
+#define SPARQ_MAX_MESSAGE_LENGTH    (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_MAX_PAYLOAD_LENGTH + SPARQ_CHECKSUM_LENGTH)
+#define SPARQ_DEFAULT_SIGNATURE     0xFF
 
 constexpr bool sparq_is_little_endian()
 {
@@ -102,12 +102,12 @@ struct sparq_message_header_t
     {
     }
 
-    sparq_message_header_t(const uint8_t *buffer)
+    sparq_message_header_t(const uint8_t* buffer)
     {
         from_array(buffer);
     }
 
-    void from_array(const uint8_t *buffer)
+    void from_array(const uint8_t* buffer)
     {
         signature = buffer[0];
         control = buffer[1];
@@ -123,7 +123,7 @@ struct sparq_message_header_t
         checksum = buffer[4];
     }
 
-    void to_array(uint8_t *buffer)
+    void to_array(uint8_t* buffer)
     {
         buffer[0] = signature;
         buffer[1] = control;
@@ -147,7 +147,7 @@ struct sparq_message_t
     std::vector<uint8_t> command_data;
     uint16_t nval = 0;
 
-    double buffer_to_double(const uint8_t *data)
+    double buffer_to_double(const uint8_t* data)
     {
         uint8_t v3 = data[0];
         uint8_t v2 = data[1];
@@ -171,22 +171,22 @@ struct sparq_message_t
         {
             if (header.control & (uint8_t)sparq_header_control_t::SIGNED)
             {
-                value = *(int32_t *)&value32;
+                value = *(int32_t*)&value32;
             }
             else
             {
-                value = *(uint32_t *)&value32;
+                value = *(uint32_t*)&value32;
             }
         }
         else
         {
-            value = *(float *)&value32;
+            value = *(float*)&value32;
         }
 
         return value;
     }
 
-    void parse_msg_id_pair(const uint8_t *data)
+    void parse_msg_id_pair(const uint8_t* data)
     {
         nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
         ids.resize(nval);
@@ -201,22 +201,22 @@ struct sparq_message_t
         }
     }
 
-    void parse_msg_bulk_single_id(const uint8_t *data)
+    void parse_msg_bulk_single_id(const uint8_t* data)
     {
         nval = (header.payload_length - 1) / 4;
 
         ids.assign(nval, data[SPARQ_MESSAGE_HEADER_LENGTH]);
         values.resize(nval);
 
-        const uint8_t *ptr = data + SPARQ_MESSAGE_HEADER_LENGTH + 1;
-        for (double &value : values)
+        const uint8_t* ptr = data + SPARQ_MESSAGE_HEADER_LENGTH + 1;
+        for (double& value : values)
         {
             value = buffer_to_double(ptr);
             ptr += 4;
         }
     }
 
-    void parse_msg_sender_command(const uint8_t *data)
+    void parse_msg_sender_command(const uint8_t* data)
     {
         command_type = static_cast<sparq_sender_command_t>(data[SPARQ_MESSAGE_HEADER_LENGTH]);
 
@@ -226,13 +226,13 @@ struct sparq_message_t
         }
 
         size_t additional_command_payload_length = header.payload_length - 1;
-        const uint8_t *first_payload_ptr = &data[SPARQ_MESSAGE_HEADER_LENGTH];
+        const uint8_t* first_payload_ptr = &data[SPARQ_MESSAGE_HEADER_LENGTH];
 
         command_data.resize(additional_command_payload_length);
         std::copy(first_payload_ptr + 1, first_payload_ptr + additional_command_payload_length + 1, command_data.begin());
     }
 
-    void from_array(const uint8_t *data)
+    void from_array(const uint8_t* data)
     {
         header.from_array(data);
 
@@ -246,7 +246,7 @@ struct sparq_message_t
         switch (message_type)
         {
         case sparq_message_type_t::STRING:
-            string_data = std::string((char *)&data[SPARQ_MESSAGE_HEADER_LENGTH], header.payload_length);
+            string_data = std::string((char*)&data[SPARQ_MESSAGE_HEADER_LENGTH], header.payload_length);
             break;
         case sparq_message_type_t::ID_PAIR:
             parse_msg_id_pair(data);
@@ -267,8 +267,8 @@ struct sparq_message_t
 
 struct sparq_axis_t
 {
-    const char *dropdown_name;
-    const char *axis_label;
+    const char* dropdown_name;
+    const char* axis_label;
 };
 
 struct sparq_marker_t
@@ -308,5 +308,5 @@ const sparq_axis_t X_AX_REL_TIME = {.dropdown_name = "Relative Time", .axis_labe
 const sparq_axis_t X_AX_ABS_TIME = {.dropdown_name = "Date Time", .axis_label = "Date"};
 
 const std::array<sparq_axis_t, 3> x_axis_types = {X_AX_SAMPLES, X_AX_REL_TIME, X_AX_ABS_TIME};
-const std::array<const char *, 3> x_axis_fits = {"Manual", "Fit All", "Last N"};
-const std::array<const char *, 2> y_axis_fits = {"Manual", "Fit All"};
+const std::array<const char*, 3> x_axis_fits = {"Manual", "Fit All", "Last N"};
+const std::array<const char*, 2> y_axis_fits = {"Manual", "Fit All"};
