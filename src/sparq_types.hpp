@@ -97,10 +97,10 @@ struct sparq_dataset_t
 
 struct sparq_message_header_t
 {
-    uint8_t signature;
-    uint8_t control;
-    uint16_t payload_length;
-    uint8_t checksum;
+    uint8_t signature{};
+    uint8_t control{};
+    uint16_t payload_length{};
+    uint8_t checksum{};
 
     sparq_message_header_t()
     {
