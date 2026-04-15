@@ -22,7 +22,7 @@ public:
     mINI::INIStructure ini;
 
     void read_config();
-    void write_config() const;
+    void write_config();
     void apply_in_context_settings();
 
 private:
