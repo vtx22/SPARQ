@@ -63,9 +63,18 @@ endif()
 # ─────────────────────────────────────────────
 #  Compile definitions
 # ─────────────────────────────────────────────
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE SPARQ_DEBUG_BUILD)
+else()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE SPARQ_RELEASE_BUILD)
+endif()
+
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE SPARQ_WINDOWS_BUILD)
+endif()
+
 if(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE
-        BUILD_WINDOWS
         IMGUI_SFML_VIEWPORTS_ENABLE
         SFML_STATIC
         NOMINMAX
@@ -75,9 +84,16 @@ if(WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE
         opengl32
         gdi32
-        winmm
         dwmapi
     )
+
+    # By linking winmm the console window is hidden for release builds
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        target_link_libraries(${PROJECT_NAME} PRIVATE
+            winmm
+        )
+    endif()
+
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         target_compile_definitions(${PROJECT_NAME} PRIVATE

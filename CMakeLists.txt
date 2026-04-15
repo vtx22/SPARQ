@@ -7,11 +7,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ─────────────────────────────────────────────
-#  Options
-# ─────────────────────────────────────────────
-option(SPARQ_RELEASE "Strip console window on Windows (release build)" OFF)
-
-# ─────────────────────────────────────────────
 #  Build SFML from source
 # ─────────────────────────────────────────────
 set(SFML_BUILD_AUDIO     OFF CACHE BOOL "" FORCE)

@@ -80,7 +80,7 @@ int SPARQ::window_init()
     bool vsync_enabled = config.ini["graphics"]["vsync"] == "1";
     window.setVerticalSyncEnabled(vsync_enabled);
 
-#ifdef BUILD_WINDOWS
+#ifdef SPARQ_WINDOWS_BUILD
     BOOL USE_DARK_MODE = true;
     DwmSetWindowAttribute(window.getSystemHandle(), 20, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
     ShowWindow(window.getSystemHandle(), SW_MAXIMIZE);
@@ -165,8 +165,9 @@ int SPARQ::run()
         _view_window->draw();
         _statistics_window->draw();
         _settings_window->draw();
+#ifdef SPARQ_DEBUG_BUILD
         _debug_window->draw();
-
+#endif
         // Render Notifications
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
@@ -191,9 +192,7 @@ int SPARQ::run()
 
 int SPARQ::close_app()
 {
-    ImPlot::DestroyContext();
-    ImGui::DestroyContext();
-    // ImGui::SFML::Shutdown();
+    ImGui::SFML::Shutdown();
 
     _window->close();
 
