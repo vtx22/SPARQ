@@ -25,6 +25,19 @@ namespace spq::helper
     {
         return std::endian::native == std::endian::little;
     }
+
+    [[nodiscard]]
+    constexpr auto xor8_cs(uint8_t const* data, std::size_t const length) noexcept
+    {
+        uint8_t cs = 0x00;
+
+        for (std::size_t i = 0; i < length; i++)
+        {
+            cs ^= data[i];
+        }
+
+        return cs;
+    }
 }
 
 enum class sparq_header_control_t : uint8_t
