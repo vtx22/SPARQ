@@ -1,6 +1,7 @@
 #include "SettingsWindow.hpp"
 
-SettingsWindow::SettingsWindow(DataHandler *data_handler) : Window(ICON_FA_GEAR "  Settings", data_handler)
+SettingsWindow::SettingsWindow(DataHandler* data_handler)
+    : Window(ICON_FA_GEAR "  Settings", data_handler)
 {
 }
 
@@ -51,7 +52,7 @@ void SettingsWindow::show_downsampling_settings()
 
         ImGui::SetNextItemWidth(spacing_right);
 
-        const char *max_samples_types[2] = {"Total", "Per Dataset"};
+        const char* max_samples_types[2] = {"Total", "Per Dataset"};
         int max_samples_type = std::stoi(_config_handler.ini["downsampling"]["max_samples_type"]);
         int prev_max_samples_type = max_samples_type;
         if (ImGui::BeginCombo("##X View", max_samples_types[max_samples_type]))
@@ -118,7 +119,6 @@ void SettingsWindow::show_color_settings()
 {
     if (ImGui::CollapsingHeader("Color"))
     {
-
         ImGui::Text("Color Map:");
         ImGui::SameLine();
 

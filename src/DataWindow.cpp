@@ -5,7 +5,7 @@ void DataWindow::update_content()
     show_datasets_section();
 }
 
-void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
+void DataWindow::dataset_entries(std::vector<sparq_dataset_t>& datasets)
 {
     if (datasets.size() == 0)
     {
@@ -25,11 +25,11 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t> &datasets)
             ImGui::Text("  %d", datasets[i].id);
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(150);
-            char *name_buffer = datasets[i].name_buffer;
+            char* name_buffer = datasets[i].name_buffer;
             ImGui::InputTextWithHint(("##DsNameTB" + i_str).c_str(), "Custom Name", name_buffer, sizeof(name_buffer));
             datasets[i].name = name_buffer;
             ImGui::TableSetColumnIndex(2);
-            ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float *)&datasets[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+            ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float*)&datasets[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
             ImGui::TableSetColumnIndex(3);
 
             std::string hide_text = std::string(datasets[i].hidden ? ICON_FA_EYE_SLASH : ICON_FA_EYE) + "##HIDE" + i_str;

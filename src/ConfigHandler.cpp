@@ -1,6 +1,6 @@
 #include "ConfigHandler.hpp"
 
-ConfigHandler &ConfigHandler::get_instance()
+ConfigHandler& ConfigHandler::get_instance()
 {
     static ConfigHandler instance;
     return instance;

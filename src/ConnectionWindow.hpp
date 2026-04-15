@@ -3,9 +3,9 @@
 #include "Window.hpp"
 
 #include <array>
+#include <cmath>
 #include <string>
 #include <vector>
-#include <cmath>
 
 #include "serial.hpp"
 
@@ -14,7 +14,7 @@
 class ConnectionWindow : public Window
 {
 public:
-    ConnectionWindow(DataHandler *data_handler, Serial *sp);
+    ConnectionWindow(DataHandler* data_handler, Serial* sp);
 
     void update_content();
 
@@ -27,8 +27,8 @@ private:
     int _current_id = 0;
     std::vector<std::string> _com_ports;
 
-    int _baud_rate = 115200;
-    const std::array<int, 9> _available_baud_rates = {4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600};
+    int _baud_rate = 115'200;
+    const std::array<int, 9> _available_baud_rates = {4800, 9600, 19'200, 38'400, 57'600, 115'200, 230'400, 460'800, 921'600};
     char _signature_chars[3] = {'F', 'F', 0};
     uint8_t _signature = 0xFF;
 
@@ -37,5 +37,5 @@ private:
 
     uint8_t hex_chars_to_byte(char high, char low);
 
-    Serial *_sp;
+    Serial* _sp;
 };

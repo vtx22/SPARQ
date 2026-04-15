@@ -1,8 +1,10 @@
 #include "DataHandler.hpp"
 
-DataHandler::DataHandler(Serial *sp, ConsoleWindow *console_window) : _sp(sp), _console_window(console_window)
+DataHandler::DataHandler(Serial* sp, ConsoleWindow* console_window)
+    : _sp(sp),
+      _console_window(console_window)
 {
-    _sp->set_timeouts(0xFFFFFFFF, 0, 0, 0, 0);
+    _sp->set_timeouts(0xFFFF'FFFF, 0, 0, 0, 0);
     _serial_buffer.reserve(SPARQ_MAX_MESSAGE_LENGTH * 2);
 
     _receive_thread = std::thread(&DataHandler::receiver_loop, this);
@@ -72,14 +74,14 @@ void DataHandler::update_markers()
 {
     std::lock_guard<std::mutex> lock(_data_mutex);
 
-    for (auto &m : _markers)
+    for (auto& m : _markers)
     {
         if (m.ds_id == -1)
         {
             continue;
         }
 
-        auto &ds = _datasets[m.ds_index];
+        auto& ds = _datasets[m.ds_index];
 
         if (ds.samples.size() < 2)
         {
@@ -110,7 +112,7 @@ void DataHandler::update_markers()
     }
 }
 
-void DataHandler::add_to_datasets(const sparq_message_t &message)
+void DataHandler::add_to_datasets(const sparq_message_t& message)
 {
     if (first_receive_timestamp == 0)
     {
@@ -127,9 +129,9 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
 
     for (uint16_t i = 0; i < message.nval; i++)
     {
-        sparq_dataset_t *ds = nullptr;
+        sparq_dataset_t* ds = nullptr;
 
-        for (auto &d : _datasets)
+        for (auto& d : _datasets)
         {
             if (d.id == message.ids[i])
             {
@@ -170,7 +172,7 @@ void DataHandler::add_to_datasets(const sparq_message_t &message)
     current_absolute_sample++;
 }
 
-void DataHandler::handle_command(const sparq_message_t &message)
+void DataHandler::handle_command(const sparq_message_t& message)
 {
     switch (message.command_type)
     {
@@ -181,11 +183,11 @@ void DataHandler::handle_command(const sparq_message_t &message)
     {
         auto id = message.command_data[0];
         auto ds = get_dataset(id);
-        auto new_name = std::string(reinterpret_cast<const char *>(&message.command_data[1]), message.command_data.size() - 1);
+        auto new_name = std::string(reinterpret_cast<const char*>(&message.command_data[1]), message.command_data.size() - 1);
 
         if (ds.has_value())
         {
-            auto &ds_ref = ds.value().get();
+            auto& ds_ref = ds.value().get();
             ds_ref.name = new_name;
             std::strncpy(ds_ref.name_buffer, new_name.c_str(), sizeof(ds_ref.name_buffer));
         }
@@ -222,9 +224,9 @@ void DataHandler::handle_command(const sparq_message_t &message)
     }
 }
 
-bool DataHandler::add_dataset(const sparq_dataset_t &dataset)
+bool DataHandler::add_dataset(const sparq_dataset_t& dataset)
 {
-    for (const auto &ds : _datasets)
+    for (const auto& ds : _datasets)
     {
         if (dataset.id == ds.id)
         {
@@ -238,7 +240,7 @@ bool DataHandler::add_dataset(const sparq_dataset_t &dataset)
 
 std::optional<std::reference_wrapper<sparq_dataset_t>> DataHandler::get_dataset(uint8_t id)
 {
-    for (auto &ds : _datasets)
+    for (auto& ds : _datasets)
     {
         if (ds.id == id)
         {
@@ -280,7 +282,7 @@ void DataHandler::delete_all_datasets()
         ids[i] = _datasets[i].id;
     }
 
-    for (const auto &id : ids)
+    for (const auto& id : ids)
     {
         delete_dataset(id);
     }
@@ -289,7 +291,7 @@ void DataHandler::delete_all_datasets()
 bool DataHandler::clear_dataset(uint8_t id)
 {
     bool ds_found = false;
-    for (auto &ds : _datasets)
+    for (auto& ds : _datasets)
     {
         if (ds.id == id)
         {
@@ -305,7 +307,7 @@ bool DataHandler::clear_dataset(uint8_t id)
     }
 
     // If all datasets are now empty, reset start time
-    for (auto &ds : _datasets)
+    for (auto& ds : _datasets)
     {
         if (ds.samples.size() > 0)
         {
@@ -324,7 +326,7 @@ bool DataHandler::clear_dataset(uint8_t id)
 void DataHandler::clear_all_datasets()
 {
     std::cout << "Clearing all datasets ...\n";
-    for (const auto &ds : _datasets)
+    for (const auto& ds : _datasets)
     {
         clear_dataset(ds.id);
     }
@@ -332,7 +334,7 @@ void DataHandler::clear_all_datasets()
 
 void DataHandler::hide_all_datasets()
 {
-    for (auto &ds : _datasets)
+    for (auto& ds : _datasets)
     {
         ds.hide = true;
     }
@@ -340,7 +342,7 @@ void DataHandler::hide_all_datasets()
 
 void DataHandler::show_all_datasets()
 {
-    for (auto &ds : _datasets)
+    for (auto& ds : _datasets)
     {
         ds.show = true;
     }
@@ -440,17 +442,17 @@ sparq_message_t DataHandler::receive_message()
     return message;
 }
 
-const std::vector<sparq_dataset_t> &DataHandler::get_datasets()
+const std::vector<sparq_dataset_t>& DataHandler::get_datasets()
 {
     return _datasets;
 }
 
-std::vector<sparq_dataset_t> &DataHandler::get_datasets_editable()
+std::vector<sparq_dataset_t>& DataHandler::get_datasets_editable()
 {
     return _datasets;
 }
 
-std::vector<sparq_marker_t> &DataHandler::get_markers()
+std::vector<sparq_marker_t>& DataHandler::get_markers()
 {
     return _markers;
 }
@@ -478,7 +480,7 @@ void DataHandler::export_data_csv()
 
     file << "sample,relative time [s],timestamp";
 
-    for (const auto &ds : _datasets)
+    for (const auto& ds : _datasets)
     {
         file << "," << std::to_string(ds.id);
 
@@ -495,7 +497,7 @@ void DataHandler::export_data_csv()
         file << std::to_string(i) << "," << std::to_string(_rel_times[i]) << "," << std::to_string(_timestamps[i]) << ",";
 
         uint8_t ds_count = 0;
-        for (const auto &ds : _datasets)
+        for (const auto& ds : _datasets)
         {
             const double eps = 1e-9;
             auto it = std::lower_bound(ds.samples.begin(), ds.samples.end(), i - eps);
@@ -521,7 +523,7 @@ void DataHandler::export_data_csv()
     ImGui::InsertNotification({ImGuiToastType::Success, SPARQ_NOTIFY_DURATION_OK, "Data exported to export.csv"});
 }
 
-uint8_t DataHandler::xor8_cs(const uint8_t *data, uint32_t length)
+uint8_t DataHandler::xor8_cs(const uint8_t* data, uint32_t length)
 {
     uint8_t cs = 0x00;
 
@@ -544,7 +546,7 @@ double DataHandler::get_max_rel_time()
     std::lock_guard<std::mutex> lock(_data_mutex);
     double max_rel_time = 0;
 
-    for (const auto &ds : _datasets)
+    for (const auto& ds : _datasets)
     {
         if (ds.relative_times.back() > max_rel_time)
         {
@@ -560,7 +562,7 @@ double DataHandler::get_max_abs_time()
     std::lock_guard<std::mutex> lock(_data_mutex);
     double max_abs_time = 0;
 
-    for (const auto &ds : _datasets)
+    for (const auto& ds : _datasets)
     {
         if (ds.relative_times.back() > max_abs_time)
         {

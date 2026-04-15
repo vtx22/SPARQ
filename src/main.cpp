@@ -4,7 +4,7 @@ int main()
 {
     SPARQ sparq;
 
-    int init_result = sparq.init();
+    auto const init_result = sparq.init();
 
     if (init_result != 0)
     {

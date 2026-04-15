@@ -20,7 +20,7 @@ void ViewWindow::update_content()
 
 void ViewWindow::menu_plot_type()
 {
-    const char *plot_types[2] = {"Line", "Heatmap"};
+    const char* plot_types[2] = {"Line", "Heatmap"};
     if (ImGui::BeginCombo("##PLOT TYPE", plot_types[(int)_data_handler->plot_settings.type]))
     {
         for (uint8_t n = 0; n < 2; n++)
@@ -43,7 +43,7 @@ void ViewWindow::menu_plot_type()
 
     if (_data_handler->plot_settings.type == sparq_plot_t::HEATMAP)
     {
-        auto &hms = _data_handler->plot_settings.heatmap_settings;
+        auto& hms = _data_handler->plot_settings.heatmap_settings;
 
         ImGui::SetNextItemWidth(100);
         ImGui::InputInt("##HMI_R", &hms.rows);

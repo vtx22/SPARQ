@@ -1,6 +1,8 @@
 #include "ConnectionWindow.hpp"
 
-ConnectionWindow::ConnectionWindow(DataHandler *data_handler, Serial *sp) : Window(ICON_FA_NETWORK_WIRED "  Connection", data_handler), _sp(sp)
+ConnectionWindow::ConnectionWindow(DataHandler* data_handler, Serial* sp)
+    : Window(ICON_FA_NETWORK_WIRED "  Connection", data_handler),
+      _sp(sp)
 {
     update_com_ports_dropdown();
 }
@@ -79,7 +81,7 @@ void ConnectionWindow::update_content()
 
     ImGui::BeginDisabled();
 
-    const char *comm_modes[2] = {"SPARQ", "ASCII"};
+    const char* comm_modes[2] = {"SPARQ", "ASCII"};
     if (ImGui::BeginCombo("###CommModeSelect", comm_modes[_selected_comm_mode]))
     {
         for (uint8_t n = 0; n < 2; n++)
@@ -126,7 +128,7 @@ void ConnectionWindow::update_content()
         {
             _signature = hex_chars_to_byte(_signature_chars[0], _signature_chars[1]);
 
-            const char *selected_port = _com_ports[_current_id].c_str();
+            const char* selected_port = _com_ports[_current_id].c_str();
             std::cout << "Opening Port: " << selected_port << " (" << _baud_rate << ") ..." << std::endl;
 
             int rtn = _sp->open(selected_port, _baud_rate);
@@ -197,8 +199,7 @@ std::string ConnectionWindow::get_selected_port()
 
 uint8_t ConnectionWindow::hex_chars_to_byte(char high, char low)
 {
-    auto char_to_hex_value = [](char c) -> uint8_t
-    {
+    auto char_to_hex_value = [](char c) -> uint8_t {
         if (c == 0)
         {
             return 0;

@@ -53,7 +53,7 @@ void SPARQ::object_init()
 
 int SPARQ::window_init()
 {
-    auto &config = ConfigHandler::get_instance();
+    auto& config = ConfigHandler::get_instance();
 
     std::cout << "Initializing window ...\n";
 
@@ -92,7 +92,7 @@ int SPARQ::window_init()
 
     std::cout << "Loading " << SPARQ_FONT << " ...\n";
     float baseFontSize = 18.f;
-    ImGuiIO &io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
     io.Fonts->Clear();
     io.Fonts->AddFontFromFileTTF(SPARQ_FONT, baseFontSize);

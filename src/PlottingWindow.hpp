@@ -7,27 +7,29 @@
 
 #include "sparq_types.hpp"
 
-#include <vector>
-#include <string>
-#include <cstdint>
-#include <tuple>
-#include <cmath>
-#include <utility>
 #include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 class PlottingWindow : public Window
 {
-
 public:
-    PlottingWindow(DataHandler *data_handler) : Window(ICON_FA_CHART_LINE "  Plot", data_handler) {}
+    PlottingWindow(DataHandler* data_handler)
+        : Window(ICON_FA_CHART_LINE "  Plot", data_handler)
+    {
+    }
 
     void update_content();
     void update_axes();
     void config_limits_n_values();
 
-    std::vector<float> bilinear_interpolate(const std::vector<float> &original_image, int original_rows, int original_cols, float scale_factor);
+    std::vector<float> bilinear_interpolate(const std::vector<float>& original_image, int original_rows, int original_cols, float scale_factor);
 
-    std::pair<std::vector<double> &, std::vector<double> &> get_xy_downsampled(sparq_dataset_t &dataset, uint32_t max_samples, double x_min, double x_max);
+    std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(sparq_dataset_t& dataset, uint32_t max_samples, double x_min, double x_max);
 
 private:
     std::vector<double> _x_downsampled, _x_in_view;

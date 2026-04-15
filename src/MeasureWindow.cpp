@@ -2,7 +2,7 @@
 
 void MeasureWindow::update_content()
 {
-    auto &markers = _data_handler->get_markers();
+    auto& markers = _data_handler->get_markers();
 
     if (ImGui::CollapsingHeader("Markers"))
     {
@@ -17,7 +17,7 @@ void MeasureWindow::update_content()
 
         if (ImGui::Button("Hide All"))
         {
-            for (auto &m : markers)
+            for (auto& m : markers)
             {
                 m.hidden = true;
             }
@@ -36,7 +36,7 @@ void MeasureWindow::update_content()
     }
 }
 
-void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
+void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers)
 {
     if (markers.size() == 0)
     {
@@ -59,7 +59,7 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(200);
 
-            auto &datasets = _data_handler->get_datasets();
+            auto& datasets = _data_handler->get_datasets();
 
             std::string ds_selector_name = std::to_string(markers[i].ds_id);
             if (markers[i].ds_id != -1 && datasets[markers[i].ds_index].name.length() > 0)
@@ -107,7 +107,7 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
             }
 
             ImGui::TableSetColumnIndex(2);
-            ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float *)&markers[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+            ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float*)&markers[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
             ImGui::TableSetColumnIndex(3);
 
             std::string hide_text = std::string(markers[i].hidden ? ICON_FA_EYE_SLASH : ICON_FA_EYE) + "##HIDE" + i_str;
