@@ -115,12 +115,14 @@ public:
 
     sparq_plot_settings_t plot_settings;
 
-    std::mutex& get_data_mutex()
+    [[nodiscard]]
+    constexpr std::mutex& get_data_mutex() noexcept
     {
         return _data_mutex;
     }
 
-    std::mutex& get_serial_mutex()
+    [[nodiscard]]
+    constexpr std::mutex& get_serial_mutex() noexcept
     {
         return _serial_mutex;
     }
