@@ -37,6 +37,7 @@ void SPARQ::object_init()
     static ViewWindow view_window(&data_handler);
     static StatisticsWindow statistics_window(&data_handler);
     static SettingsWindow settings_window(&data_handler);
+    static DebugWindow debug_window(&data_handler);
 
     _sp = &serial_port;
     _data_handler = &data_handler;
@@ -49,6 +50,7 @@ void SPARQ::object_init()
     _view_window = &view_window;
     _statistics_window = &statistics_window;
     _settings_window = &settings_window;
+    _debug_window = &debug_window;
 }
 
 int SPARQ::window_init()
@@ -163,6 +165,7 @@ int SPARQ::run()
         _view_window->draw();
         _statistics_window->draw();
         _settings_window->draw();
+        _debug_window->draw();
 
         // Render Notifications
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
