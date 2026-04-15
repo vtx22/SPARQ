@@ -5,4 +5,10 @@ imgui.ini
 *.exe
 *.csv
 SPARQ
+.clang-format
+.clang-tidy
 /.vs
+/src/sfml-source
+/build
+/src/sfml-build
+src/nul

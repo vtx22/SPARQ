@@ -3,7 +3,7 @@
 void PlottingWindow::update_content()
 {
     std::lock_guard<std::mutex> lock(_data_handler->get_data_mutex());
-    std::vector<sparq_dataset_t> &datasets = _data_handler->get_datasets_editable();
+    std::vector<sparq_dataset_t>& datasets = _data_handler->get_datasets_editable();
 
     ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
 
@@ -16,10 +16,10 @@ void PlottingWindow::update_content()
     {
         update_axes();
 
-        auto &markers = _data_handler->get_markers();
+        auto& markers = _data_handler->get_markers();
 
         size_t id = 0;
-        for (auto &m : markers)
+        for (auto& m : markers)
         {
             if (m.hidden)
             {
@@ -30,8 +30,8 @@ void PlottingWindow::update_content()
             ImPlot::TagX(m.x, m.color, m.name.c_str());
         }
 
-        ImPlotContext *ctx = ImPlot::GetCurrentContext();
-        ImPlotPlot *plot = ctx->CurrentPlot;
+        ImPlotContext* ctx = ImPlot::GetCurrentContext();
+        ImPlotPlot* plot = ctx->CurrentPlot;
 
         switch (_data_handler->plot_settings.type)
         {
@@ -46,7 +46,7 @@ void PlottingWindow::update_content()
                 max_samples = static_cast<uint32_t>(round(max_samples / (double)datasets.size()));
             }
 
-            for (auto &ds : datasets)
+            for (auto& ds : datasets)
             {
                 std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
                 ImPlot::SetNextLineStyle(ds.color, 3);
@@ -62,7 +62,7 @@ void PlottingWindow::update_content()
                     ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values.data(), y_values.data(), y_values.size());
                 }
 
-                ImPlotItem *item = plot->Items.GetLegendItem(i);
+                ImPlotItem* item = plot->Items.GetLegendItem(i);
                 if (ds.toggle_visibility)
                 {
                     item->Show = !item->Show;
@@ -87,7 +87,7 @@ void PlottingWindow::update_content()
         }
         case sparq_plot_t::HEATMAP:
         {
-            sparq_heatmap_settings_t &hms = _data_handler->plot_settings.heatmap_settings;
+            sparq_heatmap_settings_t& hms = _data_handler->plot_settings.heatmap_settings;
 
             std::vector<float> values(hms.cols * hms.rows);
 
@@ -133,7 +133,7 @@ void PlottingWindow::update_content()
                 bounds_max_y = rows;
             }
 
-            ImPlot::PlotHeatmap("Heatmap", values.data(), rows, cols, min_scale, max_scale, hms.show_values ? "%.1f" : "", {0, 0}, {bounds_max_x, bounds_max_y}, 0);
+            ImPlot::PlotHeatmap("Heatmap", values.data(), rows, cols, min_scale, max_scale, hms.show_values ? "%.1f" : "", {0, 0}, {static_cast<double>(bounds_max_x), static_cast<double>(bounds_max_y)}, 0);
             break;
         }
         }
@@ -142,9 +142,9 @@ void PlottingWindow::update_content()
     ImPlot::EndPlot();
 }
 
-std::pair<std::vector<double> &, std::vector<double> &> PlottingWindow::get_xy_downsampled(sparq_dataset_t &dataset, uint32_t max_samples, double x_min, double x_max)
+std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_downsampled(sparq_dataset_t& dataset, uint32_t max_samples, double x_min, double x_max)
 {
-    auto &d = dataset;
+    auto& d = dataset;
 
     bool downsampling_enabled = _config_handler.ini["downsampling"]["enabled"] == "1";
     // No downsampling possible
@@ -168,7 +168,7 @@ std::pair<std::vector<double> &, std::vector<double> &> PlottingWindow::get_xy_d
         x_max = DBL_MAX;
     }
 
-    std::vector<double> *x_values;
+    std::vector<double>* x_values;
     switch (_data_handler->x_axis_select)
     {
     default:
@@ -240,9 +240,8 @@ std::pair<std::vector<double> &, std::vector<double> &> PlottingWindow::get_xy_d
 
 void PlottingWindow::update_axes()
 {
-
     // X Axis Setup
-    const char *x_axis_label = x_axis_types[_data_handler->x_axis_select].axis_label;
+    const char* x_axis_label = x_axis_types[_data_handler->x_axis_select].axis_label;
 
     if (_data_handler->x_axis_select == 2)
     {
@@ -282,7 +281,6 @@ void PlottingWindow::update_axes()
 
 void PlottingWindow::config_limits_n_values()
 {
-
     switch (_data_handler->x_axis_select)
     {
     // Last N Samples
@@ -332,17 +330,15 @@ void PlottingWindow::config_limits_n_values()
     }
 }
 
-std::vector<float> PlottingWindow::bilinear_interpolate(const std::vector<float> &original_image, int original_rows, int original_cols, float scale_factor)
+std::vector<float> PlottingWindow::bilinear_interpolate(const std::vector<float>& original_image, int original_rows, int original_cols, float scale_factor)
 {
-
     int new_rows = static_cast<int>(original_rows * scale_factor);
     int new_cols = static_cast<int>(original_cols * scale_factor);
 
     std::vector<float> interpolated_image(new_rows * new_cols);
 
     // Helper lambda to get pixel value with bounds checking
-    auto get_pixel = [&](int row, int col) -> float
-    {
+    auto get_pixel = [&](int row, int col) -> float {
         if (row < 0 || row >= original_rows || col < 0 || col >= original_cols)
         {
             return 0.0f;
@@ -355,7 +351,6 @@ std::vector<float> PlottingWindow::bilinear_interpolate(const std::vector<float>
     {
         for (int new_col = 0; new_col < new_cols; ++new_col)
         {
-
             // Map new coordinates back to original image coordinates
             float orig_row_f = (new_row + 0.5f) / scale_factor - 0.5f;
             float orig_col_f = (new_col + 0.5f) / scale_factor - 0.5f;
