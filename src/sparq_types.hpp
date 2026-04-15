@@ -20,7 +20,8 @@
 
 namespace spq::helper
 {
-    constexpr bool is_little_endian()
+    [[nodiscard]]
+    constexpr bool is_little_endian() noexcept
     {
         return std::endian::native == std::endian::little;
     }
