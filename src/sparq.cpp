@@ -8,7 +8,7 @@ int SPARQ::init()
 {
     std::cout << "\n=== SPARQ " << SPARQ_VERSION << " ===\n\n";
     std::cout << "Initializing ...\n\n";
-    std::cout << "System Endianess: " << (sparq_is_little_endian() ? "Little Endian" : "Big Endian") << "\n";
+    std::cout << "System Endianess: " << (spq::helper::is_little_endian() ? "Little Endian" : "Big Endian") << "\n";
 
     object_init();
 

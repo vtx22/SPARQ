@@ -18,9 +18,12 @@
 #define SPARQ_MAX_MESSAGE_LENGTH    (SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_MAX_PAYLOAD_LENGTH + SPARQ_CHECKSUM_LENGTH)
 #define SPARQ_DEFAULT_SIGNATURE     0xFF
 
-constexpr bool sparq_is_little_endian()
+namespace spq::helper
 {
-    return std::endian::native == std::endian::little;
+    constexpr bool is_little_endian()
+    {
+        return std::endian::native == std::endian::little;
+    }
 }
 
 enum class sparq_header_control_t : uint8_t
@@ -111,7 +114,7 @@ struct sparq_message_header_t
     {
         signature = buffer[0];
         control = buffer[1];
-        if ((bool)(control & (uint8_t)sparq_header_control_t::LSB_FIRST) == sparq_is_little_endian())
+        if ((bool)(control & (uint8_t)sparq_header_control_t::LSB_FIRST) == spq::helper::is_little_endian())
         {
             payload_length = (buffer[2] << 8) + buffer[3];
         }
@@ -157,7 +160,7 @@ struct sparq_message_t
         uint32_t value32 = 0;
 
         bool lsb_first = header.control & (uint8_t)sparq_header_control_t::LSB_FIRST;
-        if (lsb_first == sparq_is_little_endian())
+        if (lsb_first == spq::helper::is_little_endian())
         {
             value32 = (v3 << 24) + (v2 << 16) + (v1 << 8) + v0;
         }
