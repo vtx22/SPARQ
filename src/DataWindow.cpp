@@ -72,7 +72,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t>& datasets)
             }
 
             ImGui::TableSetColumnIndex(7);
-            ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "%lld", datasets[i].y_values.size());
+            ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "%zu", datasets[i].y_values.size());
         }
 
         ImGui::EndTable();
