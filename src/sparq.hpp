@@ -1,19 +1,19 @@
 #pragma once
 
 #include <cmath>
-#include <vector>
-#include <string>
 #include <iostream>
 #include <stdint.h>
+#include <string>
+#include <vector>
 
 #ifdef BUILD_WINDOWS
-#include <windows.h>
-#include <dwmapi.h>
+    #include <dwmapi.h>
+    #include <windows.h>
 #endif
 
 #include "IconsFontAwesome6.h"
-#include "fa-solid-900.h"
 #include "ImGuiNotify.hpp"
+#include "fa-solid-900.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -23,8 +23,8 @@
 #include "imgui.h"
 #include "implot.h"
 
-#include "serial.hpp"
 #include "imstyles.hpp"
+#include "serial.hpp"
 
 #include "sparq_config.h"
 #include "sparq_types.hpp"
@@ -33,14 +33,14 @@
 
 #include "DataHandler.hpp"
 
-#include "ConsoleWindow.hpp"
 #include "ConnectionWindow.hpp"
-#include "PlottingWindow.hpp"
+#include "ConsoleWindow.hpp"
 #include "DataWindow.hpp"
 #include "MeasureWindow.hpp"
-#include "ViewWindow.hpp"
-#include "StatisticsWindow.hpp"
+#include "PlottingWindow.hpp"
 #include "SettingsWindow.hpp"
+#include "StatisticsWindow.hpp"
+#include "ViewWindow.hpp"
 
 class SPARQ
 {
@@ -54,16 +54,16 @@ public:
     int close_app();
 
 private:
-    Serial *_sp;
-    DataHandler *_data_handler;
-    ConsoleWindow *_console_window;
-    ConnectionWindow *_connection_window;
-    PlottingWindow *_plotting_window;
-    DataWindow *_data_window;
-    MeasureWindow *_measure_window;
-    ViewWindow *_view_window;
-    StatisticsWindow *_statistics_window;
-    SettingsWindow *_settings_window;
+    Serial* _sp;
+    DataHandler* _data_handler;
+    ConsoleWindow* _console_window;
+    ConnectionWindow* _connection_window;
+    PlottingWindow* _plotting_window;
+    DataWindow* _data_window;
+    MeasureWindow* _measure_window;
+    ViewWindow* _view_window;
+    StatisticsWindow* _statistics_window;
+    SettingsWindow* _settings_window;
 
-    sf::RenderWindow *_window;
+    sf::RenderWindow* _window;
 };

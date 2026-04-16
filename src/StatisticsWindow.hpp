@@ -5,7 +5,10 @@
 class StatisticsWindow : public Window
 {
 public:
-    StatisticsWindow(DataHandler *data_handler) : Window(ICON_FA_MAGNIFYING_GLASS_CHART "  Statistics", data_handler) {};
+    StatisticsWindow(DataHandler* data_handler)
+        : Window(ICON_FA_MAGNIFYING_GLASS_CHART "  Statistics", data_handler)
+    {
+    }
 
     void update_content();
 };

@@ -81,7 +81,7 @@ void ConnectionWindow::update_content()
 
     ImGui::BeginDisabled();
 
-    constexpr std::array<char const*, 2> comm_modes{"SPARQ", "ASCII"};
+    constexpr std::array comm_modes{"SPARQ", "ASCII"};
     if (ImGui::BeginCombo("###CommModeSelect", comm_modes[_selected_comm_mode]))
     {
         for (std::size_t n = 0; n < comm_modes.size(); n++)

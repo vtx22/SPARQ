@@ -52,7 +52,7 @@ void SettingsWindow::show_downsampling_settings()
 
         ImGui::SetNextItemWidth(spacing_right);
 
-        constexpr std::array<const char*, 2> max_samples_types{"Total", "Per Dataset"};
+        constexpr std::array max_samples_types{"Total", "Per Dataset"};
         auto max_samples_type = std::stoi(_config_handler.ini["downsampling"]["max_samples_type"]);
         auto prev_max_samples_type = max_samples_type;
         if (ImGui::BeginCombo("##X View", max_samples_types[max_samples_type]))
