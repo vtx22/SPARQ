@@ -1,6 +1,7 @@
 #include "SettingsWindow.hpp"
 
-SettingsWindow::SettingsWindow(DataHandler *data_handler) : Window(ICON_FA_GEAR "  Settings", data_handler)
+SettingsWindow::SettingsWindow(DataHandler* data_handler)
+    : Window(ICON_FA_GEAR "  Settings", data_handler)
 {
 }
 
@@ -21,7 +22,7 @@ void SettingsWindow::show_downsampling_settings()
 {
     if (ImGui::CollapsingHeader("Downsampling"))
     {
-        bool downsampling_enabled = _config_handler.ini["downsampling"]["enabled"] == "1";
+        auto downsampling_enabled = (_config_handler.ini["downsampling"]["enabled"] == "1");
         if (ImGui::Checkbox("Enabled", &downsampling_enabled))
         {
             _config_handler.ini["downsampling"]["enabled"] = downsampling_enabled ? "1" : "0";
@@ -31,9 +32,9 @@ void SettingsWindow::show_downsampling_settings()
         ImGui::Text("Max Samples:");
         ImGui::SameLine();
 
-        int max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
+        auto max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
 
-        float spacing_right = 7.f * ImGui::GetFontSize();
+        auto const spacing_right = 7.f * ImGui::GetFontSize();
         ImGui::SetNextItemWidth(-spacing_right);
 
         if (ImGui::InputInt("##MaxSamples", &max_samples, 0, 0))
@@ -51,14 +52,14 @@ void SettingsWindow::show_downsampling_settings()
 
         ImGui::SetNextItemWidth(spacing_right);
 
-        const char *max_samples_types[2] = {"Total", "Per Dataset"};
-        int max_samples_type = std::stoi(_config_handler.ini["downsampling"]["max_samples_type"]);
-        int prev_max_samples_type = max_samples_type;
+        constexpr std::array max_samples_types{"Total", "Per Dataset"};
+        auto max_samples_type = std::stoi(_config_handler.ini["downsampling"]["max_samples_type"]);
+        auto prev_max_samples_type = max_samples_type;
         if (ImGui::BeginCombo("##X View", max_samples_types[max_samples_type]))
         {
-            for (uint8_t n = 0; n < 2; n++)
+            for (std::size_t n = 0; n < max_samples_types.size(); n++)
             {
-                bool is_selected = (max_samples_type == n);
+                auto const is_selected = (max_samples_type == n);
 
                 if (ImGui::Selectable(max_samples_types[n], is_selected))
                 {
@@ -84,7 +85,7 @@ void SettingsWindow::show_graphics_settings()
 {
     if (ImGui::CollapsingHeader("Graphics"))
     {
-        bool vsync_enabled = _config_handler.ini["graphics"]["vsync"] == "1";
+        auto vsync_enabled = _config_handler.ini["graphics"]["vsync"] == "1";
 
         if (ImGui::Checkbox("VSYNC", &vsync_enabled))
         {
@@ -95,7 +96,7 @@ void SettingsWindow::show_graphics_settings()
         ImGui::Text("Antialiasing Level:");
         ImGui::SameLine();
 
-        int antialiasing_level = std::stoi(_config_handler.ini["graphics"]["antialiasing"]);
+        auto antialiasing_level = std::stoi(_config_handler.ini["graphics"]["antialiasing"]);
 
         if (ImGui::InputInt("##MaxSamples", &antialiasing_level, 0, 0))
         {
@@ -118,7 +119,6 @@ void SettingsWindow::show_color_settings()
 {
     if (ImGui::CollapsingHeader("Color"))
     {
-
         ImGui::Text("Color Map:");
         ImGui::SameLine();
 

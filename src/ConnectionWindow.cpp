@@ -1,6 +1,8 @@
 #include "ConnectionWindow.hpp"
 
-ConnectionWindow::ConnectionWindow(DataHandler *data_handler, Serial *sp) : Window(ICON_FA_NETWORK_WIRED "  Connection", data_handler), _sp(sp)
+ConnectionWindow::ConnectionWindow(DataHandler* data_handler, Serial* sp)
+    : Window(ICON_FA_NETWORK_WIRED "  Connection", data_handler),
+      _sp(sp)
 {
     update_com_ports_dropdown();
 }
@@ -17,15 +19,15 @@ void ConnectionWindow::update_content()
         ImGui::BeginDisabled();
     }
 
-    float spacing_right = 4.5f * ImGui::GetFontSize();
+    auto const spacing_right = 4.5f * ImGui::GetFontSize();
     ImGui::SetNextItemWidth(-spacing_right);
 
     // COM Port selection
     if (ImGui::BeginCombo("##ComPorts", _com_ports[_current_id].c_str()))
     {
-        for (int n = 0; n < (int)_com_ports.size(); n++)
+        for (std::size_t n = 0; n < _com_ports.size(); n++)
         {
-            bool is_selected = (_current_id == n);
+            auto const is_selected = (_current_id == n);
 
             if (ImGui::Selectable(_com_ports.at(n).c_str(), is_selected))
             {
@@ -52,9 +54,9 @@ void ConnectionWindow::update_content()
     // Baud Rate selection
     if (ImGui::BeginCombo("###BaudRateSelect", std::to_string(_baud_rate).c_str()))
     {
-        for (uint8_t n = 0; n < _available_baud_rates.size(); n++)
+        for (std::size_t n = 0; n < _available_baud_rates.size(); n++)
         {
-            bool is_selected = (_baud_rate == _available_baud_rates[n]);
+            auto const is_selected = (_baud_rate == _available_baud_rates[n]);
 
             if (ImGui::Selectable(std::to_string(_available_baud_rates[n]).c_str(), is_selected))
             {
@@ -79,12 +81,12 @@ void ConnectionWindow::update_content()
 
     ImGui::BeginDisabled();
 
-    const char *comm_modes[2] = {"SPARQ", "ASCII"};
+    constexpr std::array comm_modes{"SPARQ", "ASCII"};
     if (ImGui::BeginCombo("###CommModeSelect", comm_modes[_selected_comm_mode]))
     {
-        for (uint8_t n = 0; n < 2; n++)
+        for (std::size_t n = 0; n < comm_modes.size(); n++)
         {
-            bool is_selected = (n == _selected_comm_mode);
+            auto const is_selected = (n == _selected_comm_mode);
 
             if (ImGui::Selectable(comm_modes[n], is_selected))
             {
@@ -126,10 +128,10 @@ void ConnectionWindow::update_content()
         {
             _signature = hex_chars_to_byte(_signature_chars[0], _signature_chars[1]);
 
-            const char *selected_port = _com_ports[_current_id].c_str();
+            auto const selected_port = _com_ports[_current_id].c_str();
             std::cout << "Opening Port: " << selected_port << " (" << _baud_rate << ") ..." << std::endl;
 
-            int rtn = _sp->open(selected_port, _baud_rate);
+            auto const rtn = _sp->open(selected_port, _baud_rate);
 
             if (rtn == SERIAL_ERR::OK)
             {
@@ -180,25 +182,30 @@ void ConnectionWindow::update_content()
     if (_port_open)
     {
         ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0, 0.6, 1, 1));
-        ImGui::ProgressBar(-0.6f * (float)ImGui::GetTime(), ImVec2(-FLT_MIN, 0.5f * ImGui::GetFontSize()), "");
+        ImGui::ProgressBar(
+            -0.6f * static_cast<float>(ImGui::GetTime()),
+            ImVec2(-std::numeric_limits<float>::min(), 0.5f * ImGui::GetFontSize()),
+            "");
         ImGui::PopStyleColor();
     }
 }
 
-int ConnectionWindow::get_selected_index()
+[[nodiscard]]
+constexpr auto ConnectionWindow::get_selected_index() const noexcept
 {
     return _current_id;
 }
 
-std::string ConnectionWindow::get_selected_port()
+[[nodiscard]]
+constexpr auto ConnectionWindow::get_selected_port() const
 {
     return _com_ports.at(_current_id);
 }
 
-uint8_t ConnectionWindow::hex_chars_to_byte(char high, char low)
+[[nodiscard]]
+uint8_t ConnectionWindow::hex_chars_to_byte(char const high, char const low) noexcept
 {
-    auto char_to_hex_value = [](char c) -> uint8_t
-    {
+    auto char_to_hex_value = [](char const c) -> uint8_t {
         if (c == 0)
         {
             return 0;
@@ -218,21 +225,5 @@ uint8_t ConnectionWindow::hex_chars_to_byte(char high, char low)
         return 0;
     };
 
-    uint8_t high_value = char_to_hex_value(high);
-    uint8_t low_value = char_to_hex_value(low);
-
-    return (high_value << 4) | low_value;
-}
-
-size_t ConnectionWindow::update_com_ports_dropdown()
-{
-    _com_ports = Serial::get_port_names();
-
-    if (_com_ports.size() == 0)
-    {
-        _com_ports.push_back("COM-");
-        return 0;
-    }
-
-    return _com_ports.size();
+    return (char_to_hex_value(high) << 4) | char_to_hex_value(low);
 }

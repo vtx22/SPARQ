@@ -2,22 +2,20 @@
 
 void MeasureWindow::update_content()
 {
-    auto &markers = _data_handler->get_markers();
+    auto& markers = _data_handler->get_markers();
 
     if (ImGui::CollapsingHeader("Markers"))
     {
         if (ImGui::Button("Add"))
         {
-            sparq_marker_t marker;
-            marker.name = std::string("M") + std::to_string(markers.size());
-            markers.push_back(marker);
+            markers.push_back(sparq_marker_t{.name = std::string("M") + std::to_string(markers.size())});
         }
 
         ImGui::SameLine();
 
         if (ImGui::Button("Hide All"))
         {
-            for (auto &m : markers)
+            for (auto& m : markers)
             {
                 m.hidden = true;
             }
@@ -36,7 +34,7 @@ void MeasureWindow::update_content()
     }
 }
 
-void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
+void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers)
 {
     if (markers.size() == 0)
     {
@@ -47,10 +45,10 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
     {
         std::lock_guard<std::mutex> lock(_data_handler->get_data_mutex());
 
-        std::vector<uint32_t> to_delete;
-        for (size_t i = 0; i < markers.size(); i++)
+        std::vector<std::size_t> to_delete;
+        for (std::size_t i = 0; i < markers.size(); i++)
         {
-            std::string i_str = std::to_string(i);
+            std::string const i_str = std::to_string(i);
 
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
@@ -59,7 +57,7 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(200);
 
-            auto &datasets = _data_handler->get_datasets();
+            auto const& datasets = _data_handler->get_datasets();
 
             std::string ds_selector_name = std::to_string(markers[i].ds_id);
             if (markers[i].ds_id != -1 && datasets[markers[i].ds_index].name.length() > 0)
@@ -67,7 +65,10 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
                 ds_selector_name += " [" + datasets[markers[i].ds_index].name + "]";
             }
 
-            std::string ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1) ? "None Selected" : ds_selector_name;
+            std::string const ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1)
+                                                      ? "None Selected"
+                                                      : ds_selector_name;
+            // TODO: Fix mutex lock issue
 
             if (datasets.size() == 0)
             {
@@ -78,7 +79,7 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
             {
                 for (uint8_t n = 0; n < datasets.size(); n++)
                 {
-                    bool is_selected = (n == markers[i].ds_index);
+                    auto const is_selected = (n == markers[i].ds_index);
 
                     std::string selectable_name = std::to_string(datasets[n].id);
                     if (datasets[n].name.length() > 0)
@@ -107,10 +108,14 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
             }
 
             ImGui::TableSetColumnIndex(2);
-            ImGui::ColorEdit4(("##DsColor" + i_str).c_str(), (float *)&markers[i].color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+            ImGui::ColorEdit4(
+                ("##DsColor" + i_str).c_str(),
+                reinterpret_cast<float*>(&markers[i].color),
+                ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
             ImGui::TableSetColumnIndex(3);
 
-            std::string hide_text = std::string(markers[i].hidden ? ICON_FA_EYE_SLASH : ICON_FA_EYE) + "##HIDE" + i_str;
+            std::string const hide_text = std::string(markers[i].hidden ? ICON_FA_EYE_SLASH : ICON_FA_EYE)
+                                        + "##HIDE" + i_str;
             if (ImGui::Button(hide_text.c_str()))
             {
                 markers[i].hidden = !markers[i].hidden;
@@ -118,7 +123,8 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
 
             ImGui::TableSetColumnIndex(4);
 
-            std::string del_text = std::string(ICON_FA_TRASH) + "##DEL" + i_str;
+            std::string const del_text = std::string(ICON_FA_TRASH)
+                                       + "##DEL" + i_str;
             if (ImGui::Button(del_text.c_str()))
             {
                 to_delete.push_back(i);
@@ -134,7 +140,7 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t> &markers)
         ImGui::EndTable();
 
         std::sort(to_delete.rbegin(), to_delete.rend());
-        for (auto id : to_delete)
+        for (auto const id : to_delete)
         {
             markers.erase(markers.begin() + id);
         }

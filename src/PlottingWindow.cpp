@@ -18,7 +18,7 @@ void PlottingWindow::update_content()
 
         auto& markers = _data_handler->get_markers();
 
-        size_t id = 0;
+        std::size_t id = 0;
         for (auto& m : markers)
         {
             if (m.hidden)
@@ -37,15 +37,14 @@ void PlottingWindow::update_content()
         {
         case sparq_plot_t::LINE:
         {
-            uint8_t i = 0;
-
             uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
 
             if (_config_handler.ini["downsampling"]["max_samples_type"] == "0" && datasets.size() != 0)
             {
-                max_samples = static_cast<uint32_t>(round(max_samples / (double)datasets.size()));
+                max_samples = static_cast<uint32_t>(std::round(max_samples / static_cast<double>(datasets.size())));
             }
 
+            std::size_t i = 0;
             for (auto& ds : datasets)
             {
                 std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
@@ -55,11 +54,19 @@ void PlottingWindow::update_content()
 
                 if (ds.display_square)
                 {
-                    ImPlot::PlotStairs((name + "###LP" + std::to_string(ds.id)).c_str(), x_values.data(), y_values.data(), y_values.size());
+                    ImPlot::PlotStairs(
+                        (name + "###LP" + std::to_string(ds.id)).c_str(),
+                        x_values.data(),
+                        y_values.data(),
+                        y_values.size());
                 }
                 else
                 {
-                    ImPlot::PlotLine((name + "###LP" + std::to_string(ds.id)).c_str(), x_values.data(), y_values.data(), y_values.size());
+                    ImPlot::PlotLine(
+                        (name + "###LP" + std::to_string(ds.id)).c_str(),
+                        x_values.data(),
+                        y_values.data(),
+                        y_values.size());
                 }
 
                 ImPlotItem* item = plot->Items.GetLegendItem(i);
@@ -87,11 +94,11 @@ void PlottingWindow::update_content()
         }
         case sparq_plot_t::HEATMAP:
         {
-            sparq_heatmap_settings_t& hms = _data_handler->plot_settings.heatmap_settings;
+            auto const& hms = _data_handler->plot_settings.heatmap_settings;
 
             std::vector<float> values(hms.cols * hms.rows);
 
-            for (uint32_t i = 0; i < hms.cols * hms.rows; i++)
+            for (std::size_t i = 0; i < hms.cols * hms.rows; i++)
             {
                 if (i >= datasets.size())
                 {
@@ -104,25 +111,25 @@ void PlottingWindow::update_content()
             uint32_t bounds_max_x = hms.normalize_xy ? 1 : hms.cols;
             uint32_t bounds_max_y = hms.normalize_xy ? 1 : hms.rows;
 
-            float min_scale = hms.scale_min;
-            float max_scale = hms.scale_max;
+            auto min_scale = hms.scale_min;
+            auto max_scale = hms.scale_max;
 
             if (hms.autoscale)
             {
-                auto [min_it, max_it] = std::minmax_element(values.begin(), values.end());
+                auto const [min_it, max_it] = std::minmax_element(values.begin(), values.end());
                 min_scale = *min_it;
                 max_scale = *max_it;
             }
 
             if (hms.invert_scale)
             {
-                float tmp = min_scale;
+                auto const tmp = min_scale;
                 min_scale = max_scale;
                 max_scale = tmp;
             }
 
-            int rows = hms.rows;
-            int cols = hms.cols;
+            auto rows = hms.rows;
+            auto cols = hms.cols;
 
             if (hms.smooth)
             {
@@ -133,7 +140,18 @@ void PlottingWindow::update_content()
                 bounds_max_y = rows;
             }
 
-            ImPlot::PlotHeatmap("Heatmap", values.data(), rows, cols, min_scale, max_scale, hms.show_values ? "%.1f" : "", {0, 0}, {static_cast<double>(bounds_max_x), static_cast<double>(bounds_max_y)}, 0);
+            ImPlot::PlotHeatmap(
+                "Heatmap",
+                values.data(),
+                rows,
+                cols,
+                min_scale,
+                max_scale,
+                hms.show_values ? "%.1f" : "",
+                {0, 0},
+                {static_cast<double>(bounds_max_x), static_cast<double>(bounds_max_y)},
+                0);
+
             break;
         }
         }
@@ -142,11 +160,15 @@ void PlottingWindow::update_content()
     ImPlot::EndPlot();
 }
 
-std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_downsampled(sparq_dataset_t& dataset, uint32_t max_samples, double x_min, double x_max)
+std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_downsampled(
+    sparq_dataset_t& dataset,
+    std::size_t const max_samples,
+    double x_min,
+    double x_max)
 {
     auto& d = dataset;
 
-    bool downsampling_enabled = _config_handler.ini["downsampling"]["enabled"] == "1";
+    auto const downsampling_enabled = (_config_handler.ini["downsampling"]["enabled"] == "1");
     // No downsampling possible
     if (d.samples.empty() || d.samples.size() < max_samples || !downsampling_enabled)
     {
@@ -164,8 +186,8 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
     // For FIT_ALL x axis we have to keep the whole data length so ImPlot AutoFit works
     if (_data_handler->x_fit_select == 1)
     {
-        x_min = -DBL_MAX;
-        x_max = DBL_MAX;
+        x_min = std::numeric_limits<double>::lowest();
+        x_max = std::numeric_limits<double>::max();
     }
 
     std::vector<double>* x_values;
@@ -184,11 +206,11 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
     }
 
     // Find the sample index for the x_value that is below x_min / above x_max
-    auto lower = std::lower_bound(x_values->begin(), x_values->end(), x_min);
-    auto upper = std::upper_bound(x_values->begin(), x_values->end(), x_max);
+    auto const lower = std::lower_bound(x_values->begin(), x_values->end(), x_min);
+    auto const upper = std::upper_bound(x_values->begin(), x_values->end(), x_max);
 
-    size_t min_index = std::distance(x_values->begin(), lower);
-    size_t max_index = std::distance(x_values->begin(), upper) + 1;
+    std::size_t min_index = std::distance(x_values->begin(), lower);
+    std::size_t max_index = std::distance(x_values->begin(), upper) + 1;
 
     if (min_index > 0)
     {
@@ -199,7 +221,7 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
         max_index = x_values->size() - 1;
     }
 
-    size_t number_of_samples = max_index - min_index;
+    std::size_t number_of_samples = max_index - min_index;
 
     // Keep only the values that are visible
     _x_in_view.resize(number_of_samples);
@@ -219,12 +241,12 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
     _x_downsampled[0] = _x_in_view.front();
     _y_downsampled[0] = _y_in_view.front();
 
-    double step = static_cast<double>(number_of_samples - 1) / (max_samples - 1);
+    auto const step = static_cast<double>(number_of_samples - 1) / (max_samples - 1);
 
     // Start from the second value
-    double index = step;
+    auto index = step;
 
-    for (size_t i = 1; i < max_samples - 1; ++i)
+    for (std::size_t i = 1; i < max_samples - 1; ++i)
     {
         _x_downsampled[i] = (_x_in_view[static_cast<size_t>(index)]);
         _y_downsampled[i] = (_y_in_view[static_cast<size_t>(index)]);
@@ -286,8 +308,8 @@ void PlottingWindow::config_limits_n_values()
     // Last N Samples
     case 0:
     {
-        int max_sample = round(_data_handler->get_max_sample()) - 1;
-        int min_sample = max_sample - _data_handler->last_n + 1;
+        auto const max_sample = static_cast<std::size_t>(round(_data_handler->get_max_sample())) - 1;
+        auto min_sample = max_sample - static_cast<std::size_t>(_data_handler->last_n) + 1;
 
         if (min_sample < 0)
         {
@@ -301,8 +323,8 @@ void PlottingWindow::config_limits_n_values()
     // Last N relative seconds
     case 1:
     {
-        double max_rel_time = _data_handler->get_max_rel_time();
-        double min_rel_time = max_rel_time - _data_handler->last_n;
+        auto const max_rel_time = _data_handler->get_max_rel_time();
+        auto min_rel_time = max_rel_time - _data_handler->last_n;
 
         if (min_rel_time < 0)
         {
@@ -316,8 +338,8 @@ void PlottingWindow::config_limits_n_values()
         // Last N absolute seconds
     case 2:
     {
-        double max_abs_time = _data_handler->get_max_abs_time();
-        double min_abs_time = max_abs_time - _data_handler->last_n;
+        auto const max_abs_time = _data_handler->get_max_abs_time();
+        auto min_abs_time = max_abs_time - _data_handler->last_n;
 
         if (min_abs_time < 0)
         {
@@ -330,10 +352,10 @@ void PlottingWindow::config_limits_n_values()
     }
 }
 
-std::vector<float> PlottingWindow::bilinear_interpolate(const std::vector<float>& original_image, int original_rows, int original_cols, float scale_factor)
+std::vector<float> PlottingWindow::bilinear_interpolate(std::vector<float> const& original_image, int const original_rows, int const original_cols, float const scale_factor)
 {
-    int new_rows = static_cast<int>(original_rows * scale_factor);
-    int new_cols = static_cast<int>(original_cols * scale_factor);
+    auto const new_rows = static_cast<int>(original_rows * scale_factor);
+    auto const new_cols = static_cast<int>(original_cols * scale_factor);
 
     std::vector<float> interpolated_image(new_rows * new_cols);
 
@@ -352,31 +374,31 @@ std::vector<float> PlottingWindow::bilinear_interpolate(const std::vector<float>
         for (int new_col = 0; new_col < new_cols; ++new_col)
         {
             // Map new coordinates back to original image coordinates
-            float orig_row_f = (new_row + 0.5f) / scale_factor - 0.5f;
-            float orig_col_f = (new_col + 0.5f) / scale_factor - 0.5f;
+            auto const orig_row_f = (new_row + 0.5f) / scale_factor - 0.5f;
+            auto const orig_col_f = (new_col + 0.5f) / scale_factor - 0.5f;
 
             // Get the four surrounding pixel coordinates
-            int row0 = static_cast<int>(std::floor(orig_row_f));
-            int row1 = row0 + 1;
-            int col0 = static_cast<int>(std::floor(orig_col_f));
-            int col1 = col0 + 1;
+            auto const row0 = static_cast<int>(std::floor(orig_row_f));
+            auto const row1 = row0 + 1;
+            auto const col0 = static_cast<int>(std::floor(orig_col_f));
+            auto const col1 = col0 + 1;
 
             // Calculate interpolation weights
-            float row_weight = orig_row_f - row0;
-            float col_weight = orig_col_f - col0;
+            auto const row_weight = orig_row_f - row0;
+            auto const col_weight = orig_col_f - col0;
 
             // Get the four corner pixel values
-            float top_left = get_pixel(row0, col0);
-            float top_right = get_pixel(row0, col1);
-            float bottom_left = get_pixel(row1, col0);
-            float bottom_right = get_pixel(row1, col1);
+            auto const top_left = get_pixel(row0, col0);
+            auto const top_right = get_pixel(row0, col1);
+            auto const bottom_left = get_pixel(row1, col0);
+            auto const bottom_right = get_pixel(row1, col1);
 
             // Perform bilinear interpolation
-            float top_interp = top_left * (1.0f - col_weight) + top_right * col_weight;
-            float bottom_interp = bottom_left * (1.0f - col_weight) + bottom_right * col_weight;
-            float final_value = top_interp * (1.0f - row_weight) + bottom_interp * row_weight;
+            auto const top_interp = top_left * (1.0f - col_weight) + top_right * col_weight;
+            auto const bottom_interp = bottom_left * (1.0f - col_weight) + bottom_right * col_weight;
+            auto const final_value = top_interp * (1.0f - row_weight) + bottom_interp * row_weight;
 
-            interpolated_image[new_row * new_cols + new_col] = final_value;
+            interpolated_image[static_cast<std::size_t>(new_row) * new_cols + new_col] = final_value;
         }
     }
 

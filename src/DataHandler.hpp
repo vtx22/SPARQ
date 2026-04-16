@@ -1,21 +1,22 @@
 #pragma once
 
-#include <cstdint>
 #include <array>
-#include <iostream>
-#include <chrono>
-#include <iomanip>
-#include <fstream>
-#include <thread>
 #include <atomic>
+#include <chrono>
+#include <cstdint>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <mutex>
 #include <optional>
-#include <cstring>
+#include <ranges>
+#include <thread>
 
+#include "implot.h"
+#include "serial.hpp"
 #include "sparq_config.h"
 #include "sparq_types.hpp"
-#include "serial.hpp"
-#include "implot.h"
 
 #include "ImGuiNotify.hpp"
 
@@ -26,20 +27,34 @@ using namespace std::chrono;
 class DataHandler
 {
 public:
-    DataHandler(Serial *sp, ConsoleWindow *console_window);
+    DataHandler(Serial* sp, ConsoleWindow* console_window);
     ~DataHandler();
 
     void update();
     void receiver_loop();
     sparq_message_t receive_message();
 
-    const std::vector<sparq_dataset_t> &get_datasets();
-    std::vector<sparq_dataset_t> &get_datasets_editable();
+    [[nodiscard]]
+    constexpr std::vector<sparq_dataset_t> const& get_datasets() const noexcept
+    {
+        return _datasets;
+    }
 
-    std::vector<sparq_marker_t> &get_markers();
+    [[nodiscard]]
+    constexpr std::vector<sparq_dataset_t>& get_datasets_editable() noexcept
+    {
+        return _datasets;
+    }
+
+    [[nodiscard]]
+    constexpr std::vector<sparq_marker_t>& get_markers() noexcept
+    {
+        return _markers;
+    }
+
     void update_markers();
 
-    bool add_dataset(const sparq_dataset_t &dataset);
+    bool add_dataset(sparq_dataset_t const& dataset);
     bool delete_dataset(uint8_t id);
     void delete_all_datasets();
 
@@ -51,31 +66,73 @@ public:
 
     std::optional<std::reference_wrapper<sparq_dataset_t>> get_dataset(uint8_t id);
 
-    static uint8_t xor8_cs(const uint8_t *data, uint32_t length);
-
     uint8_t x_axis_select = 0;
     uint8_t x_fit_select = 1;
     uint8_t y_fit_select = 1;
 
     int last_n = 10;
 
-    void export_data_csv();
+    void export_data_csv() const;
 
-    double get_max_sample();
-    double get_max_rel_time();
-    double get_max_abs_time();
+    [[nodiscard]]
+    auto get_max_sample()
+    {
+        std::lock_guard<std::mutex> lock(_data_mutex);
+        return static_cast<double>(current_absolute_sample);
+    }
+
+    [[nodiscard]]
+    auto get_max_rel_time()
+    {
+        std::lock_guard<std::mutex> lock(_data_mutex);
+
+        if (_datasets.empty())
+        {
+            return 0.0;
+        }
+
+        return std::ranges::max(
+            _datasets | std::views::transform([](auto const& ds) {
+                return ds.relative_times.back();
+            }));
+    }
+
+    [[nodiscard]]
+    auto get_max_abs_time()
+    {
+        std::lock_guard<std::mutex> lock(_data_mutex);
+
+        if (_datasets.empty())
+        {
+            return 0.0;
+        }
+
+        return std::ranges::max(
+            _datasets | std::views::transform([](auto const& ds) {
+                return ds.absolute_times.back();
+            }));
+    }
 
     sparq_plot_settings_t plot_settings;
 
-    std::mutex &get_data_mutex() { return _data_mutex; }
-    std::mutex &get_serial_mutex() { return _serial_mutex; }
+    [[nodiscard]]
+    constexpr std::mutex& get_data_mutex() noexcept
+    {
+        return _data_mutex;
+    }
+
+    [[nodiscard]]
+    constexpr std::mutex& get_serial_mutex() noexcept
+    {
+        return _serial_mutex;
+    }
 
 private:
     uint32_t current_absolute_sample = 0;
     uint64_t first_receive_timestamp = 0;
 
-    Serial *_sp;
-    ConsoleWindow *_console_window;
+    Serial* _sp;
+    ConsoleWindow* _console_window;
 
     std::vector<uint8_t> _serial_buffer;
     std::vector<uint8_t> _message_buffer;
@@ -86,8 +143,8 @@ private:
 
     std::vector<sparq_marker_t> _markers;
 
-    void add_to_datasets(const sparq_message_t &message);
-    void handle_command(const sparq_message_t &message);
+    void add_to_datasets(const sparq_message_t& message);
+    void handle_command(const sparq_message_t& message);
 
     std::thread _receive_thread;
     std::atomic<bool> _running = true;
