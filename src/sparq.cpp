@@ -53,7 +53,7 @@ void SPARQ::object_init()
 
 int SPARQ::window_init()
 {
-    auto &config = ConfigHandler::get_instance();
+    auto& config = ConfigHandler::get_instance();
 
     std::cout << "Initializing window ...\n";
 
@@ -75,8 +75,7 @@ int SPARQ::window_init()
     }
 
     window.setFramerateLimit(SPARQ_MAX_FPS);
-    bool vsync_enabled = config.ini["graphics"]["vsync"] == "1";
-    window.setVerticalSyncEnabled(vsync_enabled);
+    window.setVerticalSyncEnabled(config.ini["graphics"]["vsync"] == "1");
 
 #ifdef BUILD_WINDOWS
     BOOL USE_DARK_MODE = true;
@@ -91,20 +90,25 @@ int SPARQ::window_init()
     }
 
     std::cout << "Loading " << SPARQ_FONT << " ...\n";
-    float baseFontSize = 18.f;
-    ImGuiIO &io = ImGui::GetIO();
+    constexpr auto base_font_size = 18.f;
+    ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable;
     io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF(SPARQ_FONT, baseFontSize);
+    io.Fonts->AddFontFromFileTTF(SPARQ_FONT, base_font_size);
 
-    float iconFontSize = 16.f;
+    constexpr auto icon_font_size = 16.f;
     static constexpr ImWchar iconsRanges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
     ImFontConfig iconsConfig;
     iconsConfig.MergeMode = true;
     iconsConfig.PixelSnapH = true;
     iconsConfig.GlyphMinAdvanceX = 16.f;
     iconsConfig.GlyphOffset = ImVec2(1.f, 0);
-    io.Fonts->AddFontFromMemoryCompressedTTF(fa_solid_900_compressed_data, fa_solid_900_compressed_size, iconFontSize, &iconsConfig, iconsRanges);
+    io.Fonts->AddFontFromMemoryCompressedTTF(
+        fa_solid_900_compressed_data,
+        fa_solid_900_compressed_size,
+        icon_font_size,
+        &iconsConfig,
+        iconsRanges);
 
     if (!ImGui::SFML::UpdateFontTexture())
     {
@@ -189,8 +193,7 @@ int SPARQ::run()
 int SPARQ::close_app()
 {
     ImPlot::DestroyContext();
-    ImGui::DestroyContext();
-    // ImGui::SFML::Shutdown();
+    ImGui::SFML::Shutdown();
 
     _window->close();
 
