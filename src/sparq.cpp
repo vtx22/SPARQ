@@ -3,15 +3,15 @@
 SPARQ::SPARQ()
     : _sp(),
       _console_window(),
-      _data_handler(&_sp, &_console_window),
-      _connection_window(&_data_handler, &_sp),
-      _plotting_window(&_data_handler),
-      _data_window(&_data_handler),
-      _measure_window(&_data_handler),
-      _view_window(&_data_handler),
-      _statistics_window(&_data_handler),
-      _settings_window(&_data_handler),
-      _debug_window(&_data_handler)
+      _data_handler(_sp, _console_window),
+      _connection_window(_data_handler, _sp),
+      _plotting_window(_data_handler),
+      _data_window(_data_handler),
+      _measure_window(_data_handler),
+      _view_window(_data_handler),
+      _statistics_window(_data_handler),
+      _settings_window(_data_handler),
+      _debug_window(_data_handler)
 {
     register_windows();
 }

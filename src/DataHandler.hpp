@@ -28,7 +28,7 @@ using namespace std::chrono;
 class DataHandler
 {
 public:
-    DataHandler(Serial* sp, ConsoleWindow* console_window);
+    DataHandler(Serial& sp, ConsoleWindow& console_window);
     ~DataHandler();
 
     void update();
@@ -132,8 +132,8 @@ private:
     uint32_t current_absolute_sample = 0;
     uint64_t first_receive_timestamp = 0;
 
-    Serial* _sp;
-    ConsoleWindow* _console_window;
+    Serial& _sp;
+    ConsoleWindow& _console_window;
 
     std::vector<uint8_t> _serial_buffer;
     std::vector<uint8_t> _message_buffer;

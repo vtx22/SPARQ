@@ -10,7 +10,7 @@
 class Window
 {
 public:
-    Window(const char* name, DataHandler* data_handler)
+    Window(const char* name, DataHandler& data_handler)
         : _name(name),
           _data_handler(data_handler),
           _config_handler(ConfigHandler::get_instance())
@@ -33,6 +33,6 @@ public:
 
 protected:
     const char* _name;
-    DataHandler* _data_handler;
+    DataHandler& _data_handler;
     ConfigHandler& _config_handler;
 };

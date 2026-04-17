@@ -1,6 +1,6 @@
 #include "ConnectionWindow.hpp"
 
-ConnectionWindow::ConnectionWindow(DataHandler* data_handler, Serial* sp)
+ConnectionWindow::ConnectionWindow(DataHandler& data_handler, Serial& sp)
     : Window(ICON_FA_NETWORK_WIRED "  Connection", data_handler),
       _sp(sp)
 {
@@ -9,10 +9,10 @@ ConnectionWindow::ConnectionWindow(DataHandler* data_handler, Serial* sp)
 
 void ConnectionWindow::update_content()
 {
-    std::lock_guard<std::mutex> lock(_data_handler->get_serial_mutex());
+    std::lock_guard<std::mutex> lock(_data_handler.get_serial_mutex());
 
     ImGui::SeparatorText("Settings");
-    _port_open = _sp->get_open();
+    _port_open = _sp.get_open();
 
     if (_port_open)
     {
@@ -131,7 +131,7 @@ void ConnectionWindow::update_content()
             auto const selected_port = _com_ports[_current_id].c_str();
             std::cout << "Opening Port: " << selected_port << " (" << _baud_rate << ") ..." << std::endl;
 
-            auto const rtn = _sp->open(selected_port, _baud_rate);
+            auto const rtn = _sp.open(selected_port, _baud_rate);
 
             if (rtn == SERIAL_ERR::OK)
             {
@@ -168,7 +168,7 @@ void ConnectionWindow::update_content()
     {
         std::cout << "Closing COM port ..." << std::endl;
 
-        _sp->close();
+        _sp.close();
 
         ImGui::InsertNotification({ImGuiToastType::Success, SPARQ_NOTIFY_DURATION_OK, "COM port closed successfully!"});
         _port_open = false;

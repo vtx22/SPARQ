@@ -59,7 +59,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t>& datasets)
                                          + "##CLEAR" + i_str;
             if (ImGui::Button(clear_text.c_str()))
             {
-                _data_handler->clear_dataset(datasets[i].id);
+                _data_handler.clear_dataset(datasets[i].id);
             }
 
             ImGui::TableSetColumnIndex(6);
@@ -79,7 +79,7 @@ void DataWindow::dataset_entries(std::vector<sparq_dataset_t>& datasets)
 
         for (auto const id : to_delete)
         {
-            _data_handler->delete_dataset(id);
+            _data_handler.delete_dataset(id);
         }
     }
 }
@@ -88,28 +88,28 @@ void DataWindow::show_datasets_section()
 {
     if (ImGui::CollapsingHeader("Serial Datasets"))
     {
-        std::lock_guard<std::mutex> lock(_data_handler->get_data_mutex());
+        std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
 
         if (ImGui::Button("Import"))
         {
         }
         ImGui::SameLine();
 
-        if (_data_handler->get_datasets().size() == 0)
+        if (_data_handler.get_datasets().size() == 0)
         {
             ImGui::BeginDisabled();
         }
 
         if (ImGui::Button("Export"))
         {
-            _data_handler->export_data_csv();
+            _data_handler.export_data_csv();
         }
 
         ImGui::SameLine();
 
         if (ImGui::Button("Clear All"))
         {
-            _data_handler->clear_all_datasets();
+            _data_handler.clear_all_datasets();
         }
 
         ImGui::SameLine();
@@ -117,7 +117,7 @@ void DataWindow::show_datasets_section()
         bool just_deleted = false;
         if (ImGui::Button("Delete All"))
         {
-            _data_handler->delete_all_datasets();
+            _data_handler.delete_all_datasets();
             just_deleted = true;
         }
 
@@ -125,24 +125,24 @@ void DataWindow::show_datasets_section()
 
         if (ImGui::Button("Hide All"))
         {
-            _data_handler->hide_all_datasets();
+            _data_handler.hide_all_datasets();
         }
 
         ImGui::SameLine();
 
         if (ImGui::Button("Show All"))
         {
-            _data_handler->show_all_datasets();
+            _data_handler.show_all_datasets();
         }
 
-        if (!just_deleted && _data_handler->get_datasets().size() == 0)
+        if (!just_deleted && _data_handler.get_datasets().size() == 0)
         {
             ImGui::EndDisabled();
         }
 
         ImGui::Separator();
 
-        dataset_entries(_data_handler->get_datasets_editable());
+        dataset_entries(_data_handler.get_datasets_editable());
     }
 
     if (ImGui::CollapsingHeader("Synthetic Datasets"))

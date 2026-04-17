@@ -15,7 +15,7 @@
 class ConnectionWindow : public Window
 {
 public:
-    ConnectionWindow(DataHandler* data_handler, Serial* sp);
+    ConnectionWindow(DataHandler& data_handler, Serial& sp);
 
     void update_content();
 
@@ -53,5 +53,5 @@ private:
     [[nodiscard]]
     static uint8_t hex_chars_to_byte(char high, char low) noexcept;
 
-    Serial* _sp;
+    Serial& _sp;
 };

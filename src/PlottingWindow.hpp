@@ -18,7 +18,7 @@
 class PlottingWindow : public Window
 {
 public:
-    PlottingWindow(DataHandler* data_handler)
+    PlottingWindow(DataHandler& data_handler)
         : Window(ICON_FA_CHART_LINE "  Plot", data_handler)
     {
     }
