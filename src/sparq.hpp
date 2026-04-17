@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#ifdef SPARQ_WINDOWS_BUILD
+#ifdef BUILD_WINDOWS
     #include <dwmapi.h>
     #include <windows.h>
 #endif

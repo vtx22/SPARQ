@@ -13,6 +13,7 @@
 class ConfigHandler
 {
 public:
+    [[nodiscard]]
     static ConfigHandler& get_instance();
 
     ConfigHandler(ConfigHandler const&) = delete;
@@ -22,7 +23,6 @@ public:
 
     void read_config();
     void write_config();
-
     void apply_in_context_settings();
 
 private:

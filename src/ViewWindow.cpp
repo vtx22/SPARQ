@@ -20,16 +20,16 @@ void ViewWindow::update_content()
 
 void ViewWindow::menu_plot_type()
 {
-    const char* plot_types[2] = {"Line", "Heatmap"};
+    constexpr std::array plot_types{"Line", "Heatmap"};
     if (ImGui::BeginCombo("##PLOT TYPE", plot_types[(int)_data_handler->plot_settings.type]))
     {
-        for (uint8_t n = 0; n < 2; n++)
+        for (std::size_t n = 0; n < plot_types.size(); n++)
         {
-            bool is_selected = ((uint8_t)_data_handler->plot_settings.type == n);
+            auto const is_selected = (static_cast<uint8_t>(_data_handler->plot_settings.type) == n);
 
             if (ImGui::Selectable(plot_types[n], is_selected))
             {
-                _data_handler->plot_settings.type = (sparq_plot_t)n;
+                _data_handler->plot_settings.type = static_cast<sparq_plot_t>(n);
             }
 
             // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -88,16 +88,16 @@ void ViewWindow::menu_plot_type()
 
 void ViewWindow::menu_x_axis()
 {
-    const int text_offset = 90;
+    constexpr auto text_offset = 90;
     ImGui::Text("Axis Unit");
     ImGui::SameLine();
     ImGui::SetCursorPosX(text_offset);
-    ImGui::SetNextItemWidth(-FLT_MIN);
+    ImGui::SetNextItemWidth(-std::numeric_limits<float>::min());
     if (ImGui::BeginCombo("##X View", x_axis_types[_data_handler->x_axis_select].dropdown_name))
     {
-        for (uint8_t n = 0; n < x_axis_types.size(); n++)
+        for (std::size_t n = 0; n < x_axis_types.size(); n++)
         {
-            bool is_selected = (_data_handler->x_axis_select == n);
+            auto const is_selected = (_data_handler->x_axis_select == n);
 
             if (ImGui::Selectable(x_axis_types[n].dropdown_name, is_selected))
             {
@@ -119,9 +119,9 @@ void ViewWindow::menu_x_axis()
     ImGui::SetNextItemWidth(-200);
     if (ImGui::BeginCombo("##X Fit", x_axis_fits[_data_handler->x_fit_select]))
     {
-        for (uint8_t n = 0; n < x_axis_fits.size(); n++)
+        for (std::size_t n = 0; n < x_axis_fits.size(); n++)
         {
-            bool is_selected = (_data_handler->x_fit_select == n);
+            auto const is_selected = (_data_handler->x_fit_select == n);
 
             if (ImGui::Selectable(x_axis_fits[n], is_selected))
             {
@@ -162,16 +162,16 @@ void ViewWindow::menu_x_axis()
 
 void ViewWindow::menu_y_axis()
 {
-    const int text_offset = 90;
+    constexpr auto text_offset = 90;
     ImGui::Text("Fit");
     ImGui::SameLine();
     ImGui::SetCursorPosX(text_offset);
     ImGui::SetNextItemWidth(-FLT_MIN);
     if (ImGui::BeginCombo("##Y Fit", y_axis_fits[_data_handler->y_fit_select]))
     {
-        for (uint8_t n = 0; n < y_axis_fits.size(); n++)
+        for (std::size_t n = 0; n < y_axis_fits.size(); n++)
         {
-            bool is_selected = (_data_handler->y_fit_select == n);
+            auto const is_selected = (_data_handler->y_fit_select == n);
 
             if (ImGui::Selectable(y_axis_fits[n], is_selected))
             {
