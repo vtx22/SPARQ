@@ -9,7 +9,7 @@
 class ViewWindow : public Window
 {
 public:
-    ViewWindow(DataHandler* data_handler)
+    ViewWindow(DataHandler& data_handler)
         : Window(ICON_FA_SLIDERS "  View", data_handler)
     {
     }

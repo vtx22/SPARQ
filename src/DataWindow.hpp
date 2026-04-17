@@ -10,7 +10,7 @@
 class DataWindow : public Window
 {
 public:
-    DataWindow(DataHandler* data_handler)
+    DataWindow(DataHandler& data_handler)
         : Window(ICON_FA_DATABASE "  Data", data_handler)
     {
     }

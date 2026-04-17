@@ -2,12 +2,12 @@
 
 void PlottingWindow::update_content()
 {
-    std::lock_guard<std::mutex> lock(_data_handler->get_data_mutex());
-    std::vector<sparq_dataset_t>& datasets = _data_handler->get_datasets_editable();
+    std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
+    std::vector<sparq_dataset_t>& datasets = _data_handler.get_datasets_editable();
 
     ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
 
-    if (_data_handler->plot_settings.type == sparq_plot_t::HEATMAP && _data_handler->plot_settings.heatmap_settings.equal)
+    if (_data_handler.plot_settings.type == sparq_plot_t::HEATMAP && _data_handler.plot_settings.heatmap_settings.equal)
     {
         plot_flags |= ImPlotFlags_Equal;
     }
@@ -16,7 +16,7 @@ void PlottingWindow::update_content()
     {
         update_axes();
 
-        auto& markers = _data_handler->get_markers();
+        auto& markers = _data_handler.get_markers();
 
         std::size_t id = 0;
         for (auto& m : markers)
@@ -33,7 +33,7 @@ void PlottingWindow::update_content()
         ImPlotContext* ctx = ImPlot::GetCurrentContext();
         ImPlotPlot* plot = ctx->CurrentPlot;
 
-        switch (_data_handler->plot_settings.type)
+        switch (_data_handler.plot_settings.type)
         {
         case sparq_plot_t::LINE:
         {
@@ -94,7 +94,7 @@ void PlottingWindow::update_content()
         }
         case sparq_plot_t::HEATMAP:
         {
-            auto const& hms = _data_handler->plot_settings.heatmap_settings;
+            auto const& hms = _data_handler.plot_settings.heatmap_settings;
 
             std::vector<float> values(hms.cols * hms.rows);
 
@@ -184,14 +184,14 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
     }
 
     // For FIT_ALL x axis we have to keep the whole data length so ImPlot AutoFit works
-    if (_data_handler->x_fit_select == 1)
+    if (_data_handler.x_fit_select == 1)
     {
         x_min = std::numeric_limits<double>::lowest();
         x_max = std::numeric_limits<double>::max();
     }
 
     std::vector<double>* x_values;
-    switch (_data_handler->x_axis_select)
+    switch (_data_handler.x_axis_select)
     {
     default:
     case 0:
@@ -263,14 +263,14 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
 void PlottingWindow::update_axes()
 {
     // X Axis Setup
-    const char* x_axis_label = x_axis_types[_data_handler->x_axis_select].axis_label;
+    const char* x_axis_label = x_axis_types[_data_handler.x_axis_select].axis_label;
 
-    if (_data_handler->x_axis_select == 2)
+    if (_data_handler.x_axis_select == 2)
     {
         ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
     }
 
-    switch (_data_handler->x_fit_select)
+    switch (_data_handler.x_fit_select)
     {
     // Manual
     case 0:
@@ -288,7 +288,7 @@ void PlottingWindow::update_axes()
     }
 
     // Y Axis Setup
-    switch (_data_handler->y_fit_select)
+    switch (_data_handler.y_fit_select)
     {
     // Manual
     case 0:
@@ -303,13 +303,13 @@ void PlottingWindow::update_axes()
 
 void PlottingWindow::config_limits_n_values()
 {
-    switch (_data_handler->x_axis_select)
+    switch (_data_handler.x_axis_select)
     {
     // Last N Samples
     case 0:
     {
-        auto const max_sample = static_cast<std::size_t>(round(_data_handler->get_max_sample())) - 1;
-        auto min_sample = max_sample - static_cast<std::size_t>(_data_handler->last_n) + 1;
+        auto const max_sample = static_cast<std::size_t>(round(_data_handler.get_max_sample())) - 1;
+        auto min_sample = max_sample - static_cast<std::size_t>(_data_handler.last_n) + 1;
 
         if (min_sample < 0)
         {
@@ -323,8 +323,8 @@ void PlottingWindow::config_limits_n_values()
     // Last N relative seconds
     case 1:
     {
-        auto const max_rel_time = _data_handler->get_max_rel_time();
-        auto min_rel_time = max_rel_time - _data_handler->last_n;
+        auto const max_rel_time = _data_handler.get_max_rel_time();
+        auto min_rel_time = max_rel_time - _data_handler.last_n;
 
         if (min_rel_time < 0)
         {
@@ -338,8 +338,8 @@ void PlottingWindow::config_limits_n_values()
         // Last N absolute seconds
     case 2:
     {
-        auto const max_abs_time = _data_handler->get_max_abs_time();
-        auto min_abs_time = max_abs_time - _data_handler->last_n;
+        auto const max_abs_time = _data_handler.get_max_abs_time();
+        auto min_abs_time = max_abs_time - _data_handler.last_n;
 
         if (min_abs_time < 0)
         {

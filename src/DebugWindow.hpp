@@ -8,7 +8,7 @@
 class DebugWindow : public Window
 {
 public:
-    DebugWindow(DataHandler* data_handler)
+    DebugWindow(DataHandler& data_handler)
         : Window(ICON_FA_CODE "  Debug", data_handler)
     {
     }

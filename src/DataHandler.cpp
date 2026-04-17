@@ -1,10 +1,10 @@
 #include "DataHandler.hpp"
 
-DataHandler::DataHandler(Serial* sp, ConsoleWindow* console_window)
+DataHandler::DataHandler(Serial& sp, ConsoleWindow& console_window)
     : _sp(sp),
       _console_window(console_window)
 {
-    _sp->set_timeouts(0xFFFF'FFFF, 0, 0, 0, 0);
+    _sp.set_timeouts(0xFFFF'FFFF, 0, 0, 0, 0);
     _serial_buffer.reserve(static_cast<std::size_t>(SPARQ_MAX_MESSAGE_LENGTH) * 2);
 
     _receive_thread = std::thread(&DataHandler::receiver_loop, this);
@@ -26,7 +26,7 @@ void DataHandler::receiver_loop()
     {
         std::unique_lock<std::mutex> serial_lock(_serial_mutex);
 
-        if (!_sp->get_open())
+        if (!_sp.get_open())
         {
             serial_lock.unlock();
             std::this_thread::sleep_for(std::chrono::milliseconds(SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS));
@@ -43,7 +43,7 @@ void DataHandler::receiver_loop()
             switch (message.message_type)
             {
             case sparq_message_type_t::STRING:
-                _console_window->add_log(message.string_data.c_str());
+                _console_window.add_log(message.string_data.c_str());
                 break;
             case sparq_message_type_t::SENDER_COMMAND:
                 handle_command(message);
@@ -122,9 +122,9 @@ void DataHandler::add_to_datasets(sparq_message_t const& message)
     _timestamps.push_back(message.timestamp);
     _rel_times.push_back((message.timestamp - first_receive_timestamp) / 1000.0);
 
-    if (!_console_window->TextOnly)
+    if (!_console_window.TextOnly)
     {
-        _console_window->add_data_to_log(message.ids.data(), message.values.data(), message.nval);
+        _console_window.add_data_to_log(message.ids.data(), message.values.data(), message.nval);
     }
 
     for (uint16_t i = 0; i < message.nval; i++)
@@ -177,7 +177,7 @@ void DataHandler::handle_command(sparq_message_t const& message)
     switch (message.command_type)
     {
     case sparq_sender_command_t::CLEAR_CONSOLE:
-        _console_window->clear_log();
+        _console_window.clear_log();
         break;
     case sparq_sender_command_t::SET_DATASET_NAME:
     {
@@ -356,7 +356,7 @@ sparq_message_t DataHandler::receive_message()
     static bool in_message = false;
 
     // Read everything thats available
-    auto const len = _sp->read(_serial_buffer.data(), SPARQ_MAX_MESSAGE_LENGTH * 2);
+    auto const len = _sp.read(_serial_buffer.data(), SPARQ_MAX_MESSAGE_LENGTH * 2);
 
     if (len <= 0 && _message_buffer.size() == 0)
     {

@@ -11,7 +11,7 @@
 class MeasureWindow : public Window
 {
 public:
-    MeasureWindow(DataHandler* data_handler)
+    MeasureWindow(DataHandler& data_handler)
         : Window(ICON_FA_RULER_HORIZONTAL "  Measure", data_handler)
     {
     }

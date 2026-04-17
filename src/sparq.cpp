@@ -1,7 +1,19 @@
 #include "sparq.hpp"
 
 SPARQ::SPARQ()
+    : _sp(),
+      _console_window(),
+      _data_handler(_sp, _console_window),
+      _connection_window(_data_handler, _sp),
+      _plotting_window(_data_handler),
+      _data_window(_data_handler),
+      _measure_window(_data_handler),
+      _view_window(_data_handler),
+      _statistics_window(_data_handler),
+      _settings_window(_data_handler),
+      _debug_window(_data_handler)
 {
+    register_windows();
 }
 
 int SPARQ::init()
@@ -9,8 +21,6 @@ int SPARQ::init()
     std::cout << "\n=== SPARQ " << SPARQ_VERSION << " ===\n\n";
     std::cout << "Initializing ...\n\n";
     std::cout << "System Endianess: " << (spq::helper::is_little_endian() ? "Little Endian" : "Big Endian") << "\n";
-
-    object_init();
 
     if (window_init() < 0)
     {
@@ -22,35 +32,20 @@ int SPARQ::init()
     return 0;
 }
 
-void SPARQ::object_init()
+void SPARQ::register_windows()
 {
-    std::cout << "Initializing objects ...\n";
+    _windows.clear();
 
-    static Serial serial_port;
-    static ConsoleWindow console_window;
-    static DataHandler data_handler(&serial_port, &console_window);
-
-    static ConnectionWindow connection_window(&data_handler, &serial_port);
-    static PlottingWindow plotting_window(&data_handler);
-    static DataWindow data_window(&data_handler);
-    static MeasureWindow measure_window(&data_handler);
-    static ViewWindow view_window(&data_handler);
-    static StatisticsWindow statistics_window(&data_handler);
-    static SettingsWindow settings_window(&data_handler);
-    static DebugWindow debug_window(&data_handler);
-
-    _sp = &serial_port;
-    _data_handler = &data_handler;
-
-    _console_window = &console_window;
-    _connection_window = &connection_window;
-    _plotting_window = &plotting_window;
-    _data_window = &data_window;
-    _measure_window = &measure_window;
-    _view_window = &view_window;
-    _statistics_window = &statistics_window;
-    _settings_window = &settings_window;
-    _debug_window = &debug_window;
+    _windows.push_back(_connection_window);
+    _windows.push_back(_plotting_window);
+    _windows.push_back(_data_window);
+    _windows.push_back(_measure_window);
+    _windows.push_back(_view_window);
+    _windows.push_back(_statistics_window);
+    _windows.push_back(_settings_window);
+#ifdef SPARQ_DEBUG_BUILD
+    _windows.push_back(_debug_window);
+#endif
 }
 
 int SPARQ::window_init()
@@ -62,13 +57,13 @@ int SPARQ::window_init()
     sf::ContextSettings settings;
     settings.antialiasingLevel = std::stoi(config.ini["graphics"]["antialiasing"]);
 
-    static sf::RenderWindow window(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION, sf::Style::Default, settings);
+    _render_window.create(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION, sf::Style::Default, settings);
 
     std::cout << "Loading " << SPARQ_ICON_FILE << " ...\n";
     sf::Image icon;
     if (icon.loadFromFile(SPARQ_ICON_FILE))
     {
-        window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+        _render_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     }
     else
     {
@@ -76,16 +71,16 @@ int SPARQ::window_init()
         ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Failed to load icon.png!"});
     }
 
-    window.setFramerateLimit(SPARQ_MAX_FPS);
-    window.setVerticalSyncEnabled(config.ini["graphics"]["vsync"] == "1");
+    _render_window.setFramerateLimit(SPARQ_MAX_FPS);
+    _render_window.setVerticalSyncEnabled(config.ini["graphics"]["vsync"] == "1");
 
 #ifdef SPARQ_WINDOWS_BUILD
-    BOOL USE_DARK_MODE = true;
-    DwmSetWindowAttribute(window.getSystemHandle(), 20, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
-    ShowWindow(window.getSystemHandle(), SW_MAXIMIZE);
+    constexpr BOOL USE_DARK_MODE = true;
+    DwmSetWindowAttribute(_render_window.getSystemHandle(), 20, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
+    ShowWindow(_render_window.getSystemHandle(), SW_MAXIMIZE);
 #endif
 
-    if (!ImGui::SFML::Init(window))
+    if (!ImGui::SFML::Init(_render_window))
     {
         std::cerr << "IMGUI SFML Window Init failed!\n";
         return -1;
@@ -121,8 +116,6 @@ int SPARQ::window_init()
     ImGui::CreateContext();
     ImPlot::CreateContext();
 
-    _window = &window;
-
     config.apply_in_context_settings();
 
     std::cout << "\nInitialization complete!\n\n";
@@ -133,10 +126,10 @@ int SPARQ::window_init()
 int SPARQ::run()
 {
     sf::Clock deltaClock;
-    while (_window->isOpen())
+    while (_render_window.isOpen())
     {
         sf::Event event;
-        while (_window->pollEvent(event))
+        while (_render_window.pollEvent(event))
         {
             ImGui::SFML::ProcessEvent(event);
 
@@ -149,29 +142,21 @@ int SPARQ::run()
             {
                 // update the view to the new size of the window
                 sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
-                _window->setView(sf::View(visibleArea));
+                _render_window.setView(sf::View(visibleArea));
             }
         }
 
         // == UPDATE == //
-        ImGui::SFML::Update(*_window, deltaClock.restart());
+        ImGui::SFML::Update(_render_window, deltaClock.restart());
 
         // == DRAWING == //
         ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
 
-        _data_handler->update();
+        for (auto& w : _windows)
+        {
+            w.get().draw();
+        }
 
-        _console_window->update();
-        _plotting_window->draw();
-        _connection_window->draw();
-        _data_window->draw();
-        _measure_window->draw();
-        _view_window->draw();
-        _statistics_window->draw();
-        _settings_window->draw();
-#ifdef SPARQ_DEBUG_BUILD
-        _debug_window->draw();
-#endif
         // Render Notifications
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
@@ -180,15 +165,16 @@ int SPARQ::run()
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor(1);
 
-        _window->clear(sf::Color(20, 20, 20, 255));
-        ImGui::SFML::Render(*_window);
+        _render_window.clear(sf::Color(20, 20, 20, 255));
+        ImGui::SFML::Render(_render_window);
 
         if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
         }
-        _window->display();
+
+        _render_window.display();
     }
 
     return close_app();
@@ -199,7 +185,7 @@ int SPARQ::close_app()
     ImPlot::DestroyContext();
     ImGui::SFML::Shutdown();
 
-    _window->close();
+    _render_window.close();
 
     return 0;
 }

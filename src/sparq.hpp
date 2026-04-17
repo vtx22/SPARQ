@@ -49,23 +49,25 @@ public:
     SPARQ();
 
     int init();
-    void object_init();
     int window_init();
+    void register_windows();
     int run();
     int close_app();
 
 private:
-    Serial* _sp;
-    DataHandler* _data_handler;
-    ConsoleWindow* _console_window;
-    ConnectionWindow* _connection_window;
-    PlottingWindow* _plotting_window;
-    DataWindow* _data_window;
-    MeasureWindow* _measure_window;
-    ViewWindow* _view_window;
-    StatisticsWindow* _statistics_window;
-    SettingsWindow* _settings_window;
-    DebugWindow* _debug_window;
+    Serial _sp;
+    ConsoleWindow _console_window;
+    DataHandler _data_handler;
+    ConnectionWindow _connection_window;
+    PlottingWindow _plotting_window;
+    DataWindow _data_window;
+    MeasureWindow _measure_window;
+    ViewWindow _view_window;
+    StatisticsWindow _statistics_window;
+    SettingsWindow _settings_window;
+    DebugWindow _debug_window;
 
-    sf::RenderWindow* _window;
+    std::vector<std::reference_wrapper<Window>> _windows;
+
+    sf::RenderWindow _render_window;
 };
