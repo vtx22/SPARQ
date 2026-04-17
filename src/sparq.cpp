@@ -152,6 +152,7 @@ int SPARQ::run()
         // == DRAWING == //
         ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
 
+        _console_window.update();
         for (auto& w : _windows)
         {
             w.get().draw();
