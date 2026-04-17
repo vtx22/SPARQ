@@ -11,3 +11,5 @@ SPARQ
 /build
 /src/sfml-build
 src/nul
+*.aps
+*.APS
