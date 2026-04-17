@@ -1,15 +1,6 @@
 #pragma once
 
-#include <cmath>
-#include <iostream>
-#include <stdint.h>
-#include <string>
-#include <vector>
-
-#ifdef SPARQ_WINDOWS_BUILD
-    #include <dwmapi.h>
-    #include <windows.h>
-#endif
+#include "pch.hpp"
 
 #include "IconsFontAwesome6.h"
 #include "ImGuiNotify.hpp"

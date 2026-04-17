@@ -1,14 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-
-#include "implot.h"
-
-#include "sparq_config.h"
-
 #include "ImGuiNotify.hpp"
+#include "implot.h"
 #include "mini/ini.h"
+#include "sparq_config.h"
 
 class ConfigHandler
 {

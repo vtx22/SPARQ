@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Window.hpp"
-
 #include "imgui-SFML.h"
 #include "implot.h"
 #include "sparq_types.hpp"

@@ -1,19 +1,9 @@
 #pragma once
 
 #include "Window.hpp"
-
 #include "implot.h"
 #include "implot_internal.h"
-
 #include "sparq_types.hpp"
-
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-#include <string>
-#include <tuple>
-#include <utility>
-#include <vector>
 
 class PlottingWindow : public Window
 {
