@@ -35,3 +35,7 @@ FetchContent_MakeAvailable(SFML)
 #  Main sources
 # ─────────────────────────────────────────────
 add_subdirectory(src)
+
+target_precompile_headers(SPARQ PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/pch.hpp"
+)

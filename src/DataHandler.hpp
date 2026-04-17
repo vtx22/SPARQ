@@ -1,27 +1,11 @@
 #pragma once
 
-#include <algorithm>
-#include <array>
-#include <atomic>
-#include <chrono>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <mutex>
-#include <optional>
-#include <ranges>
-#include <thread>
-
+#include "ConsoleWindow.hpp"
+#include "ImGuiNotify.hpp"
 #include "implot.h"
 #include "serial.hpp"
 #include "sparq_config.h"
 #include "sparq_types.hpp"
-
-#include "ImGuiNotify.hpp"
-
-#include "ConsoleWindow.hpp"
 
 using namespace std::chrono;
 

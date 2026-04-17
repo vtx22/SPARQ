@@ -1,16 +1,8 @@
 #pragma once
 
-#include "Window.hpp"
-
-#include <array>
-#include <cmath>
-#include <limits>
-#include <string>
-#include <vector>
-
-#include "serial.hpp"
-
 #include "ImGuiNotify.hpp"
+#include "Window.hpp"
+#include "serial.hpp"
 
 class ConnectionWindow : public Window
 {

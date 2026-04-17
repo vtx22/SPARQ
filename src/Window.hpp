@@ -1,11 +1,9 @@
 #pragma once
 
-#include "imgui.h"
-
-#include "IconsFontAwesome6.h"
-
 #include "ConfigHandler.hpp"
 #include "DataHandler.hpp"
+#include "IconsFontAwesome6.h"
+#include "imgui.h"
 
 class Window
 {
