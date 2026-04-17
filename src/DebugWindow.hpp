@@ -2,6 +2,9 @@
 
 #include "Window.hpp"
 
+#include <cmath>
+#include <numbers>
+
 class DebugWindow : public Window
 {
 public:

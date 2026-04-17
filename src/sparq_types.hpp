@@ -110,6 +110,12 @@ struct sparq_dataset_t
         samples.clear();
         y_values.clear();
     }
+
+    void set_name(std::string const& new_name) noexcept
+    {
+        name = new_name;
+        std::snprintf(name_buffer, sizeof(name_buffer), "%s", name.c_str());
+    }
 };
 
 struct sparq_message_header_t
