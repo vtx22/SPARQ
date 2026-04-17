@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#ifdef BUILD_WINDOWS
+#ifdef SPARQ_WINDOWS_BUILD
     #include <dwmapi.h>
     #include <windows.h>
 #endif
@@ -36,6 +36,7 @@
 #include "ConnectionWindow.hpp"
 #include "ConsoleWindow.hpp"
 #include "DataWindow.hpp"
+#include "DebugWindow.hpp"
 #include "MeasureWindow.hpp"
 #include "PlottingWindow.hpp"
 #include "SettingsWindow.hpp"
@@ -64,6 +65,7 @@ private:
     ViewWindow* _view_window;
     StatisticsWindow* _statistics_window;
     SettingsWindow* _settings_window;
+    DebugWindow* _debug_window;
 
     sf::RenderWindow* _window;
 };

@@ -56,5 +56,5 @@ void ConfigHandler::write_config()
 
 void ConfigHandler::apply_in_context_settings()
 {
-    ImPlot::GetStyle().Colormap = static_cast<ImPlotColormap>(std::stoi(ini["color"]["colormap"]));
+    ImPlot::GetStyle().Colormap = (ImPlotColormap)std::stoi(ini["color"]["colormap"]);
 }

@@ -41,7 +41,7 @@ void ConsoleWindow::clear_log()
     Items.clear();
 }
 
-void ConsoleWindow::add_log(const char *fmt, ...) // IM_FMTARGS(2)
+void ConsoleWindow::add_log(const char* fmt, ...) // IM_FMTARGS(2)
 {
     // FIXME-OPT
     char buf[1024];
@@ -53,7 +53,7 @@ void ConsoleWindow::add_log(const char *fmt, ...) // IM_FMTARGS(2)
     Items.push_back(Strdup(buf));
 }
 
-void ConsoleWindow::add_data_to_log(const uint8_t *ids, const double *values, uint32_t length)
+void ConsoleWindow::add_data_to_log(const uint8_t* ids, const double* values, uint32_t length)
 {
     for (uint32_t i = 0; i < length; i++)
     {
@@ -61,7 +61,7 @@ void ConsoleWindow::add_data_to_log(const uint8_t *ids, const double *values, ui
     }
 }
 
-void ConsoleWindow::draw(const char *title)
+void ConsoleWindow::draw(const char* title)
 {
     if (!ImGui::Begin(title))
     {
@@ -89,7 +89,9 @@ void ConsoleWindow::draw(const char *title)
         if (ImGui::BeginPopupContextWindow())
         {
             if (ImGui::Selectable("Clear"))
+            {
                 clear_log();
+            }
             ImGui::EndPopup();
         }
 
@@ -118,10 +120,12 @@ void ConsoleWindow::draw(const char *title)
         // - Split them into same height items would be simpler and facilitate random-seeking into your list.
         // - Consider using manual call to IsRectVisible() and skipping extraneous decoration from your items.
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
-        for (const char *item : Items)
+        for (const char* item : Items)
         {
             if (!Filter.PassFilter(item))
+            {
                 continue;
+            }
 
             // Normally you would store more information in your item than just a string.
             // (e.g. make Items[] an array of structure, store color/type etc.)
@@ -138,16 +142,22 @@ void ConsoleWindow::draw(const char *title)
                 has_color = true;
             }
             if (has_color)
+            {
                 ImGui::PushStyleColor(ImGuiCol_Text, color);
+            }
             ImGui::TextUnformatted(item);
             if (has_color)
+            {
                 ImGui::PopStyleColor();
+            }
         }
 
         // Keep up at the bottom of the scroll region if we were already at the bottom at the beginning of the frame.
         // Using a scrollbar or mouse-wheel will take away from the bottom edge.
         if (ScrollToBottom || (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
+        {
             ImGui::SetScrollHereY(1.0f);
+        }
         ScrollToBottom = false;
 
         ImGui::PopStyleVar();
@@ -162,12 +172,14 @@ void ConsoleWindow::draw(const char *title)
     ImGui::SetNextItemWidth(-spacing_right);
     bool reclaim_focus = false;
     ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &text_edit_callbackStub, (void *)this))
+    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &text_edit_callbackStub, (void*)this))
     {
-        char *s = InputBuf;
+        char* s = InputBuf;
         Strtrim(s);
         if (s[0])
+        {
             exec_command(s);
+        }
         strcpy(s, "");
         reclaim_focus = true;
     }
@@ -175,13 +187,15 @@ void ConsoleWindow::draw(const char *title)
     // Auto-focus on window apparition
     ImGui::SetItemDefaultFocus();
     if (reclaim_focus)
+    {
         ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+    }
 
     ImGui::EndDisabled();
     ImGui::End();
 }
 
-void ConsoleWindow::exec_command(const char *command_line)
+void ConsoleWindow::exec_command(const char* command_line)
 {
     add_log("# %s\n", command_line);
 
@@ -189,12 +203,14 @@ void ConsoleWindow::exec_command(const char *command_line)
     // This isn't trying to be smart or optimal.
     HistoryPos = -1;
     for (int i = History.Size - 1; i >= 0; i--)
+    {
         if (Stricmp(History[i], command_line) == 0)
         {
             free(History[i]);
             History.erase(History.begin() + i);
             break;
         }
+    }
     History.push_back(Strdup(command_line));
 
     // Process command
@@ -206,13 +222,17 @@ void ConsoleWindow::exec_command(const char *command_line)
     {
         add_log("Commands:");
         for (int i = 0; i < Commands.Size; i++)
+        {
             add_log("- %s", Commands[i]);
+        }
     }
     else if (Stricmp(command_line, "HISTORY") == 0)
     {
         int first = History.Size - 10;
         for (int i = first > 0 ? first : 0; i < History.Size; i++)
+        {
             add_log("%3d: %s\n", i, History[i]);
+        }
     }
     else
     {
@@ -223,7 +243,7 @@ void ConsoleWindow::exec_command(const char *command_line)
     ScrollToBottom = true;
 }
 
-int ConsoleWindow::text_edit_callback(ImGuiInputTextCallbackData *data)
+int ConsoleWindow::text_edit_callback(ImGuiInputTextCallbackData* data)
 {
     // add_log("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
     switch (data->EventFlag)
@@ -233,21 +253,27 @@ int ConsoleWindow::text_edit_callback(ImGuiInputTextCallbackData *data)
         // Example of TEXT COMPLETION
 
         // Locate beginning of current word
-        const char *word_end = data->Buf + data->CursorPos;
-        const char *word_start = word_end;
+        const char* word_end = data->Buf + data->CursorPos;
+        const char* word_start = word_end;
         while (word_start > data->Buf)
         {
             const char c = word_start[-1];
             if (c == ' ' || c == '\t' || c == ',' || c == ';')
+            {
                 break;
+            }
             word_start--;
         }
 
         // Build a list of candidates
-        ImVector<const char *> candidates;
+        ImVector<const char*> candidates;
         for (int i = 0; i < Commands.Size; i++)
+        {
             if (Strnicmp(Commands[i], word_start, (int)(word_end - word_start)) == 0)
+            {
                 candidates.push_back(Commands[i]);
+            }
+        }
 
         if (candidates.Size == 0)
         {
@@ -271,12 +297,20 @@ int ConsoleWindow::text_edit_callback(ImGuiInputTextCallbackData *data)
                 int c = 0;
                 bool all_candidates_matches = true;
                 for (int i = 0; i < candidates.Size && all_candidates_matches; i++)
+                {
                     if (i == 0)
+                    {
                         c = toupper(candidates[i][match_len]);
+                    }
                     else if (c == 0 || c != toupper(candidates[i][match_len]))
+                    {
                         all_candidates_matches = false;
+                    }
+                }
                 if (!all_candidates_matches)
+                {
                     break;
+                }
                 match_len++;
             }
 
@@ -289,7 +323,9 @@ int ConsoleWindow::text_edit_callback(ImGuiInputTextCallbackData *data)
             // List matches
             add_log("Possible matches:\n");
             for (int i = 0; i < candidates.Size; i++)
+            {
                 add_log("- %s\n", candidates[i]);
+            }
         }
 
         break;
@@ -301,21 +337,29 @@ int ConsoleWindow::text_edit_callback(ImGuiInputTextCallbackData *data)
         if (data->EventKey == ImGuiKey_UpArrow)
         {
             if (HistoryPos == -1)
+            {
                 HistoryPos = History.Size - 1;
+            }
             else if (HistoryPos > 0)
+            {
                 HistoryPos--;
+            }
         }
         else if (data->EventKey == ImGuiKey_DownArrow)
         {
             if (HistoryPos != -1)
+            {
                 if (++HistoryPos >= History.Size)
+                {
                     HistoryPos = -1;
+                }
+            }
         }
 
         // A better implementation would preserve the data on the current input line along with cursor position.
         if (prev_history_pos != HistoryPos)
         {
-            const char *history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
+            const char* history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
             data->DeleteChars(0, data->BufTextLen);
             data->InsertChars(0, history_str);
         }
