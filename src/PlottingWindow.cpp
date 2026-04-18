@@ -5,6 +5,8 @@ void PlottingWindow::update_content()
     std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
     std::vector<sparq_dataset_t>& datasets = _data_handler.get_datasets_editable();
 
+    _in_focus_flag = ImGui::IsWindowFocused();
+
     ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
 
     if (_data_handler.plot_settings.type == sparq_plot_t::HEATMAP && _data_handler.plot_settings.heatmap_settings.equal)
@@ -156,6 +158,59 @@ void PlottingWindow::update_content()
         }
         }
         ImPlot::EndPlot();
+    }
+
+    show_highlighting_rectangle();
+}
+
+constexpr void PlottingWindow::show_highlighting_rectangle() const
+{
+    if (_highlight_window)
+    {
+        auto p0 = ImGui::GetWindowPos();
+
+        if (ImGui::IsWindowDocked())
+        {
+            p0.y += ImGui::GetFrameHeight();
+        }
+
+        auto const sz = ImGui::GetWindowSize();
+
+        ImVec2 const p1{
+            p0.x + sz.x,
+            ImGui::GetWindowPos().y + sz.y};
+
+        ImGui::GetForegroundDrawList()->AddRect(
+            p0,
+            p1,
+            IM_COL32(0, 102, 255, 255),
+            ImGui::GetStyle().WindowRounding,
+            0,
+            3.0f);
+    }
+}
+
+void PlottingWindow::before_imgui_begin()
+{
+    // Highlight selected plot
+    _highlight_window = _in_focus_flag;
+
+    if (_highlight_window)
+    {
+        constexpr ImVec4 highlight_color{0.f, 0.4f, 1.f, 1.f};
+
+        ImGui::PushStyleColor(ImGuiCol_TitleBg, highlight_color);
+        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, highlight_color);
+        ImGui::PushStyleColor(ImGuiCol_Tab, highlight_color);
+        ImGui::PushStyleColor(ImGuiCol_TabActive, highlight_color);
+    }
+}
+
+void PlottingWindow::after_imgui_end()
+{
+    if (_highlight_window)
+    {
+        ImGui::PopStyleColor(4);
     }
 }
 
