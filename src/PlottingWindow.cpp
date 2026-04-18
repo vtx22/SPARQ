@@ -155,9 +155,8 @@ void PlottingWindow::update_content()
             break;
         }
         }
+        ImPlot::EndPlot();
     }
-
-    ImPlot::EndPlot();
 }
 
 std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_downsampled(
