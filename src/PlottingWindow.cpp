@@ -180,10 +180,10 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
         ImGui::GetForegroundDrawList()->AddRect(
             p0,
             p1,
-            IM_COL32(0, 102, 255, 255),
+            spq::styling::plot_highlight_color,
             ImGui::GetStyle().WindowRounding,
             0,
-            3.0f);
+            spq::styling::plot_highlight_border_width);
     }
 }
 
@@ -194,12 +194,11 @@ void PlottingWindow::before_imgui_begin()
 
     if (_highlight_window)
     {
-        constexpr ImVec4 highlight_color{0.f, 0.4f, 1.f, 1.f};
-
-        ImGui::PushStyleColor(ImGuiCol_TitleBg, highlight_color);
-        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, highlight_color);
-        ImGui::PushStyleColor(ImGuiCol_Tab, highlight_color);
-        ImGui::PushStyleColor(ImGuiCol_TabActive, highlight_color);
+        constexpr auto color = spq::styling::plot_highlight_color;
+        ImGui::PushStyleColor(ImGuiCol_TitleBg, color);
+        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, color);
+        ImGui::PushStyleColor(ImGuiCol_Tab, color);
+        ImGui::PushStyleColor(ImGuiCol_TabActive, color);
     }
 }
 

@@ -5,6 +5,12 @@
 #include "implot_internal.h"
 #include "sparq_types.hpp"
 
+namespace spq::styling
+{
+    constexpr auto plot_highlight_color = IM_COL32(0, 102, 255, 255);
+    constexpr auto plot_highlight_border_width = 3.f;
+}
+
 class PlottingWindow : public Window
 {
 public:
