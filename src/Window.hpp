@@ -8,7 +8,7 @@
 class Window
 {
 public:
-    Window(const char* name, DataHandler& data_handler)
+    Window(std::string name, DataHandler& data_handler)
         : _name(name),
           _data_handler(data_handler),
           _config_handler(ConfigHandler::get_instance())
@@ -19,7 +19,7 @@ public:
 
     void draw()
     {
-        if (ImGui::Begin(_name))
+        if (ImGui::Begin(_name.c_str()))
         {
             update_content();
         }
@@ -30,7 +30,7 @@ public:
     virtual void update_content() = 0;
 
 protected:
-    const char* _name;
+    std::string _name;
     DataHandler& _data_handler;
     ConfigHandler& _config_handler;
 };
