@@ -5,7 +5,6 @@ SPARQ::SPARQ()
       _console_window(),
       _data_handler(_sp, _console_window),
       _connection_window(_data_handler, _sp),
-      _plotting_window(_data_handler, 0),
       _data_window(_data_handler),
       _measure_window(_data_handler),
       _view_window(_data_handler, [this]() {
@@ -39,7 +38,6 @@ void SPARQ::register_windows()
     _windows.clear();
 
     _windows.push_back(_connection_window);
-    _windows.push_back(_plotting_window);
     _windows.push_back(_data_window);
     _windows.push_back(_measure_window);
     _windows.push_back(_view_window);
@@ -48,6 +46,9 @@ void SPARQ::register_windows()
 #ifdef SPARQ_DEBUG_BUILD
     _windows.push_back(_debug_window);
 #endif
+
+    // add one default plotting window at startup
+    add_plotting_window();
 }
 
 int SPARQ::window_init()

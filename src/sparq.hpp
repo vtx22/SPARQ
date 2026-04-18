@@ -56,7 +56,6 @@ private:
     ConsoleWindow _console_window;
     DataHandler _data_handler;
     ConnectionWindow _connection_window;
-    PlottingWindow _plotting_window;
     DataWindow _data_window;
     MeasureWindow _measure_window;
     ViewWindow _view_window;
