@@ -157,6 +157,10 @@ int SPARQ::run()
         {
             w.get().draw();
         }
+        for (auto& pw : _dynamic_plotting_windows)
+        {
+            pw.get()->draw();
+        }
 
         // Render Notifications
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);

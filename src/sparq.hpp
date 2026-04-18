@@ -59,6 +59,7 @@ private:
     DebugWindow _debug_window;
 
     std::vector<std::reference_wrapper<Window>> _windows;
+    std::vector<std::unique_ptr<Window>> _dynamic_plotting_windows;
 
     sf::RenderWindow _render_window;
 };
