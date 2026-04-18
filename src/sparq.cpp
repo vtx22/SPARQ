@@ -5,10 +5,12 @@ SPARQ::SPARQ()
       _console_window(),
       _data_handler(_sp, _console_window),
       _connection_window(_data_handler, _sp),
-      _plotting_window(_data_handler),
+      _plotting_window(_data_handler, 0),
       _data_window(_data_handler),
       _measure_window(_data_handler),
-      _view_window(_data_handler),
+      _view_window(_data_handler, [this]() {
+          add_plotting_window();
+      }),
       _statistics_window(_data_handler),
       _settings_window(_data_handler),
       _debug_window(_data_handler)

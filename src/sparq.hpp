@@ -46,6 +46,12 @@ public:
     int close_app();
 
 private:
+    void add_plotting_window()
+    {
+        _dynamic_plotting_windows.push_back(
+            std::make_unique<PlottingWindow>(_data_handler, _dynamic_plotting_windows.size() + 1));
+    }
+
     Serial _sp;
     ConsoleWindow _console_window;
     DataHandler _data_handler;

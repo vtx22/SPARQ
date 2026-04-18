@@ -8,8 +8,8 @@
 class PlottingWindow : public Window
 {
 public:
-    PlottingWindow(DataHandler& data_handler)
-        : Window(ICON_FA_CHART_LINE "  Plot", data_handler)
+    PlottingWindow(DataHandler& data_handler, uint8_t id)
+        : Window(std::string(ICON_FA_CHART_LINE "  Plot##") + std::to_string(id), data_handler)
     {
     }
 

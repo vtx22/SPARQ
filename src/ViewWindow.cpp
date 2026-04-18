@@ -2,6 +2,14 @@
 
 void ViewWindow::update_content()
 {
+    if (ImGui::Button("Add Plot"))
+    {
+        if (_on_create_plotting_window)
+        {
+            _on_create_plotting_window();
+        }
+    }
+
     if (ImGui::CollapsingHeader("Plot Type"))
     {
         menu_plot_type();
