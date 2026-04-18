@@ -165,26 +165,28 @@ void PlottingWindow::update_content()
 
 constexpr void PlottingWindow::show_highlighting_rectangle() const
 {
-    if (_highlight_window)
+    if (!_highlight_window)
     {
-        auto p0 = ImGui::GetWindowPos();
-        auto const sz = ImGui::GetWindowSize();
-
-        ImVec2 const p1{p0.x + sz.x, p0.y + sz.y};
-
-        if (ImGui::IsWindowDocked())
-        {
-            p0.y += ImGui::GetFrameHeight();
-        }
-
-        ImGui::GetForegroundDrawList()->AddRect(
-            p0,
-            p1,
-            spq::styling::plot_highlight_color,
-            ImGui::GetStyle().WindowRounding,
-            0,
-            spq::styling::plot_highlight_border_width);
+        return;
     }
+
+    auto p0 = ImGui::GetWindowPos();
+    auto const sz = ImGui::GetWindowSize();
+
+    ImVec2 const p1{p0.x + sz.x, p0.y + sz.y};
+
+    if (ImGui::IsWindowDocked())
+    {
+        p0.y += ImGui::GetFrameHeight();
+    }
+
+    ImGui::GetForegroundDrawList()->AddRect(
+        p0,
+        p1,
+        spq::styling::plot_highlight_color,
+        ImGui::GetStyle().WindowRounding,
+        0,
+        spq::styling::plot_highlight_border_width);
 }
 
 void PlottingWindow::before_imgui_begin()
