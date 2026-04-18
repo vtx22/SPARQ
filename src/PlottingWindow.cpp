@@ -168,17 +168,14 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
     if (_highlight_window)
     {
         auto p0 = ImGui::GetWindowPos();
+        auto const sz = ImGui::GetWindowSize();
+
+        ImVec2 const p1{p0.x + sz.x, p0.y + sz.y};
 
         if (ImGui::IsWindowDocked())
         {
             p0.y += ImGui::GetFrameHeight();
         }
-
-        auto const sz = ImGui::GetWindowSize();
-
-        ImVec2 const p1{
-            p0.x + sz.x,
-            ImGui::GetWindowPos().y + sz.y};
 
         ImGui::GetForegroundDrawList()->AddRect(
             p0,
