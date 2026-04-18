@@ -14,7 +14,7 @@ namespace spq::styling
 class PlottingWindow : public Window
 {
 public:
-    PlottingWindow(DataHandler& data_handler, uint8_t id)
+    PlottingWindow(DataHandler& data_handler, std::size_t id)
         : Window(std::string(ICON_FA_CHART_LINE "  Plot##") + std::to_string(id), data_handler)
     {
     }
