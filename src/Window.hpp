@@ -19,15 +19,27 @@ public:
 
     void draw()
     {
+        before_imgui_begin();
+
         if (ImGui::Begin(_name.c_str()))
         {
             update_content();
         }
 
         ImGui::End();
+
+        after_imgui_end();
     }
 
     virtual void update_content() = 0;
+
+    virtual void before_imgui_begin()
+    {
+    }
+
+    virtual void after_imgui_end()
+    {
+    }
 
 protected:
     std::string _name;
