@@ -165,6 +165,11 @@ int SPARQ::run()
             pw.get()->draw();
         }
 
+        // Remove closed plotting windows
+        std::erase_if(_plotting_windows, [](const std::unique_ptr<Window>& w) {
+            return w->close_triggered();
+        });
+
         // Render Notifications
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);

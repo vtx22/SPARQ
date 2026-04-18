@@ -15,15 +15,29 @@ public:
     {
     }
 
+    Window(std::string name, DataHandler& data_handler, ImGuiWindowFlags flags)
+        : window_flags(flags),
+          _name(name),
+          _data_handler(data_handler),
+          _config_handler(ConfigHandler::get_instance())
+    {
+    }
+
     virtual ~Window() = default;
 
     void draw()
     {
         before_imgui_begin();
 
-        if (ImGui::Begin(_name.c_str()))
+        bool should_stay_open = true;
+        if (ImGui::Begin(_name.c_str(), has_close_button() ? &should_stay_open : nullptr, window_flags))
         {
             update_content();
+        }
+
+        if (!should_stay_open)
+        {
+            _close_triggered = true;
         }
 
         ImGui::End();
@@ -31,6 +45,12 @@ public:
         after_imgui_end();
     }
 
+    constexpr bool close_triggered() const noexcept
+    {
+        return _close_triggered;
+    }
+
+protected:
     virtual void update_content() = 0;
 
     virtual void before_imgui_begin()
@@ -41,8 +61,17 @@ public:
     {
     }
 
-protected:
+    [[nodiscard]]
+    constexpr virtual bool has_close_button() const noexcept
+    {
+        return false;
+    }
+
     std::string _name;
     DataHandler& _data_handler;
     ConfigHandler& _config_handler;
+    ImGuiWindowFlags window_flags{};
+
+private:
+    bool _close_triggered{};
 };

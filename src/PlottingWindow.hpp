@@ -22,6 +22,13 @@ public:
     void update_content() override;
     void before_imgui_begin() override;
     void after_imgui_end() override;
+
+    [[nodiscard]]
+    constexpr bool has_close_button() const noexcept override
+    {
+        return true;
+    }
+
     void update_axes();
     void config_limits_n_values();
 
