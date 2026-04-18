@@ -159,7 +159,7 @@ int SPARQ::run()
         {
             w.get().draw();
         }
-        for (auto& pw : _dynamic_plotting_windows)
+        for (auto& pw : _plotting_windows)
         {
             pw.get()->draw();
         }

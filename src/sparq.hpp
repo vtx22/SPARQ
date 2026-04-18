@@ -48,8 +48,8 @@ public:
 private:
     void add_plotting_window()
     {
-        _dynamic_plotting_windows.push_back(
-            std::make_unique<PlottingWindow>(_data_handler, _dynamic_plotting_windows.size() + 1));
+        _plotting_windows.push_back(
+            std::make_unique<PlottingWindow>(_data_handler, _plotting_windows.size() + 1));
     }
 
     Serial _sp;
@@ -65,7 +65,7 @@ private:
     DebugWindow _debug_window;
 
     std::vector<std::reference_wrapper<Window>> _windows;
-    std::vector<std::unique_ptr<Window>> _dynamic_plotting_windows;
+    std::vector<std::unique_ptr<Window>> _plotting_windows;
 
     sf::RenderWindow _render_window;
 };
