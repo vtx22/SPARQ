@@ -41,6 +41,15 @@ public:
     std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(sparq_dataset_t& dataset, std::size_t max_samples, double x_min, double x_max);
 
 private:
+    ImPlotFlags get_plot_flags();
+    void update_plot_contents();
+    void update_markers();
+
+    void handle_plot_timeseries();
+    void handle_plot_xy();
+    void handle_plot_single_value();
+    void handle_plot_heatmap();
+
     bool _highlight_window = false;
     bool _in_focus_flag = false;
 

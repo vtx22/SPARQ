@@ -2,167 +2,192 @@
 
 void PlottingWindow::update_content()
 {
-    using namespace spq::plotting;
-
     std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
-    std::vector<sparq_dataset_t>& datasets = _data_handler.get_datasets_editable();
 
     _in_focus_flag = ImGui::IsWindowFocused();
 
-    ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
+    update_plot_contents();
+    show_highlighting_rectangle();
+}
 
-    if (_data_handler.plot_settings.type == plot_type::heatmap && _data_handler.plot_settings.heatmap_settings.equal)
+void PlottingWindow::update_plot_contents()
+{
+    using namespace spq::plotting;
+
+    if (ImPlot::BeginPlot("##Plot", ImVec2(-1, -1), get_plot_flags()))
     {
-        plot_flags |= ImPlotFlags_Equal;
-    }
+        update_markers();
 
-    if (ImPlot::BeginPlot("##Data", ImVec2(-1, -1), plot_flags))
-    {
-        // update_axes();
-
-        auto& markers = _data_handler.get_markers();
-
-        std::size_t id = 0;
-        for (auto& m : markers)
-        {
-            if (m.hidden)
-            {
-                continue;
-            }
-
-            ImPlot::DragLineX(id++, &m.x, m.color, 2);
-            ImPlot::TagX(m.x, m.color, m.name.c_str());
-        }
-
-        ImPlotContext* ctx = ImPlot::GetCurrentContext();
-        ImPlotPlot* plot = ctx->CurrentPlot;
-
-        switch (_data_handler.plot_settings.type)
+        switch (_plot_settings.type)
         {
         case plot_type::timeseries:
-        {
-            uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
-
-            if (_config_handler.ini["downsampling"]["max_samples_type"] == "0" && datasets.size() != 0)
-            {
-                max_samples = static_cast<uint32_t>(std::round(max_samples / static_cast<double>(datasets.size())));
-            }
-
-            std::size_t i = 0;
-            for (auto& ds : datasets)
-            {
-                std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
-                ImPlot::SetNextLineStyle(ds.color, 3);
-
-                auto [x_values, y_values] = get_xy_downsampled(ds, max_samples, ImPlot::GetPlotLimits().X.Min, ImPlot::GetPlotLimits().X.Max);
-
-                if (ds.display_square)
-                {
-                    ImPlot::PlotStairs(
-                        (name + "###LP" + std::to_string(ds.id)).c_str(),
-                        x_values.data(),
-                        y_values.data(),
-                        y_values.size());
-                }
-                else
-                {
-                    ImPlot::PlotLine(
-                        (name + "###LP" + std::to_string(ds.id)).c_str(),
-                        x_values.data(),
-                        y_values.data(),
-                        y_values.size());
-                }
-
-                ImPlotItem* item = plot->Items.GetLegendItem(i);
-                if (ds.toggle_visibility)
-                {
-                    item->Show = !item->Show;
-                    ds.toggle_visibility = false;
-                }
-                if (ds.hide)
-                {
-                    item->Show = false;
-                    ds.hide = false;
-                }
-                if (ds.show)
-                {
-                    item->Show = true;
-                    ds.show = false;
-                }
-
-                ds.hidden = !item->Show;
-
-                i++;
-            }
+            handle_plot_timeseries();
             break;
-        }
+        case plot_type::xy:
+            handle_plot_xy();
+            break;
+        case plot_type::single_value:
+            handle_plot_single_value();
+            break;
         case plot_type::heatmap:
-        {
-            auto const& hms = _data_handler.plot_settings.heatmap_settings;
-
-            std::vector<float> values(hms.cols * hms.rows);
-
-            for (std::size_t i = 0; i < hms.cols * hms.rows; i++)
-            {
-                if (i >= datasets.size())
-                {
-                    break;
-                }
-
-                values[i] = datasets[i].y_values.back();
-            }
-
-            uint32_t bounds_max_x = hms.normalize_xy ? 1 : hms.cols;
-            uint32_t bounds_max_y = hms.normalize_xy ? 1 : hms.rows;
-
-            auto min_scale = hms.scale_min;
-            auto max_scale = hms.scale_max;
-
-            if (hms.autoscale)
-            {
-                auto const [min_it, max_it] = std::minmax_element(values.begin(), values.end());
-                min_scale = *min_it;
-                max_scale = *max_it;
-            }
-
-            if (hms.invert_scale)
-            {
-                auto const tmp = min_scale;
-                min_scale = max_scale;
-                max_scale = tmp;
-            }
-
-            auto rows = hms.rows;
-            auto cols = hms.cols;
-
-            if (hms.smooth)
-            {
-                values = bilinear_interpolate(values, hms.rows, hms.cols, hms.smoothing_factor);
-                rows = hms.rows * hms.smoothing_factor;
-                cols = hms.cols * hms.smoothing_factor;
-                bounds_max_x = cols;
-                bounds_max_y = rows;
-            }
-
-            ImPlot::PlotHeatmap(
-                "Heatmap",
-                values.data(),
-                rows,
-                cols,
-                min_scale,
-                max_scale,
-                hms.show_values ? "%.1f" : "",
-                {0, 0},
-                {static_cast<double>(bounds_max_x), static_cast<double>(bounds_max_y)},
-                0);
-
+            handle_plot_heatmap();
+            break;
+        default:
             break;
         }
-        }
+
         ImPlot::EndPlot();
     }
+}
 
-    show_highlighting_rectangle();
+void PlottingWindow::handle_plot_timeseries()
+{
+    auto& datasets = _data_handler.get_datasets_editable();
+
+    ImPlotContext* ctx = ImPlot::GetCurrentContext();
+    ImPlotPlot* plot = ctx->CurrentPlot;
+
+    uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
+
+    if (_config_handler.ini["downsampling"]["max_samples_type"] == "0" && datasets.size() != 0)
+    {
+        max_samples = static_cast<uint32_t>(std::round(max_samples / static_cast<double>(datasets.size())));
+    }
+
+    std::size_t i = 0;
+    for (auto& ds : datasets)
+    {
+        std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
+        ImPlot::SetNextLineStyle(ds.color, 3);
+
+        auto [x_values, y_values] = get_xy_downsampled(ds, max_samples, ImPlot::GetPlotLimits().X.Min, ImPlot::GetPlotLimits().X.Max);
+
+        if (ds.display_square)
+        {
+            ImPlot::PlotStairs(
+                (name + "###LP" + std::to_string(ds.id)).c_str(),
+                x_values.data(),
+                y_values.data(),
+                y_values.size());
+        }
+        else
+        {
+            ImPlot::PlotLine(
+                (name + "###LP" + std::to_string(ds.id)).c_str(),
+                x_values.data(),
+                y_values.data(),
+                y_values.size());
+        }
+
+        ImPlotItem* item = plot->Items.GetLegendItem(i);
+        if (ds.toggle_visibility)
+        {
+            item->Show = !item->Show;
+            ds.toggle_visibility = false;
+        }
+        if (ds.hide)
+        {
+            item->Show = false;
+            ds.hide = false;
+        }
+        if (ds.show)
+        {
+            item->Show = true;
+            ds.show = false;
+        }
+
+        ds.hidden = !item->Show;
+
+        i++;
+    }
+}
+
+void PlottingWindow::handle_plot_xy()
+{
+}
+
+void PlottingWindow::handle_plot_single_value()
+{
+}
+
+void PlottingWindow::handle_plot_heatmap()
+{
+    auto& datasets = _data_handler.get_datasets_editable();
+
+    auto const& hms = _data_handler.plot_settings.heatmap_settings;
+
+    std::vector<float> values(hms.cols * hms.rows);
+
+    for (std::size_t i = 0; i < hms.cols * hms.rows; i++)
+    {
+        if (i >= datasets.size())
+        {
+            break;
+        }
+
+        values[i] = datasets[i].y_values.back();
+    }
+
+    uint32_t bounds_max_x = hms.normalize_xy ? 1 : hms.cols;
+    uint32_t bounds_max_y = hms.normalize_xy ? 1 : hms.rows;
+
+    auto min_scale = hms.scale_min;
+    auto max_scale = hms.scale_max;
+
+    if (hms.autoscale)
+    {
+        auto const [min_it, max_it] = std::minmax_element(values.begin(), values.end());
+        min_scale = *min_it;
+        max_scale = *max_it;
+    }
+
+    if (hms.invert_scale)
+    {
+        auto const tmp = min_scale;
+        min_scale = max_scale;
+        max_scale = tmp;
+    }
+
+    auto rows = hms.rows;
+    auto cols = hms.cols;
+
+    if (hms.smooth)
+    {
+        values = bilinear_interpolate(values, hms.rows, hms.cols, hms.smoothing_factor);
+        rows = hms.rows * hms.smoothing_factor;
+        cols = hms.cols * hms.smoothing_factor;
+        bounds_max_x = cols;
+        bounds_max_y = rows;
+    }
+
+    ImPlot::PlotHeatmap(
+        "Heatmap",
+        values.data(),
+        rows,
+        cols,
+        min_scale,
+        max_scale,
+        hms.show_values ? "%.1f" : "",
+        {0, 0},
+        {static_cast<double>(bounds_max_x), static_cast<double>(bounds_max_y)},
+        0);
+}
+
+void PlottingWindow::update_markers()
+{
+    auto& markers = _data_handler.get_markers();
+
+    std::size_t id = 0;
+    for (auto& m : markers)
+    {
+        if (m.hidden)
+        {
+            continue;
+        }
+
+        ImPlot::DragLineX(id++, &m.x, m.color, 2);
+        ImPlot::TagX(m.x, m.color, m.name.c_str());
+    }
 }
 
 constexpr void PlottingWindow::show_highlighting_rectangle() const
@@ -189,6 +214,18 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
         ImGui::GetStyle().WindowRounding,
         0,
         spq::styling::plot_highlight_border_width);
+}
+
+ImPlotFlags PlottingWindow::get_plot_flags()
+{
+    ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
+
+    if (_data_handler.plot_settings.type == spq::plotting::plot_type::heatmap && _plot_settings.equal)
+    {
+        plot_flags |= ImPlotFlags_Equal;
+    }
+
+    return plot_flags;
 }
 
 void PlottingWindow::before_imgui_begin()

@@ -111,7 +111,6 @@ namespace spq::plotting
     struct heatmap_settings
     {
         bool normalize_xy = false;
-        bool equal = false;
         bool show_values = false;
         float scale_min = 0;
         float scale_max = 100;
@@ -129,6 +128,7 @@ namespace spq::plotting
         heatmap_settings heatmap_settings{};
         x_fit x_fit;
         y_fit y_fit;
+        bool equal{};
     };
 }
 
