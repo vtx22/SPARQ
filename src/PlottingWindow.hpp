@@ -15,7 +15,9 @@ class PlottingWindow : public Window
 {
 public:
     PlottingWindow(DataHandler& data_handler, std::size_t id)
-        : Window(std::string(ICON_FA_CHART_LINE "  Plot##") + std::to_string(id), data_handler)
+        : Window(
+              std::string(ICON_FA_CHART_LINE "  Plot") + "###PlottingWindow" + std::to_string(id),
+              data_handler)
     {
     }
 
@@ -29,7 +31,7 @@ public:
         return true;
     }
 
-    void update_axes();
+    // void update_axes();
     void config_limits_n_values();
 
     constexpr void show_highlighting_rectangle() const;
@@ -44,4 +46,6 @@ private:
 
     std::vector<double> _x_downsampled, _x_in_view;
     std::vector<double> _y_downsampled, _y_in_view;
+
+    spq::plotting::plot_settings _plot_settings;
 };

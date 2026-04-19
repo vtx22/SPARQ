@@ -219,7 +219,7 @@ void DataHandler::handle_command(sparq_message_t const& message)
         delete_dataset(message.command_data[0]);
         break;
     case sparq_sender_command_t::SWITCH_PLOT_TYPE:
-        plot_settings.type = (sparq_plot_t)message.command_data[0];
+        plot_settings.type = (spq::plotting::plot_type)message.command_data[0];
         break;
     default:
         break;

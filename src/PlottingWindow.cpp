@@ -2,6 +2,8 @@
 
 void PlottingWindow::update_content()
 {
+    using namespace spq::plotting;
+
     std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
     std::vector<sparq_dataset_t>& datasets = _data_handler.get_datasets_editable();
 
@@ -9,14 +11,14 @@ void PlottingWindow::update_content()
 
     ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
 
-    if (_data_handler.plot_settings.type == sparq_plot_t::HEATMAP && _data_handler.plot_settings.heatmap_settings.equal)
+    if (_data_handler.plot_settings.type == plot_type::heatmap && _data_handler.plot_settings.heatmap_settings.equal)
     {
         plot_flags |= ImPlotFlags_Equal;
     }
 
     if (ImPlot::BeginPlot("##Data", ImVec2(-1, -1), plot_flags))
     {
-        update_axes();
+        // update_axes();
 
         auto& markers = _data_handler.get_markers();
 
@@ -37,7 +39,7 @@ void PlottingWindow::update_content()
 
         switch (_data_handler.plot_settings.type)
         {
-        case sparq_plot_t::LINE:
+        case plot_type::timeseries:
         {
             uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
 
@@ -94,7 +96,7 @@ void PlottingWindow::update_content()
             }
             break;
         }
-        case sparq_plot_t::HEATMAP:
+        case plot_type::heatmap:
         {
             auto const& hms = _data_handler.plot_settings.heatmap_settings;
 
@@ -313,46 +315,46 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
     return {_x_downsampled, _y_downsampled};
 }
 
-void PlottingWindow::update_axes()
-{
-    // X Axis Setup
-    const char* x_axis_label = x_axis_types[_data_handler.x_axis_select].axis_label;
-
-    if (_data_handler.x_axis_select == 2)
-    {
-        ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
-    }
-
-    switch (_data_handler.x_fit_select)
-    {
-    // Manual
-    case 0:
-        ImPlot::SetupAxis(ImAxis_X1, x_axis_label, 0);
-        break;
-    // Fit all
-    default:
-    case 1:
-        ImPlot::SetupAxis(ImAxis_X1, x_axis_label, ImPlotAxisFlags_AutoFit);
-        break;
-    // Last N values
-    case 2:
-        config_limits_n_values();
-        break;
-    }
-
-    // Y Axis Setup
-    switch (_data_handler.y_fit_select)
-    {
-    // Manual
-    case 0:
-        ImPlot::SetupAxis(ImAxis_Y1, nullptr, 0);
-        break;
-    // Fit all
-    case 1:
-        ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
-        break;
-    }
-}
+// void PlottingWindow::update_axes()
+//{
+//     // X Axis Setup
+//     const char* x_axis_label = x_axis_types[_data_handler.x_axis_select].axis_label;
+//
+//     if (_data_handler.x_axis_select == 2)
+//     {
+//         ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
+//     }
+//
+//     switch (_data_handler.x_fit_select)
+//     {
+//     // Manual
+//     case 0:
+//         ImPlot::SetupAxis(ImAxis_X1, x_axis_label, 0);
+//         break;
+//     // Fit all
+//     default:
+//     case 1:
+//         ImPlot::SetupAxis(ImAxis_X1, x_axis_label, ImPlotAxisFlags_AutoFit);
+//         break;
+//     // Last N values
+//     case 2:
+//         config_limits_n_values();
+//         break;
+//     }
+//
+//     // Y Axis Setup
+//     switch (_data_handler.y_fit_select)
+//     {
+//     // Manual
+//     case 0:
+//         ImPlot::SetupAxis(ImAxis_Y1, nullptr, 0);
+//         break;
+//     // Fit all
+//     case 1:
+//         ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
+//         break;
+//     }
+// }
 
 void PlottingWindow::config_limits_n_values()
 {

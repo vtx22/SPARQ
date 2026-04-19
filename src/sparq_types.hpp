@@ -61,10 +61,86 @@ enum class sparq_sender_command_t : uint8_t
     SWITCH_PLOT_TYPE,      // Remote switch the plot type (e.g. line, heatmap, etc.)
 };
 
-enum class sparq_plot_t : uint8_t
+namespace spq::plotting
 {
-    LINE,
-    HEATMAP,
+    enum class plot_type : uint8_t
+    {
+        timeseries,
+        xy,
+        single_value,
+        bar,
+        pie,
+        heatmap,
+        fft,
+        COUNT
+    };
+
+    constexpr std::array<std::string_view, static_cast<std::size_t>(plot_type::COUNT)> plot_type_names{
+        "Timeseries",
+        "XY",
+        "Single Value",
+        "Bar Chart",
+        "Pie Chart",
+        "Heatmap",
+        "FFT"};
+
+    enum class x_fit : uint8_t
+    {
+        manual,
+        all,
+        last_n,
+        COUNT
+    };
+
+    constexpr std::array<std::string_view, static_cast<std::size_t>(x_fit::COUNT)> x_fit_names{
+        "Manual",
+        "All",
+        "Last N"};
+
+    enum class y_fit : uint8_t
+    {
+        manual,
+        all,
+        COUNT
+    };
+
+    constexpr std::array<std::string_view, static_cast<std::size_t>(y_fit::COUNT)> y_fit_names{
+        "Manual",
+        "All"};
+
+    struct heatmap_settings
+    {
+        bool normalize_xy = false;
+        bool equal = false;
+        bool show_values = false;
+        float scale_min = 0;
+        float scale_max = 100;
+        bool autoscale = false;
+        bool invert_scale = false;
+        int rows = 1;
+        int cols = 1;
+        bool smooth = false;
+        int smoothing_factor = 5;
+    };
+
+    struct plot_settings
+    {
+        plot_type type;
+        heatmap_settings heatmap_settings{};
+        x_fit x_fit;
+        y_fit y_fit;
+    };
+}
+
+struct sparq_marker_t
+{
+    std::string name = "M";
+    double x = 0;
+    double y = 0;
+    uint8_t ds_index;
+    int16_t ds_id = -1;
+    bool hidden = false;
+    ImVec4 color = ImVec4(1, 1, 1, 1);
 };
 
 struct sparq_dataset_t
@@ -279,48 +355,3 @@ struct sparq_message_t
     }
 };
 
-struct sparq_axis_t
-{
-    char const* dropdown_name;
-    char const* axis_label;
-};
-
-struct sparq_marker_t
-{
-    std::string name = "M";
-    double x = 0;
-    double y = 0;
-    uint8_t ds_index;
-    int16_t ds_id = -1;
-    bool hidden = false;
-    ImVec4 color = ImVec4(1, 1, 1, 1);
-};
-
-struct sparq_heatmap_settings_t
-{
-    bool normalize_xy = false;
-    bool equal = false;
-    bool show_values = false;
-    float scale_min = 0;
-    float scale_max = 100;
-    bool autoscale = false;
-    bool invert_scale = false;
-    int rows = 1;
-    int cols = 1;
-    bool smooth = false;
-    int smoothing_factor = 5;
-};
-
-struct sparq_plot_settings_t
-{
-    sparq_plot_t type = sparq_plot_t::LINE;
-    sparq_heatmap_settings_t heatmap_settings;
-};
-
-const sparq_axis_t X_AX_SAMPLES = {.dropdown_name = "Samples", .axis_label = "Samples"};
-const sparq_axis_t X_AX_REL_TIME = {.dropdown_name = "Relative Time", .axis_label = "Time [s]"};
-const sparq_axis_t X_AX_ABS_TIME = {.dropdown_name = "Date Time", .axis_label = "Date"};
-
-const std::array<sparq_axis_t, 3> x_axis_types = {X_AX_SAMPLES, X_AX_REL_TIME, X_AX_ABS_TIME};
-const std::array<char const*, 3> x_axis_fits = {"Manual", "Fit All", "Last N"};
-const std::array<char const*, 2> y_axis_fits = {"Manual", "Fit All"};

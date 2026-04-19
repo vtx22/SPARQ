@@ -20,10 +20,10 @@ public:
 
     void update_content();
 
+private:
     void menu_plot_type();
     void menu_x_axis();
     void menu_y_axis();
 
-private:
     CreatePlottingWindowCallback _on_create_plotting_window;
 };
