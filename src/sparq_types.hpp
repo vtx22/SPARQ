@@ -124,7 +124,7 @@ namespace spq::plotting
 
     struct plot_settings
     {
-        plot_type type;
+        plot_type type{};
         heatmap_settings heatmap_settings{};
         x_fit x_fit;
         y_fit y_fit;

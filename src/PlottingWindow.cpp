@@ -6,8 +6,19 @@ void PlottingWindow::update_content()
 
     _in_focus_flag = ImGui::IsWindowFocused();
 
+    update_window_name(); // TODO: Update only on plot type change
     update_plot_contents();
     show_highlighting_rectangle();
+}
+
+void PlottingWindow::update_window_name()
+{
+    using namespace spq::plotting;
+
+    _name = internal::window_name_prefix;
+    _name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
+    _name += "###PlottingWindow";
+    _name += std::to_string(_id);
 }
 
 void PlottingWindow::update_plot_contents()

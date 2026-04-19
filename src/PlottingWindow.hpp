@@ -11,12 +11,18 @@ namespace spq::styling
     constexpr auto plot_highlight_border_width = 3.f;
 }
 
+namespace spq::plotting::internal
+{
+    constexpr auto window_name_prefix = (ICON_FA_CHART_LINE "  Plot - ");
+}
+
 class PlottingWindow : public Window
 {
 public:
     PlottingWindow(DataHandler& data_handler, std::size_t id)
-        : Window(
-              std::string(ICON_FA_CHART_LINE "  Plot") + "###PlottingWindow" + std::to_string(id),
+        : _id(id),
+          Window(
+              std::string(spq::plotting::internal::window_name_prefix) + "###PlottingWindow" + std::to_string(id),
               data_handler)
     {
     }
@@ -50,6 +56,8 @@ private:
     void handle_plot_single_value();
     void handle_plot_heatmap();
 
+    void update_window_name();
+
     bool _highlight_window = false;
     bool _in_focus_flag = false;
 
@@ -57,4 +65,5 @@ private:
     std::vector<double> _y_downsampled, _y_in_view;
 
     spq::plotting::plot_settings _plot_settings;
+    std::size_t _id{};
 };
