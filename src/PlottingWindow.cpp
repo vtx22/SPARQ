@@ -201,6 +201,7 @@ void PlottingWindow::before_imgui_begin()
         ImGui::PushStyleColor(ImGuiCol_TitleBgActive, color);
         ImGui::PushStyleColor(ImGuiCol_Tab, color);
         ImGui::PushStyleColor(ImGuiCol_TabActive, color);
+        ImGui::PushStyleColor(ImGuiCol_TabHovered, color);
     }
 }
 
@@ -208,7 +209,7 @@ void PlottingWindow::after_imgui_end()
 {
     if (_highlight_window)
     {
-        ImGui::PopStyleColor(4);
+        ImGui::PopStyleColor(5);
     }
 }
 
