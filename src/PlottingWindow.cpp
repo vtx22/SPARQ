@@ -17,7 +17,7 @@ void PlottingWindow::update_window_name()
 
     _name = internal::window_name_prefix;
     _name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
-    _name += "###PlottingWindow";
+    _name += internal::window_name_id_prefix;
     _name += std::to_string(_id);
 }
 

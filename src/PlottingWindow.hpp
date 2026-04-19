@@ -14,6 +14,7 @@ namespace spq::styling
 namespace spq::plotting::internal
 {
     constexpr auto window_name_prefix = (ICON_FA_CHART_LINE "  Plot - ");
+    constexpr auto window_name_id_prefix = "###PlottingWindow";
 }
 
 class PlottingWindow : public Window
@@ -22,7 +23,9 @@ public:
     PlottingWindow(DataHandler& data_handler, std::size_t id)
         : _id(id),
           Window(
-              std::string(spq::plotting::internal::window_name_prefix) + "###PlottingWindow" + std::to_string(id),
+              std::string(spq::plotting::internal::window_name_prefix)
+                  + spq::plotting::internal::window_name_id_prefix
+                  + std::to_string(id),
               data_handler)
     {
     }
