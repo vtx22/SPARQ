@@ -21,6 +21,8 @@ public:
     void update_content();
 
 private:
+    void show_plot_settings(spq::plotting::plot_settings& settings);
+
     void menu_plot_type();
     void menu_x_axis();
     void menu_y_axis();

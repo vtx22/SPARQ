@@ -12,8 +12,26 @@ void ViewWindow::update_content()
 
     ImGui::SeparatorText("Plot Settings");
 
-    static int selected{};
-    ImGui::Combo("Type", &selected, spq::plotting::plot_type_names.data(), spq::plotting::plot_type_names.size());
+    static spq::plotting::plot_settings test_settings;
+    if (true) // Plot selected
+    {
+        show_plot_settings(test_settings);
+    }
+    else
+    {
+        ImGui::Text("No plot selected!");
+    }
+}
+
+void ViewWindow::show_plot_settings(spq::plotting::plot_settings& settings)
+{
+    using namespace spq::plotting;
+
+    auto selected_plot_type = static_cast<int>(settings.type);
+    if (ImGui::Combo("Type", &selected_plot_type, spq::plotting::plot_type_names.data(), spq::plotting::plot_type_names.size()))
+    {
+        settings.type = static_cast<plot_type>(selected_plot_type);
+    }
 }
 
 // void ViewWindow::menu_plot_type()
