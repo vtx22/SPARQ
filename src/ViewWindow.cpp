@@ -12,14 +12,13 @@ void ViewWindow::update_content()
 
     ImGui::SeparatorText("Plot Settings");
 
-    static spq::plotting::plot_settings test_settings;
-    if (true) // Plot selected
+    if (_get_selected_plot_settings)
     {
-        show_plot_settings(test_settings);
-    }
-    else
-    {
-        ImGui::Text("No plot selected!");
+        if (auto* settings = _get_selected_plot_settings())
+        {
+            show_plot_settings(*settings);
+            return;
+        }
     }
 }
 

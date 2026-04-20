@@ -7,9 +7,10 @@ SPARQ::SPARQ()
       _connection_window(_data_handler, _sp),
       _data_window(_data_handler),
       _measure_window(_data_handler),
-      _view_window(_data_handler, [this]() {
-          add_plotting_window();
-      }),
+      _view_window(
+          _data_handler,
+          [this]() { add_plotting_window(); },
+          [this]() { return get_selected_plot_settings(); }),
       _statistics_window(_data_handler),
       _settings_window(_data_handler),
       _debug_window(_data_handler)
@@ -165,10 +166,7 @@ int SPARQ::run()
             pw.get()->draw();
         }
 
-        // Remove closed plotting windows
-        std::erase_if(_plotting_windows, [](const std::unique_ptr<Window>& w) {
-            return w->close_triggered();
-        });
+        cleanup_closed_plotting_windows();
 
         // Render Notifications
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
@@ -201,4 +199,77 @@ int SPARQ::close_app()
     _render_window.close();
 
     return 0;
+}
+
+void SPARQ::add_plotting_window()
+{
+    auto const id = _next_id++;
+
+    _plotting_windows.push_back(
+        std::make_unique<PlottingWindow>(
+            _data_handler,
+            id,
+            [this](std::size_t selected_id) {
+                select_plot(selected_id);
+            }));
+
+    select_plot(id); // optional: new plot becomes selected immediately
+}
+
+PlottingWindow* SPARQ::find_plot_by_id(std::size_t id) noexcept
+{
+    for (auto& plot : _plotting_windows)
+    {
+        if (plot->id() == id)
+        {
+            return plot.get();
+        }
+    }
+
+    return nullptr;
+}
+
+spq::plotting::plot_settings* SPARQ::get_selected_plot_settings() noexcept
+{
+    if (auto* plot = find_plot_by_id(_selected_plot_id))
+    {
+        return &plot->settings();
+    }
+
+    return nullptr;
+}
+
+void SPARQ::select_plot(std::size_t id) noexcept
+{
+    _selected_plot_id = id;
+    sync_plot_selection_visuals();
+}
+
+void SPARQ::sync_plot_selection_visuals() noexcept
+{
+    for (auto& plot : _plotting_windows)
+    {
+        plot->set_selected(plot->id() == _selected_plot_id);
+    }
+}
+
+void SPARQ::cleanup_closed_plotting_windows()
+{
+    std::erase_if(_plotting_windows, [](auto const& w) {
+        return w->close_triggered();
+    });
+
+    if (find_plot_by_id(_selected_plot_id) == nullptr)
+    {
+        if (_plotting_windows.empty())
+        {
+            _selected_plot_id = spq::plotting::internal::invalid_plot_id;
+        }
+        else
+        {
+            _selected_plot_id = _plotting_windows.back()->id();
+        }
+    }
+
+    sync_plot_selection_visuals();
 }

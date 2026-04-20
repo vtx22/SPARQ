@@ -46,11 +46,12 @@ public:
     int close_app();
 
 private:
-    void add_plotting_window()
-    {
-        _plotting_windows.push_back(
-            std::make_unique<PlottingWindow>(_data_handler, _next_id++));
-    }
+    void add_plotting_window();
+    PlottingWindow* find_plot_by_id(std::size_t id) noexcept;
+    spq::plotting::plot_settings* get_selected_plot_settings() noexcept;
+    void select_plot(std::size_t id) noexcept;
+    void sync_plot_selection_visuals() noexcept;
+    void cleanup_closed_plotting_windows();
 
     Serial _sp;
     ConsoleWindow _console_window;
@@ -64,9 +65,10 @@ private:
     DebugWindow _debug_window;
 
     std::vector<std::reference_wrapper<Window>> _windows;
-    std::vector<std::unique_ptr<Window>> _plotting_windows;
+    std::vector<std::unique_ptr<PlottingWindow>> _plotting_windows;
 
     sf::RenderWindow _render_window;
 
     std::size_t _next_id{};
+    std::size_t _selected_plot_id{spq::plotting::internal::invalid_plot_id};
 };

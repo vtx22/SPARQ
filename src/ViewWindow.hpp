@@ -9,16 +9,19 @@ class ViewWindow : public Window
 {
 public:
     using CreatePlottingWindowCallback = std::function<void()>;
+    using GetSelectedPlotSettingsCallback = std::function<spq::plotting::plot_settings*()>;
 
     ViewWindow(
         DataHandler& data_handler,
-        CreatePlottingWindowCallback on_create_plotting_window)
+        CreatePlottingWindowCallback on_create_plotting_window,
+        GetSelectedPlotSettingsCallback get_selected_plot_settings)
         : Window(ICON_FA_SLIDERS "  View", data_handler),
-          _on_create_plotting_window(std::move(on_create_plotting_window))
+          _on_create_plotting_window(std::move(on_create_plotting_window)),
+          _get_selected_plot_settings(std::move(get_selected_plot_settings))
     {
     }
 
-    void update_content();
+    void update_content() override;
 
 private:
     void show_plot_settings(spq::plotting::plot_settings& settings);
@@ -28,4 +31,5 @@ private:
     void menu_y_axis();
 
     CreatePlottingWindowCallback _on_create_plotting_window;
+    GetSelectedPlotSettingsCallback _get_selected_plot_settings;
 };

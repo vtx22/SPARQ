@@ -15,13 +15,17 @@ namespace spq::plotting::internal
 {
     constexpr auto window_name_prefix = (ICON_FA_CHART_LINE "  Plot - ");
     constexpr auto window_name_id_prefix = "###PlottingWindow";
+    constexpr auto invalid_plot_id = std::numeric_limits<std::size_t>::max();
 }
 
 class PlottingWindow : public Window
 {
 public:
-    PlottingWindow(DataHandler& data_handler, std::size_t id)
+    using SelectCallback = std::function<void(std::size_t)>;
+
+    PlottingWindow(DataHandler& data_handler, std::size_t id, SelectCallback on_selected)
         : _id(id),
+          _on_selected(std::move(on_selected)),
           Window(
               std::string(spq::plotting::internal::window_name_prefix)
                   + spq::plotting::internal::window_name_id_prefix
@@ -49,6 +53,23 @@ public:
 
     std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(sparq_dataset_t& dataset, std::size_t max_samples, double x_min, double x_max);
 
+    [[nodiscard]]
+    spq::plotting::plot_settings& settings() noexcept
+    {
+        return _plot_settings;
+    }
+
+    [[nodiscard]]
+    constexpr auto id() const noexcept
+    {
+        return _id;
+    }
+
+    constexpr void set_selected(bool selected) noexcept
+    {
+        _highlight_window = selected;
+    }
+
 private:
     ImPlotFlags get_plot_flags();
     void update_plot_contents();
@@ -61,11 +82,11 @@ private:
 
     void update_window_name();
 
-    bool _highlight_window = false;
-
     std::vector<double> _x_downsampled, _x_in_view;
     std::vector<double> _y_downsampled, _y_in_view;
 
+    bool _highlight_window = false;
+    SelectCallback _on_selected;
     spq::plotting::plot_settings _plot_settings;
     std::size_t _id{};
 };
