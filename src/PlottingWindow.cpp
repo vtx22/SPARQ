@@ -208,14 +208,17 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
         return;
     }
 
+    auto constexpr border_width = spq::styling::plot_highlight_border_width;
     auto p0 = ImGui::GetWindowPos();
     auto const sz = ImGui::GetWindowSize();
-
-    ImVec2 const p1{p0.x + sz.x, p0.y + sz.y};
+    ImVec2 p1{p0.x + sz.x, p0.y + sz.y};
 
     if (ImGui::IsWindowDocked())
     {
+        p0.x += border_width;
         p0.y += ImGui::GetFrameHeight();
+        p1.x += border_width;
+        p1.y -= border_width;
     }
 
     ImGui::GetForegroundDrawList()->AddRect(
@@ -224,7 +227,7 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
         spq::styling::plot_highlight_color,
         ImGui::GetStyle().WindowRounding,
         0,
-        spq::styling::plot_highlight_border_width);
+        border_width);
 }
 
 ImPlotFlags PlottingWindow::get_plot_flags()
