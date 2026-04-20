@@ -98,8 +98,6 @@ public:
             }));
     }
 
-    spq::plotting::plot_settings plot_settings;
-
     [[nodiscard]]
     constexpr std::mutex& get_data_mutex() noexcept
     {

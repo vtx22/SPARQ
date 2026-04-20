@@ -125,7 +125,7 @@ void PlottingWindow::handle_plot_heatmap()
 {
     auto& datasets = _data_handler.get_datasets_editable();
 
-    auto const& hms = _data_handler.plot_settings.heatmap_settings;
+    auto const& hms = _plot_settings.heatmap_settings;
 
     std::vector<float> values(hms.cols * hms.rows);
 
@@ -234,7 +234,7 @@ ImPlotFlags PlottingWindow::get_plot_flags()
 {
     ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
 
-    if (_data_handler.plot_settings.type == spq::plotting::plot_type::heatmap && _plot_settings.equal)
+    if (_plot_settings.type == spq::plotting::plot_type::heatmap && _plot_settings.equal)
     {
         plot_flags |= ImPlotFlags_Equal;
     }
