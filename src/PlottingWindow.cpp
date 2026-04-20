@@ -219,15 +219,17 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
     auto const sz = ImGui::GetWindowSize();
     ImVec2 p1{p0.x + sz.x, p0.y + sz.y};
 
+    p0.x += border_width;
+    p0.y += border_width;
+    p1.x -= border_width;
+    p1.y -= border_width;
+
     if (ImGui::IsWindowDocked())
     {
-        p0.x += border_width;
         p0.y += ImGui::GetFrameHeight();
-        p1.x += border_width;
-        p1.y -= border_width;
     }
 
-    ImGui::GetForegroundDrawList()->AddRect(
+    ImGui::GetWindowDrawList()->AddRect(
         p0,
         p1,
         spq::styling::plot_highlight_color,
@@ -259,6 +261,8 @@ void PlottingWindow::before_imgui_begin()
         ImGui::PushStyleColor(ImGuiCol_Tab, color);
         ImGui::PushStyleColor(ImGuiCol_TabActive, color);
         ImGui::PushStyleColor(ImGuiCol_TabHovered, color);
+        ImGui::PushStyleColor(ImGuiCol_TabUnfocused, color);
+        ImGui::PushStyleColor(ImGuiCol_TabUnfocusedActive, color);
     }
 }
 
@@ -267,7 +271,7 @@ void PlottingWindow::after_imgui_end()
     // Remove highlight styles. Keep in sync with after_imgui_end()
     if (_highlight_window)
     {
-        ImGui::PopStyleColor(5);
+        ImGui::PopStyleColor(7);
     }
 }
 
