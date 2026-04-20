@@ -62,7 +62,6 @@ private:
     void update_window_name();
 
     bool _highlight_window = false;
-    bool _in_focus_flag = false;
 
     std::vector<double> _x_downsampled, _x_in_view;
     std::vector<double> _y_downsampled, _y_in_view;

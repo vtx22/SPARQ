@@ -4,7 +4,13 @@ void PlottingWindow::update_content()
 {
     std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
 
-    _in_focus_flag = ImGui::IsWindowFocused();
+    if (ImGui::IsWindowFocused())
+    {
+        if (_on_selected)
+        {
+            _on_selected(_id);
+        }
+    }
 
     update_window_name(); // TODO: Update only on plot type change
     update_plot_contents();
@@ -244,9 +250,7 @@ ImPlotFlags PlottingWindow::get_plot_flags()
 
 void PlottingWindow::before_imgui_begin()
 {
-    // Highlight selected plot
-    _highlight_window = _in_focus_flag;
-
+    // Add highlight styles. Keep in sync with after_imgui_end()
     if (_highlight_window)
     {
         constexpr auto color = spq::styling::plot_highlight_color;
@@ -260,6 +264,7 @@ void PlottingWindow::before_imgui_begin()
 
 void PlottingWindow::after_imgui_end()
 {
+    // Remove highlight styles. Keep in sync with after_imgui_end()
     if (_highlight_window)
     {
         ImGui::PopStyleColor(5);
