@@ -12,10 +12,8 @@ void ViewWindow::update_content()
 
     ImGui::SeparatorText("Plot Settings");
 
-    int selected{};
-    constexpr auto plot_types = std::array<const char*, 7>{"Timeseries", "XY", "Heatmap", "FFT", "Bar", "Pie", "Single Value"};
-
-    ImGui::Combo("Type", &selected, plot_types.data(), plot_types.size());
+    static int selected{};
+    ImGui::Combo("Type", &selected, spq::plotting::plot_type_names.data(), spq::plotting::plot_type_names.size());
 }
 
 // void ViewWindow::menu_plot_type()

@@ -75,7 +75,7 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<std::string_view, static_cast<std::size_t>(plot_type::COUNT)> plot_type_names{
+    constexpr std::array<const char*, static_cast<std::size_t>(plot_type::COUNT)> plot_type_names{
         "Timeseries",
         "XY",
         "Single Value",
@@ -92,7 +92,7 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<std::string_view, static_cast<std::size_t>(x_fit::COUNT)> x_fit_names{
+    constexpr std::array<const char*, static_cast<std::size_t>(x_fit::COUNT)> x_fit_names{
         "Manual",
         "All",
         "Last N"};
@@ -104,7 +104,7 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<std::string_view, static_cast<std::size_t>(y_fit::COUNT)> y_fit_names{
+    constexpr std::array<const char*, static_cast<std::size_t>(y_fit::COUNT)> y_fit_names{
         "Manual",
         "All"};
 
