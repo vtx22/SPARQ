@@ -126,8 +126,8 @@ namespace spq::plotting
     {
         plot_type type{};
         heatmap_settings heatmap_settings{};
-        x_fit x_fit;
-        y_fit y_fit;
+        x_fit x_fit{};
+        y_fit y_fit{};
         bool equal{};
     };
 }
