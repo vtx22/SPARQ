@@ -253,7 +253,8 @@ ImPlotFlags PlottingWindow::get_plot_flags()
 void PlottingWindow::before_imgui_begin()
 {
     // Add highlight styles. Keep in sync with after_imgui_end()
-    if (_highlight_window)
+    _highlight_colors_pushed = _highlight_window;
+    if (_highlight_colors_pushed)
     {
         constexpr auto color = spq::styling::plot_highlight_color;
         ImGui::PushStyleColor(ImGuiCol_TitleBg, color);
@@ -269,7 +270,7 @@ void PlottingWindow::before_imgui_begin()
 void PlottingWindow::after_imgui_end()
 {
     // Remove highlight styles. Keep in sync with after_imgui_end()
-    if (_highlight_window)
+    if (_highlight_colors_pushed)
     {
         ImGui::PopStyleColor(7);
     }

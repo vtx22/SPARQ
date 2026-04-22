@@ -86,6 +86,7 @@ private:
     std::vector<double> _y_downsampled, _y_in_view;
 
     bool _highlight_window = false;
+    bool _highlight_colors_pushed = false;
     SelectCallback _on_selected;
     spq::plotting::plot_settings _plot_settings;
     std::size_t _id{};
