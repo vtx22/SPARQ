@@ -49,9 +49,9 @@ private:
     void add_plotting_window();
     std::optional<std::reference_wrapper<PlottingWindow>> find_plot_by_id(std::size_t id) noexcept;
     std::optional<std::reference_wrapper<spq::plotting::plot_settings>> get_selected_plot_settings() noexcept;
-    void select_plot(std::size_t id) noexcept;
-    void sync_plot_selection_visuals() noexcept;
-    void cleanup_closed_plotting_windows();
+    constexpr void select_plot(std::size_t id) noexcept;
+    constexpr void highlight_selected_plot_only() noexcept;
+    constexpr void cleanup_closed_plotting_windows() noexcept;
 
     Serial _sp;
     ConsoleWindow _console_window;

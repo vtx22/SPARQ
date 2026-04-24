@@ -236,7 +236,7 @@ std::optional<std::reference_wrapper<spq::plotting::plot_settings>> SPARQ::get_s
         return std::nullopt;
     }
 
-    auto plot = find_plot_by_id(_selected_plot_id.value());
+    auto plot = find_plot_by_id(*_selected_plot_id);
 
     if (!plot)
     {
@@ -246,32 +246,39 @@ std::optional<std::reference_wrapper<spq::plotting::plot_settings>> SPARQ::get_s
     return plot->get().settings();
 }
 
-void SPARQ::select_plot(std::size_t id) noexcept
+constexpr void SPARQ::select_plot(std::size_t id) noexcept
 {
     _selected_plot_id = id;
-    sync_plot_selection_visuals();
+    highlight_selected_plot_only();
 }
 
-void SPARQ::sync_plot_selection_visuals() noexcept
+constexpr void SPARQ::highlight_selected_plot_only() noexcept
 {
+    if (!_selected_plot_id)
+    {
+        return;
+    }
+
     for (auto& plot : _plotting_windows)
     {
-        plot->set_selected(plot->id() == _selected_plot_id);
+        plot->set_selected(plot->id() == *_selected_plot_id);
     }
 }
 
-void SPARQ::cleanup_closed_plotting_windows()
+constexpr void SPARQ::cleanup_closed_plotting_windows() noexcept
 {
-    // Delete windows that should close
-    std::erase_if(_plotting_windows, [](auto const& w) {
-        return w->close_triggered();
+    // Delete windows that should close and deselect if it was selected
+    std::erase_if(_plotting_windows, [this](auto const& w) {
+        if (!w->close_triggered())
+        {
+            return false;
+        }
+
+        if (_selected_plot_id && w->id() == *_selected_plot_id)
+        {
+            _selected_plot_id = std::nullopt;
+        }
+
+        return true;
     });
-
-    // See if currently selected plot is still there
-    if (!find_plot_by_id(_selected_plot_id.value()))
-    {
-        _selected_plot_id = std::nullopt;
-    }
-
-    sync_plot_selection_visuals();
 }
