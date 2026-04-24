@@ -223,7 +223,7 @@ constexpr void SPARQ::add_plotting_window()
     select_plot(id);
 }
 
-std::optional<std::reference_wrapper<PlottingWindow>> SPARQ::find_plot_by_id(std::size_t id) noexcept
+constexpr std::optional<std::reference_wrapper<PlottingWindow>> SPARQ::find_plot_by_id(std::size_t id) noexcept
 {
     for (auto& plot : _plotting_windows)
     {
@@ -236,7 +236,7 @@ std::optional<std::reference_wrapper<PlottingWindow>> SPARQ::find_plot_by_id(std
     return std::nullopt;
 }
 
-std::optional<std::reference_wrapper<spq::plotting::plot_settings>> SPARQ::get_selected_plot_settings() noexcept
+constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings>> SPARQ::get_selected_plot_settings() noexcept
 {
     if (!_selected_plot_id)
     {
