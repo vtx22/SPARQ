@@ -156,17 +156,7 @@ int SPARQ::run()
         // == DRAWING == //
         ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
 
-        _console_window.update();
-        for (auto& w : _windows)
-        {
-            w.get().draw();
-        }
-        for (auto& pw : _plotting_windows)
-        {
-            pw.get()->draw();
-        }
-
-        cleanup_closed_plotting_windows();
+        update_windows();
 
         // Render Notifications
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
@@ -201,7 +191,24 @@ int SPARQ::close_app()
     return 0;
 }
 
-void SPARQ::add_plotting_window()
+void SPARQ::update_windows()
+{
+    _console_window.update();
+
+    for (auto& w : _windows)
+    {
+        w.get().draw();
+    }
+
+    for (auto& pw : _plotting_windows)
+    {
+        pw.get()->draw();
+    }
+
+    cleanup_closed_plotting_windows();
+}
+
+constexpr void SPARQ::add_plotting_window()
 {
     auto const id = _next_id++;
 

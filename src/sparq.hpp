@@ -42,6 +42,7 @@ public:
     int init();
     int window_init();
     void register_windows();
+    void update_windows();
     int run();
     int close_app();
 
