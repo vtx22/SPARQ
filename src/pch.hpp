@@ -30,3 +30,5 @@
     #include <dwmapi.h>
     #include <windows.h>
 #endif
+
+#include "Assertions.h"
