@@ -15,7 +15,6 @@ namespace spq::plotting::internal
 {
     constexpr auto window_name_prefix = (ICON_FA_CHART_LINE "  Plot - ");
     constexpr auto window_name_id_prefix = "###PlottingWindow";
-    constexpr auto invalid_plot_id = std::numeric_limits<std::size_t>::max();
 }
 
 class PlottingWindow : public Window
