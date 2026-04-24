@@ -269,7 +269,7 @@ void PlottingWindow::before_imgui_begin()
 
 void PlottingWindow::after_imgui_end()
 {
-    // Remove highlight styles. Keep in sync with after_imgui_end()
+    // Remove highlight styles. Keep in sync with before_imgui_begin()
     if (_highlight_colors_pushed)
     {
         ImGui::PopStyleColor(7);
