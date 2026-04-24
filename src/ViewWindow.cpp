@@ -4,21 +4,15 @@ void ViewWindow::update_content()
 {
     if (ImGui::Button("Add Plot"))
     {
-        if (_on_create_plotting_window)
-        {
-            _on_create_plotting_window();
-        }
+        _on_create_plotting_window();
     }
 
     ImGui::SeparatorText("Plot Settings");
 
-    if (_get_selected_plot_settings)
+    if (auto settings = _get_selected_plot_settings())
     {
-        if (auto settings = _get_selected_plot_settings())
-        {
-            show_plot_settings(settings.value());
-            return;
-        }
+        show_plot_settings(settings.value());
+        return;
     }
 }
 

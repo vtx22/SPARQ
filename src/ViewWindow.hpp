@@ -19,6 +19,8 @@ public:
           _on_create_plotting_window(std::move(on_create_plotting_window)),
           _get_selected_plot_settings(std::move(get_selected_plot_settings))
     {
+        SPQ_ASSERT(_on_create_plotting_window, "_on_create_plotting_window wasn't a callable!");
+        SPQ_ASSERT(_get_selected_plot_settings, "_get_selected_plot_settings wasn't a callable!");
     }
 
     void update_content() override;
