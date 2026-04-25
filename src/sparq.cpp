@@ -157,14 +157,7 @@ int SPARQ::run()
         ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
 
         update_windows();
-
-        // Render Notifications
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 1.00f));
-        ImGui::RenderNotifications();
-        ImGui::PopStyleVar(2);
-        ImGui::PopStyleColor(1);
+        update_notifications();
 
         _render_window.clear(sf::Color(20, 20, 20, 255));
         ImGui::SFML::Render(_render_window);
@@ -189,6 +182,16 @@ int SPARQ::close_app()
     _render_window.close();
 
     return 0;
+}
+
+void SPARQ::update_notifications() const noexcept
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 1.00f));
+    ImGui::RenderNotifications();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor(1);
 }
 
 void SPARQ::update_windows()

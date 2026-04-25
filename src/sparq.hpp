@@ -45,6 +45,7 @@ public:
     void update_windows();
     int run();
     int close_app();
+    void update_notifications() const noexcept;
 
 private:
     constexpr void add_plotting_window();
