@@ -20,11 +20,8 @@ namespace spq::plotting::internal
 class PlottingWindow : public Window
 {
 public:
-    using SelectCallback = std::function<void(std::size_t)>;
-
-    PlottingWindow(DataHandler& data_handler, std::size_t id, SelectCallback on_selected)
+    PlottingWindow(DataHandler& data_handler, std::size_t id)
         : _id(id),
-          _on_selected(std::move(on_selected)),
           Window(
               std::string(spq::plotting::internal::window_name_prefix)
                   + spq::plotting::internal::window_name_id_prefix
@@ -86,7 +83,6 @@ private:
 
     bool _highlight_window = false;
     bool _highlight_colors_pushed = false;
-    SelectCallback _on_selected;
     spq::plotting::plot_settings _plot_settings;
     std::size_t _id{};
 };

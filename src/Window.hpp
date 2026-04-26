@@ -32,6 +32,7 @@ public:
         bool should_stay_open = true;
         if (ImGui::Begin(_name.c_str(), has_close_button() ? &should_stay_open : nullptr, window_flags))
         {
+            _is_selected = ImGui::IsWindowFocused();
             update_content();
         }
 
@@ -45,9 +46,16 @@ public:
         after_imgui_end();
     }
 
+    [[nodiscard]]
     constexpr bool close_triggered() const noexcept
     {
         return _close_triggered;
+    }
+
+    [[nodiscard]]
+    constexpr bool is_selected() const noexcept
+    {
+        return _is_selected;
     }
 
 protected:
@@ -74,4 +82,5 @@ protected:
 
 private:
     bool _close_triggered{};
+    bool _is_selected{};
 };

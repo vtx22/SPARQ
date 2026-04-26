@@ -4,14 +4,6 @@ void PlottingWindow::update_content()
 {
     std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
 
-    if (ImGui::IsWindowFocused())
-    {
-        if (_on_selected)
-        {
-            _on_selected(_id);
-        }
-    }
-
     update_window_name(); // TODO: Update only on plot type change
     update_plot_contents();
     show_highlighting_rectangle();
