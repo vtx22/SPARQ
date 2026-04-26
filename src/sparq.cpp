@@ -218,7 +218,7 @@ constexpr void SPARQ::add_plotting_window()
     _plotting_windows.push_back(std::make_unique<PlottingWindow>(_data_handler, id));
 }
 
-constexpr std::optional<std::reference_wrapper<PlottingWindow>> SPARQ::find_plot_by_id(std::size_t id) noexcept
+constexpr std::optional<std::reference_wrapper<PlottingWindow>> SPARQ::find_plot_by_id(IDType const id) noexcept
 {
     for (auto& plot : _plotting_windows)
     {

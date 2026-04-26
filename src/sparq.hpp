@@ -37,6 +37,8 @@
 class SPARQ
 {
 public:
+    using IDType = std::size_t;
+
     SPARQ();
 
     int init();
@@ -71,6 +73,6 @@ private:
     std::vector<std::reference_wrapper<Window>> _windows;
     std::vector<std::unique_ptr<PlottingWindow>> _plotting_windows;
 
-    std::size_t _next_id{};
-    std::optional<std::size_t> _selected_plot_id{std::nullopt};
+    IDType _next_id{};
+    std::optional<IDType> _selected_plot_id{std::nullopt};
 };
