@@ -60,3 +60,4 @@ jobs:
             build/src/config.ini
             README.md
             FORMAT.md
+            LICENSE
