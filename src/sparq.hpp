@@ -47,14 +47,15 @@ public:
     void update_windows();
     int run();
     int close_app();
-    void update_notifications() const noexcept;
+    constexpr void update_notifications() const noexcept;
 
 private:
     constexpr void add_plotting_window();
-    constexpr std::optional<std::reference_wrapper<PlottingWindow>> find_plot_by_id(std::size_t id) noexcept;
+
+    [[nodiscard]]
+    constexpr std::optional<std::reference_wrapper<PlottingWindow>> find_plot_by_id(IDType id) noexcept;
+    [[nodiscard]]
     constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings>> get_selected_plot_settings() noexcept;
-    constexpr void select_plot(std::size_t id) noexcept;
-    constexpr void highlight_selected_plot_only() noexcept;
     constexpr void cleanup_closed_plotting_windows() noexcept;
 
     Serial _sp;

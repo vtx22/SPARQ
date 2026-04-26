@@ -50,7 +50,7 @@ public:
     std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(sparq_dataset_t& dataset, std::size_t max_samples, double x_min, double x_max);
 
     [[nodiscard]]
-    spq::plotting::plot_settings& settings() noexcept
+    constexpr auto& settings() noexcept
     {
         return _plot_settings;
     }

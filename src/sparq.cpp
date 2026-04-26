@@ -184,7 +184,7 @@ int SPARQ::close_app()
     return 0;
 }
 
-void SPARQ::update_notifications() const noexcept
+constexpr void SPARQ::update_notifications() const noexcept
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
@@ -246,25 +246,6 @@ constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings>> SP
     }
 
     return plot->get().settings();
-}
-
-constexpr void SPARQ::select_plot(std::size_t id) noexcept
-{
-    _selected_plot_id = id;
-    highlight_selected_plot_only();
-}
-
-constexpr void SPARQ::highlight_selected_plot_only() noexcept
-{
-    if (!_selected_plot_id)
-    {
-        return;
-    }
-
-    for (auto& plot : _plotting_windows)
-    {
-        plot->set_selected(plot->id() == *_selected_plot_id);
-    }
 }
 
 constexpr void SPARQ::cleanup_closed_plotting_windows() noexcept
