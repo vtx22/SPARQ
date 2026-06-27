@@ -5,7 +5,7 @@ void DataWindow::update_content()
     show_datasets_section();
 }
 
-void DataWindow::dataset_entries(std::vector<sparq_dataset_t>& datasets)
+void DataWindow::dataset_entries(std::vector<sparq_dataset_t>& datasets) const
 {
     if (datasets.size() == 0)
     {
@@ -88,7 +88,7 @@ void DataWindow::show_datasets_section()
 {
     if (ImGui::CollapsingHeader("Serial Datasets"))
     {
-        std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
+        std::lock_guard lock(_data_handler.get_data_mutex());
 
         if (ImGui::Button("Import"))
         {

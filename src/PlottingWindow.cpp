@@ -2,7 +2,7 @@
 
 void PlottingWindow::update_content()
 {
-    std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
+    std::lock_guard lock(_data_handler.get_data_mutex());
 
     update_window_name(); // TODO: Update only on plot type change
     update_plot_contents();
@@ -182,7 +182,7 @@ void PlottingWindow::handle_plot_heatmap()
         0);
 }
 
-void PlottingWindow::update_markers()
+void PlottingWindow::update_markers() const
 {
     auto& markers = _data_handler.get_markers();
 
@@ -230,7 +230,7 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
         border_width);
 }
 
-ImPlotFlags PlottingWindow::get_plot_flags()
+ImPlotFlags PlottingWindow::get_plot_flags() const
 {
     ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
 
@@ -314,8 +314,8 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
     }
 
     // Find the sample index for the x_value that is below x_min / above x_max
-    auto const lower = std::lower_bound(x_values->begin(), x_values->end(), x_min);
-    auto const upper = std::upper_bound(x_values->begin(), x_values->end(), x_max);
+    auto const lower = std::ranges::lower_bound(x_values->begin(), x_values->end(), x_min);
+    auto const upper = std::ranges::upper_bound(x_values->begin(), x_values->end(), x_max);
 
     std::size_t min_index = std::distance(x_values->begin(), lower);
     std::size_t max_index = std::distance(x_values->begin(), upper) + 1;
@@ -417,17 +417,11 @@ void PlottingWindow::config_limits_n_values()
     case 0:
     {
         auto const max_sample = static_cast<std::size_t>(round(_data_handler.get_max_sample())) - 1;
-        auto min_sample = max_sample - static_cast<std::size_t>(_data_handler.last_n) + 1;
-
-        if (min_sample < 0)
-        {
-            min_sample = 0;
-        }
+        auto const min_sample = max_sample - static_cast<std::size_t>(_data_handler.last_n) + 1;
 
         ImPlot::SetupAxisLimits(ImAxis_X1, min_sample, max_sample, ImPlotCond_Always);
         break;
     }
-
     // Last N relative seconds
     case 1:
     {
@@ -442,8 +436,7 @@ void PlottingWindow::config_limits_n_values()
         ImPlot::SetupAxisLimits(ImAxis_X1, min_rel_time, max_rel_time, ImPlotCond_Always);
         break;
     }
-
-        // Last N absolute seconds
+    // Last N absolute seconds
     case 2:
     {
         auto const max_abs_time = _data_handler.get_max_abs_time();

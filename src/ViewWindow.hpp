@@ -5,7 +5,7 @@
 #include "implot.h"
 #include "sparq_types.hpp"
 
-class ViewWindow : public Window
+class ViewWindow final : public Window
 {
 public:
     using CreatePlottingWindowCallback = std::function<void()>;
@@ -23,11 +23,12 @@ public:
         SPQ_ASSERT(_get_selected_plot_settings, "_get_selected_plot_settings wasn't a callable!");
     }
 
-    void update_content() override;
-
 private:
     void show_plot_settings(spq::plotting::plot_settings& settings);
 
     CreatePlottingWindowCallback _on_create_plotting_window;
     GetSelectedPlotSettingsCallback _get_selected_plot_settings;
+
+protected:
+    void update_content() override;
 };

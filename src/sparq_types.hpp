@@ -75,7 +75,7 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<const char*, static_cast<std::size_t>(plot_type::COUNT)> plot_type_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(plot_type::COUNT)> plot_type_names{
         "Timeseries",
         "XY",
         "Single Value",
@@ -92,7 +92,7 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<const char*, static_cast<std::size_t>(x_fit::COUNT)> x_fit_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(x_fit::COUNT)> x_fit_names{
         "Manual",
         "All",
         "Last N"};
@@ -104,7 +104,7 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<const char*, static_cast<std::size_t>(y_fit::COUNT)> y_fit_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(y_fit::COUNT)> y_fit_names{
         "Manual",
         "All"};
 
@@ -249,18 +249,18 @@ struct sparq_message_t
     [[nodiscard]]
     constexpr double buffer_to_double(uint8_t const* data) const noexcept
     {
-        const auto msg_endian = static_cast<bool>(
+        auto const msg_endian = static_cast<bool>(
             header.control & static_cast<uint8_t>(sparq_header_control_t::LSB_FIRST));
 
-        const uint32_t value32 = [&] {
-            const uint32_t le = (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
-            const uint32_t be = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
+        uint32_t const value32 = [&] {
+            uint32_t const le = (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
+            uint32_t const be = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
             return (msg_endian == spq::helper::is_little_endian()) ? le : be;
         }();
 
-        const auto is_integer = static_cast<bool>(
+        auto const is_integer = static_cast<bool>(
             header.control & static_cast<uint8_t>(sparq_header_control_t::INTEGER));
-        const auto is_signed = static_cast<bool>(
+        auto const is_signed = static_cast<bool>(
             header.control & static_cast<uint8_t>(sparq_header_control_t::SIGNED));
 
         if (!is_integer)
@@ -276,7 +276,7 @@ struct sparq_message_t
         return static_cast<double>(value32);
     }
 
-    constexpr void parse_msg_id_pair(const uint8_t* data)
+    constexpr void parse_msg_id_pair(uint8_t const* data)
     {
         nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
         ids.resize(nval);

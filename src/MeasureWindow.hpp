@@ -5,7 +5,7 @@
 #include "implot.h"
 #include "sparq_types.hpp"
 
-class MeasureWindow : public Window
+class MeasureWindow final : public Window
 {
 public:
     MeasureWindow(DataHandler& data_handler)
@@ -13,6 +13,8 @@ public:
     {
     }
 
-    void update_content();
-    void measure_markers_table(std::vector<sparq_marker_t>& markers);
+    void measure_markers_table(std::vector<sparq_marker_t>& markers) const;
+
+protected:
+    void update_content() override;
 };

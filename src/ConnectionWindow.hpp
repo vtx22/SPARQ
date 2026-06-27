@@ -4,12 +4,13 @@
 #include "Window.hpp"
 #include "serial.hpp"
 
-class ConnectionWindow : public Window
+class ConnectionWindow final : public Window
 {
+protected:
+    void update_content() override;
+
 public:
     ConnectionWindow(DataHandler& data_handler, Serial& sp);
-
-    void update_content();
 
     [[nodiscard]]
     constexpr auto get_selected_port() const;
@@ -17,14 +18,14 @@ public:
     [[nodiscard]]
     constexpr auto get_selected_index() const noexcept;
 
-    constexpr auto update_com_ports_dropdown()
+    std::size_t update_com_ports_dropdown()
     {
         _com_ports = Serial::get_port_names();
 
-        if (_com_ports.size() == 0)
+        if (_com_ports.empty())
         {
             _com_ports.push_back("COM-");
-            return std::size_t{};
+            return {};
         }
 
         return _com_ports.size();
@@ -35,7 +36,7 @@ private:
     std::vector<std::string> _com_ports;
 
     unsigned int _baud_rate = 115'200;
-    const std::array<int, 9> _available_baud_rates{4800u, 9600, 19'200, 38'400, 57'600, 115'200, 230'400, 460'800, 921'600};
+    std::array<int, 9> const _available_baud_rates{4800u, 9600, 19'200, 38'400, 57'600, 115'200, 230'400, 460'800, 921'600};
     char _signature_chars[3] = {'F', 'F', 0};
     uint8_t _signature = 0xFF;
 

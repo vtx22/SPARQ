@@ -37,7 +37,7 @@ void ConfigHandler::read_config()
     std::cout << "    Max Samples Type: " << std::stoi(ini["downsampling"]["max_samples_type"]) << "\n";
 
     std::cout << "Color Settings:       " << "\n";
-    std::cout << "    Colormap:         " << static_cast<ImPlotColormap>(std::stoi(ini["color"]["colormap"])) << "\n";
+    std::cout << "    Colormap:         " << std::stoi(ini["color"]["colormap"]) << "\n";
 
     std::cout << std::endl;
 }
@@ -56,5 +56,5 @@ void ConfigHandler::write_config()
 
 void ConfigHandler::apply_in_context_settings()
 {
-    ImPlot::GetStyle().Colormap = (ImPlotColormap)std::stoi(ini["color"]["colormap"]);
+    ImPlot::GetStyle().Colormap = std::stoi(ini["color"]["colormap"]);
 }

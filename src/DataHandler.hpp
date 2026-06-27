@@ -62,14 +62,14 @@ public:
     [[nodiscard]]
     auto get_max_sample()
     {
-        std::lock_guard<std::mutex> lock(_data_mutex);
+        std::lock_guard lock(_data_mutex);
         return static_cast<double>(current_absolute_sample);
     }
 
     [[nodiscard]]
     auto get_max_rel_time()
     {
-        std::lock_guard<std::mutex> lock(_data_mutex);
+        std::lock_guard lock(_data_mutex);
 
         if (_datasets.empty())
         {
@@ -85,7 +85,7 @@ public:
     [[nodiscard]]
     auto get_max_abs_time()
     {
-        std::lock_guard<std::mutex> lock(_data_mutex);
+        std::lock_guard lock(_data_mutex);
 
         if (_datasets.empty())
         {
@@ -126,8 +126,8 @@ private:
 
     std::vector<sparq_marker_t> _markers;
 
-    void add_to_datasets(const sparq_message_t& message);
-    void handle_command(const sparq_message_t& message);
+    void add_to_datasets(sparq_message_t const& message);
+    void handle_command(sparq_message_t const& message);
 
     std::thread _receive_thread;
     std::atomic<bool> _running = true;
