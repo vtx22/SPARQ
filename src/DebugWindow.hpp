@@ -2,7 +2,7 @@
 
 #include "Window.hpp"
 
-class DebugWindow : public Window
+class DebugWindow final : public Window
 {
 public:
     DebugWindow(DataHandler& data_handler)
@@ -10,7 +10,8 @@ public:
     {
     }
 
-    void update_content();
+protected:
+    void update_content() override;
 
 private:
 };

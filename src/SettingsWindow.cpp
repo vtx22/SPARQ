@@ -54,7 +54,7 @@ void SettingsWindow::show_downsampling_settings()
 
         constexpr std::array max_samples_types{"Total", "Per Dataset"};
         auto max_samples_type = std::stoi(_config_handler.ini["downsampling"]["max_samples_type"]);
-        auto prev_max_samples_type = max_samples_type;
+        auto const prev_max_samples_type = max_samples_type;
         if (ImGui::BeginCombo("##X View", max_samples_types[max_samples_type]))
         {
             for (std::size_t n = 0; n < max_samples_types.size(); n++)
@@ -122,7 +122,7 @@ void SettingsWindow::show_color_settings()
         ImGui::Text("Color Map:");
         ImGui::SameLine();
 
-        ImPlotColormap cm_prev = ImPlot::GetStyle().Colormap;
+        ImPlotColormap const cm_prev = ImPlot::GetStyle().Colormap;
         ImPlot::ShowColormapSelector("##Colormap");
 
         if (cm_prev != ImPlot::GetStyle().Colormap)

@@ -3,21 +3,22 @@
 #include "ConfigHandler.hpp"
 #include "DataHandler.hpp"
 #include "IconsFontAwesome6.h"
+
 #include "imgui.h"
 
 class Window
 {
 public:
-    Window(std::string name, DataHandler& data_handler)
+    Window(std::string const& name, DataHandler& data_handler)
         : _name(name),
           _data_handler(data_handler),
           _config_handler(ConfigHandler::get_instance())
     {
     }
 
-    Window(std::string name, DataHandler& data_handler, ImGuiWindowFlags flags)
-        : window_flags(flags),
-          _name(name),
+    Window(std::string const& name, DataHandler& data_handler, ImGuiWindowFlags const flags)
+        : _name(name),
+          window_flags(flags),
           _data_handler(data_handler),
           _config_handler(ConfigHandler::get_instance())
     {
@@ -75,10 +76,10 @@ protected:
         return false;
     }
 
-    std::string _name;
+    std::string _name{};
+    ImGuiWindowFlags window_flags{};
     DataHandler& _data_handler;
     ConfigHandler& _config_handler;
-    ImGuiWindowFlags window_flags{};
 
 private:
     bool _close_triggered{};
