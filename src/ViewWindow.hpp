@@ -25,6 +25,8 @@ public:
 
 private:
     void show_plot_settings(spq::plotting::plot_settings& settings);
+    void show_heatmap_settings(spq::plotting::heatmap_settings& settings);
+    void show_axis_settings(spq::plotting::plot_settings& settings);
 
     CreatePlottingWindowCallback _on_create_plotting_window;
     GetSelectedPlotSettingsCallback _get_selected_plot_settings;

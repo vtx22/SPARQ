@@ -47,7 +47,7 @@ public:
     void update_windows();
     int run();
     int close_app();
-    constexpr void update_notifications() const noexcept;
+    void update_notifications() const noexcept;
 
 private:
     constexpr void add_plotting_window();
@@ -71,7 +71,7 @@ private:
 
     sf::RenderWindow _render_window;
 
-    std::vector<std::reference_wrapper<Window>> _windows;
+    std::vector<std::reference_wrapper<Window>> _fixed_windows;
     std::vector<std::unique_ptr<PlottingWindow>> _plotting_windows;
 
     IDType _next_id{};

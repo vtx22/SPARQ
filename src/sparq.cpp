@@ -36,16 +36,16 @@ int SPARQ::init()
 
 void SPARQ::register_windows()
 {
-    _windows.clear();
+    _fixed_windows.clear();
 
-    _windows.push_back(_connection_window);
-    _windows.push_back(_data_window);
-    _windows.push_back(_measure_window);
-    _windows.push_back(_view_window);
-    _windows.push_back(_statistics_window);
-    _windows.push_back(_settings_window);
+    _fixed_windows.push_back(_connection_window);
+    _fixed_windows.push_back(_data_window);
+    _fixed_windows.push_back(_measure_window);
+    _fixed_windows.push_back(_view_window);
+    _fixed_windows.push_back(_statistics_window);
+    _fixed_windows.push_back(_settings_window);
 #ifdef SPARQ_DEBUG_BUILD
-    _windows.push_back(_debug_window);
+    _fixed_windows.push_back(_debug_window);
 #endif
 
     // add one default plotting window at startup
@@ -184,7 +184,7 @@ int SPARQ::close_app()
     return 0;
 }
 
-constexpr void SPARQ::update_notifications() const noexcept
+void SPARQ::update_notifications() const noexcept
 {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
@@ -198,12 +198,14 @@ void SPARQ::update_windows()
 {
     _console_window.update();
 
-    for (auto& w : _windows)
+    for (auto& w : _fixed_windows)
     {
         w.get().draw();
 
         if (w.get().is_selected())
         {
+            std::cout << "1 ";
+
             // Check if the selected window is ViewWindow, then the plot should be kept selected
             if (auto* view_window = dynamic_cast<ViewWindow*>(&w.get()))
             {
@@ -212,7 +214,13 @@ void SPARQ::update_windows()
 
             _selected_plot_id = std::nullopt;
         }
+        else
+        {
+            std::cout << "0 ";
+        }
     }
+
+    std::cout << std::endl;
 
     for (auto& pw : _plotting_windows)
     {
@@ -231,9 +239,8 @@ void SPARQ::update_windows()
 
 constexpr void SPARQ::add_plotting_window()
 {
-    auto const id = _next_id++;
-
-    _plotting_windows.push_back(std::make_unique<PlottingWindow>(_data_handler, id));
+    _plotting_windows.push_back(
+        std::make_unique<PlottingWindow>(_data_handler, _next_id++));
 }
 
 constexpr std::optional<std::reference_wrapper<PlottingWindow>> SPARQ::find_plot_by_id(IDType const id) noexcept
@@ -256,14 +263,12 @@ constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings>> SP
         return std::nullopt;
     }
 
-    auto plot = find_plot_by_id(*_selected_plot_id);
-
-    if (!plot)
+    if (auto plot = find_plot_by_id(*_selected_plot_id))
     {
-        return std::nullopt;
+        return plot->get().settings();
     }
 
-    return plot->get().settings();
+    return std::nullopt;
 }
 
 constexpr void SPARQ::cleanup_closed_plotting_windows() noexcept
