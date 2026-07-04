@@ -9,15 +9,15 @@
 class Window
 {
 public:
-    Window(std::string const& name, DataHandler& data_handler)
-        : _name(name),
+    Window(std::string name, DataHandler& data_handler)
+        : _name(std::move(name)),
           _data_handler(data_handler),
           _config_handler(ConfigHandler::get_instance())
     {
     }
 
-    Window(std::string const& name, DataHandler& data_handler, ImGuiWindowFlags const flags)
-        : _name(name),
+    Window(std::string name, DataHandler& data_handler, ImGuiWindowFlags const flags)
+        : _name(std::move(name)),
           window_flags(flags),
           _data_handler(data_handler),
           _config_handler(ConfigHandler::get_instance())
@@ -26,6 +26,11 @@ public:
 
     virtual ~Window() = default;
 
+    /**
+     * @brief Draws the window using ImGui. This function should be called every frame to handle and render the window.
+     * @details It handles the ImGui::Begin() and ImGui::End() calls, as well as checking for user interaction with the close button.
+     * @see Derived classes should implement the update_content() function to define the specific content of the window.
+     */
     void draw()
     {
         before_imgui_begin();
@@ -47,12 +52,20 @@ public:
         after_imgui_end();
     }
 
+    /**
+     * @brief Checks if the window has been triggered to close by the user using the manual close button.
+     * @return true if the window has been triggered to close, false otherwise.
+     */
     [[nodiscard]]
     constexpr bool close_triggered() const noexcept
     {
         return _close_triggered;
     }
 
+    /**
+     * @brief Checks if the window is currently selected (focused) using ImGui::IsWindowFocused().
+     * @return true if the window is selected, false otherwise.
+     */
     [[nodiscard]]
     constexpr bool is_selected() const noexcept
     {
@@ -60,16 +73,34 @@ public:
     }
 
 protected:
+    /**
+     * @brief Updates the content of the window. This function is called every frame between the windows ImGui::Begin() and ImGui::End() calls.
+     * Derived classes should implement this function to define the specific content of the window.
+     */
     virtual void update_content() = 0;
 
+    /**
+     * @brief Called before the ImGui::Begin() call in the draw() function. Derived classes can override this function to perform any necessary setup or state changes before the window is drawn.
+     */
     virtual void before_imgui_begin()
     {
     }
 
+    /**
+     * @brief Called after the ImGui::End() call in the draw() function. Derived classes can override this function to perform any necessary cleanup or state changes after the window is drawn.
+     */
     virtual void after_imgui_end()
     {
     }
 
+    /**
+     * @brief Determines whether the window has a close button.
+     * Derived classes can override this function to specify whether the window should have a close button or not.
+     * @details This method is called in the draw() function to determine whether to pass a pointer to the should_stay_open variable to ImGui::Begin().
+     * If this method returns true, the window will have a close button, and the should_stay_open variable will be updated based on user interaction.
+     * If it returns false, the window will not have a close button, and the should_stay_open variable will not be used.
+     * @return true if the window has a close button, false otherwise.
+     */
     [[nodiscard]]
     constexpr virtual bool has_close_button() const noexcept
     {
