@@ -99,6 +99,7 @@ protected:
      * @details This method is called in the draw() function to determine whether to pass a pointer to the should_stay_open variable to ImGui::Begin().
      * If this method returns true, the window will have a close button, and the should_stay_open variable will be updated based on user interaction.
      * If it returns false, the window will not have a close button, and the should_stay_open variable will not be used.
+     * @see close_triggered() for checking if the window has been triggered to close by the user.
      * @return true if the window has a close button, false otherwise.
      */
     [[nodiscard]]
