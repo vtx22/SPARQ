@@ -31,6 +31,26 @@ namespace spq::helper
 
         return cs;
     }
+
+    /**
+     * @brief Adds or removes a value from an unordered set. If the value is already present, it will be removed; if it is not present, it will be added.
+     * @tparam T The type of the elements in the unordered set.
+     * @param set The unordered set to modify.
+     * @param value The value to add or remove from the set.
+     */
+    template <typename T>
+    constexpr void add_or_remove_from_set(std::unordered_set<T>& set, T const value) noexcept
+    {
+        if (set.contains(value))
+        {
+            set.erase(value);
+        }
+        else
+        {
+            set.insert(value);
+        }
+    }
+
 }
 
 enum class sparq_header_control_t : uint8_t

@@ -37,14 +37,7 @@ void ViewWindow::update_content()
 
         if (ImGui::Button(d.name_with_id.c_str()))
         {
-            if (plot_settings.ids_to_plot.contains(d.id))
-            {
-                plot_settings.ids_to_plot.erase(d.id);
-            }
-            else
-            {
-                plot_settings.ids_to_plot.insert(d.id);
-            }
+            spq::helper::add_or_remove_from_set(plot_settings.ids_to_plot, static_cast<std::size_t>(d.id));
         }
 
         ImGui::PopStyleVar(2);
