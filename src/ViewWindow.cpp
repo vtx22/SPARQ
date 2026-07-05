@@ -9,31 +9,46 @@ void ViewWindow::update_content()
 
     ImGui::SeparatorText("Plot Settings");
 
-    if (auto settings = _get_selected_plot_settings())
+    auto settings = _get_selected_plot_settings();
+
+    if (!settings)
     {
-        show_plot_settings(*settings);
+        ImGui::Text("Select a plotting window to edit its settings.");
+        return;
     }
+
+    auto& plot_settings = settings->get();
+
+    show_plot_settings(plot_settings);
 
     auto& ds = _data_handler.get_datasets_editable();
 
     for (auto& d : ds)
     {
-        ImGui::PushID(d.id); // In case there is a duplicate dataset name
-
         constexpr ImVec4 button_color{0.f, 0.5f, 1.f, 1.f};
-        ImGui::PushStyleColor(ImGuiCol_Button, d.hidden ? ImVec4(0.f, 0.f, 0.f, 0.f) : button_color);
+        auto const button_state_color = plot_settings.ids_to_plot.contains(d.id) ? button_color : ImVec4{};
+
+        ImGui::PushStyleColor(ImGuiCol_Button, button_state_color);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, button_state_color);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, button_state_color);
         ImGui::PushStyleColor(ImGuiCol_Border, button_color);
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.f);
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.f);
 
-        if (ImGui::Button(d.name.c_str()))
+        if (ImGui::Button(d.name_with_id.c_str()))
         {
-            d.toggle_visibility = true;
+            if (plot_settings.ids_to_plot.contains(d.id))
+            {
+                plot_settings.ids_to_plot.erase(d.id);
+            }
+            else
+            {
+                plot_settings.ids_to_plot.insert(d.id);
+            }
         }
 
         ImGui::PopStyleVar(2);
-        ImGui::PopStyleColor(2);
-        ImGui::PopID();
+        ImGui::PopStyleColor(4);
     }
 }
 

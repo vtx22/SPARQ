@@ -65,6 +65,11 @@ void PlottingWindow::handle_plot_timeseries()
     std::size_t i = 0;
     for (auto& ds : datasets)
     {
+        if (!_plot_settings.ids_to_plot.contains(ds.id))
+        {
+            continue;
+        }
+
         std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
         ImPlot::SetNextLineStyle(ds.color, 3);
 

@@ -124,11 +124,14 @@ namespace spq::plotting
 
     struct plot_settings
     {
+        std::unordered_set<std::size_t> ids_to_plot{};
+
         plot_type type{};
-        heatmap_settings heatmap_settings{};
         x_fit x_fit{};
         y_fit y_fit{};
         bool equal{};
+
+        heatmap_settings heatmap_settings{};
     };
 }
 
@@ -148,7 +151,8 @@ struct sparq_dataset_t
     int16_t id = 0;
     char name_buffer[64] = {0};
     std::string name;
-    ImVec4 color = ImVec4(1, 0, 0, 1);
+    std::string name_with_id;
+    ImVec4 color{1.f, 0.f, 0.f, 1.f};
     bool toggle_visibility = false;
     bool show = false;
     bool hide = false;
@@ -183,6 +187,7 @@ struct sparq_dataset_t
     void set_name(std::string const& new_name) noexcept
     {
         name = new_name;
+        name_with_id = name + " [" + std::to_string(id) + "]";
         std::snprintf(name_buffer, sizeof(name_buffer), "%s", name.c_str());
     }
 };
