@@ -21,17 +21,16 @@ class PlottingWindow final : public Window
 {
 public:
     PlottingWindow(DataHandler& data_handler, std::size_t const id)
-        : _id(id),
-          Window(
+        : Window(
               std::string(spq::plotting::internal::window_name_prefix)
                   + spq::plotting::internal::window_name_id_prefix
                   + std::to_string(id),
-              data_handler)
+              data_handler),
+          _id(id)
     {
     }
 
-    // void update_axes();
-    void config_limits_n_values();
+    void config_limits_n_values() const;
 
     constexpr void show_highlighting_rectangle() const;
 

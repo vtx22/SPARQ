@@ -53,8 +53,7 @@ void PlottingWindow::handle_plot_timeseries()
 {
     auto& datasets = _data_handler.get_datasets_editable();
 
-    ImPlotContext* ctx = ImPlot::GetCurrentContext();
-    ImPlotPlot* plot = ctx->CurrentPlot;
+    ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
 
     uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
 
@@ -409,7 +408,7 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
 //     }
 // }
 
-void PlottingWindow::config_limits_n_values()
+void PlottingWindow::config_limits_n_values() const
 {
     switch (_data_handler.x_axis_select)
     {

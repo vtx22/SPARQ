@@ -13,6 +13,28 @@ void ViewWindow::update_content()
     {
         show_plot_settings(*settings);
     }
+
+    auto& ds = _data_handler.get_datasets_editable();
+
+    for (auto& d : ds)
+    {
+        ImGui::PushID(d.id); // In case there is a duplicate dataset name
+
+        constexpr ImVec4 button_color{0.f, 0.5f, 1.f, 1.f};
+        ImGui::PushStyleColor(ImGuiCol_Button, d.hidden ? ImVec4(0.f, 0.f, 0.f, 0.f) : button_color);
+        ImGui::PushStyleColor(ImGuiCol_Border, button_color);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.f);
+
+        if (ImGui::Button(d.name.c_str()))
+        {
+            d.toggle_visibility = true;
+        }
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(2);
+        ImGui::PopID();
+    }
 }
 
 void ViewWindow::show_plot_settings(spq::plotting::plot_settings& settings)
