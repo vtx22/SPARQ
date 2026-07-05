@@ -51,9 +51,9 @@ public:
         return _id;
     }
 
-    constexpr void set_selected(bool selected) noexcept
+    constexpr void set_highlighted(bool const highlight) noexcept
     {
-        _highlight_window = selected;
+        _highlight_window = highlight;
     }
 
 private:

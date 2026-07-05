@@ -201,40 +201,25 @@ void SPARQ::update_windows()
     for (auto& w : _fixed_windows)
     {
         w.get().draw();
-
-        if (w.get().is_selected())
-        {
-            std::cout << "1 ";
-
-            // Check if the selected window is ViewWindow, then the plot should be kept selected
-            if (auto* view_window = dynamic_cast<ViewWindow*>(&w.get()))
-            {
-                continue;
-            }
-
-            _selected_plot_id = std::nullopt;
-        }
-        else
-        {
-            std::cout << "0 ";
-        }
     }
 
-    std::cout << std::endl;
-
-    for (auto& pw : _plotting_windows)
+    for (auto const& pw : _plotting_windows)
     {
         pw->draw();
-        pw->unhighlight();
+        pw->set_highlighted(false);
 
         if (pw->is_selected())
         {
             _selected_plot_id = pw->id();
-            pw->highlight();
         }
     }
 
     cleanup_closed_plotting_windows();
+
+    if (_selected_plot_id)
+    {
+        find_plot_by_id(*_selected_plot_id)->get().set_highlighted(true);
+    }
 }
 
 constexpr void SPARQ::add_plotting_window()
