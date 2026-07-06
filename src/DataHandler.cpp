@@ -444,8 +444,7 @@ sparq_message_t DataHandler::receive_message()
 void DataHandler::export_data_csv() const
 {
     std::cout << "Exporting data to csv...\n";
-    // std::lock_guard<std::mutex> lock(_data_mutex);
-
+    
     if (_datasets.empty())
     {
         std::cerr << "No data to export!\n";

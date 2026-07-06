@@ -21,9 +21,10 @@ void ViewWindow::update_content()
 
     show_plot_settings(plot_settings);
 
-    auto& ds = _data_handler.get_datasets_editable();
+    auto const dataset_lock = _data_handler.datasets();
+    auto& datasets = dataset_lock.datasets;
 
-    for (auto& d : ds)
+    for (auto& d : datasets)
     {
         constexpr ImVec4 button_color{0.f, 0.5f, 1.f, 1.f};
         auto const button_state_color = plot_settings.ids_to_plot.contains(d.id) ? button_color : ImVec4{};

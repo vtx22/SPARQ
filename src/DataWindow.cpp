@@ -88,14 +88,15 @@ void DataWindow::show_datasets_section()
 {
     if (ImGui::CollapsingHeader("Serial Datasets"))
     {
-        std::lock_guard lock(_data_handler.get_data_mutex());
+        auto const dataset_lock = _data_handler.datasets();
+        auto& datasets = dataset_lock.datasets;
 
         if (ImGui::Button("Import"))
         {
         }
         ImGui::SameLine();
 
-        if (_data_handler.get_datasets().size() == 0)
+        if (datasets.empty())
         {
             ImGui::BeginDisabled();
         }
@@ -135,14 +136,14 @@ void DataWindow::show_datasets_section()
             _data_handler.show_all_datasets();
         }
 
-        if (!just_deleted && _data_handler.get_datasets().size() == 0)
+        if (!just_deleted && datasets.empty())
         {
             ImGui::EndDisabled();
         }
 
         ImGui::Separator();
 
-        dataset_entries(_data_handler.get_datasets_editable());
+        dataset_entries(datasets);
     }
 
     if (ImGui::CollapsingHeader("Synthetic Datasets"))

@@ -2,8 +2,6 @@
 
 void PlottingWindow::update_content()
 {
-    std::lock_guard lock(_data_handler.get_data_mutex());
-
     update_window_name(); // TODO: Update only on plot type change
     update_plot_contents();
     show_highlighting_rectangle();
@@ -51,7 +49,8 @@ void PlottingWindow::update_plot_contents()
 
 void PlottingWindow::handle_plot_timeseries()
 {
-    auto& datasets = _data_handler.get_datasets_editable();
+    auto const dataset_lock = _data_handler.datasets();
+    auto& datasets = dataset_lock.datasets;
 
     ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
 
@@ -125,7 +124,8 @@ void PlottingWindow::handle_plot_single_value()
 
 void PlottingWindow::handle_plot_heatmap()
 {
-    auto& datasets = _data_handler.get_datasets_editable();
+    auto const dataset_lock = _data_handler.datasets();
+    auto& datasets = dataset_lock.datasets;
 
     auto const& hms = _plot_settings.heatmap_settings;
 

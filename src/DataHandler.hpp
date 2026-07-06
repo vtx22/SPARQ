@@ -12,24 +12,37 @@ using namespace std::chrono;
 class DataHandler
 {
 public:
+    /**
+     * @brief A RAII clas that locks the data mutex and provides access to the datasets.
+     * @details This struct is used to ensure thread-safe access to the datasets while holding a lock on the data mutex.
+     * It is returned by the datasets() function, which locks the data mutex and returns an instance of this struct.
+     */
+    class LockedDatasets
+    {
+    public:
+        LockedDatasets(std::mutex& m, std::vector<sparq_dataset_t>& d)
+            : datasets{d},
+              lock{m}
+        {
+        }
+
+        std::vector<sparq_dataset_t>& datasets;
+
+    private:
+        std::unique_lock<std::mutex> lock{};
+    };
+
+    LockedDatasets datasets()
+    {
+        return LockedDatasets{_data_mutex, _datasets};
+    }
+
     DataHandler(Serial& sp, ConsoleWindow& console_window);
     ~DataHandler();
 
     void update();
     void receiver_loop();
     sparq_message_t receive_message();
-
-    [[nodiscard]]
-    constexpr std::vector<sparq_dataset_t> const& get_datasets() const noexcept
-    {
-        return _datasets;
-    }
-
-    [[nodiscard]]
-    constexpr std::vector<sparq_dataset_t>& get_datasets_editable() noexcept
-    {
-        return _datasets;
-    }
 
     [[nodiscard]]
     constexpr std::vector<sparq_marker_t>& get_markers() noexcept
