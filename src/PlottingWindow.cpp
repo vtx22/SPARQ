@@ -24,20 +24,22 @@ void PlottingWindow::update_plot_contents()
     if (ImPlot::BeginPlot("##Plot", ImVec2(-1, -1), get_plot_flags()))
     {
         update_markers();
+        auto const dataset_lock = _data_handler.datasets();
+        auto& datasets = dataset_lock.get();
 
         switch (_plot_settings.type)
         {
         case plot_type::timeseries:
-            handle_plot_timeseries();
+            handle_plot_timeseries(datasets);
             break;
         case plot_type::xy:
-            handle_plot_xy();
+            handle_plot_xy(datasets);
             break;
         case plot_type::single_value:
-            handle_plot_single_value();
+            handle_plot_single_value(datasets);
             break;
         case plot_type::heatmap:
-            handle_plot_heatmap();
+            handle_plot_heatmap(datasets);
             break;
         default:
             break;
@@ -47,11 +49,8 @@ void PlottingWindow::update_plot_contents()
     }
 }
 
-void PlottingWindow::handle_plot_timeseries()
+void PlottingWindow::handle_plot_timeseries(std::vector<sparq_dataset_t>& datasets)
 {
-    auto const dataset_lock = _data_handler.datasets();
-    auto& datasets = dataset_lock.get();
-
     ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
 
     uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
@@ -114,19 +113,16 @@ void PlottingWindow::handle_plot_timeseries()
     }
 }
 
-void PlottingWindow::handle_plot_xy()
+void PlottingWindow::handle_plot_xy(std::vector<sparq_dataset_t>& datasets)
 {
 }
 
-void PlottingWindow::handle_plot_single_value()
+void PlottingWindow::handle_plot_single_value(std::vector<sparq_dataset_t>& datasets)
 {
 }
 
-void PlottingWindow::handle_plot_heatmap()
+void PlottingWindow::handle_plot_heatmap(std::vector<sparq_dataset_t> const& datasets)
 {
-    auto const dataset_lock = _data_handler.datasets();
-    auto const& datasets = dataset_lock.get();
-
     auto const& hms = _plot_settings.heatmap_settings;
 
     std::vector<float> values(hms.cols * hms.rows);

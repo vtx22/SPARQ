@@ -60,10 +60,10 @@ private:
     void update_plot_contents();
     void update_markers() const;
 
-    void handle_plot_timeseries();
-    void handle_plot_xy();
-    void handle_plot_single_value();
-    void handle_plot_heatmap();
+    void handle_plot_timeseries(std::vector<sparq_dataset_t>& datasets);
+    void handle_plot_xy(std::vector<sparq_dataset_t>& datasets);
+    void handle_plot_single_value(std::vector<sparq_dataset_t>& datasets);
+    void handle_plot_heatmap(std::vector<sparq_dataset_t> const& datasets);
 
     void update_window_name();
 
