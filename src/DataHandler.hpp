@@ -9,7 +9,7 @@
 
 using namespace std::chrono;
 
-class DataHandler
+class DataHandler final
 {
 public:
     /**
@@ -74,17 +74,137 @@ public:
 
     void update_markers();
 
-    bool add_dataset(sparq_dataset_t const& dataset);
-    bool delete_dataset(uint8_t id);
-    void delete_all_datasets();
+    bool add_dataset(sparq_dataset_t const& dataset)
+    {
+        for (auto const& ds : _datasets)
+        {
+            if (dataset.id == ds.id)
+            {
+                return false;
+            }
+        }
 
-    bool clear_dataset(uint8_t id);
-    void clear_all_datasets();
+        _datasets.emplace_back(dataset);
+        return true;
+    }
 
-    void hide_all_datasets();
-    void show_all_datasets();
+    bool delete_dataset(uint8_t const id)
+    {
+        std::lock_guard lock(_data_mutex);
 
-    std::optional<std::reference_wrapper<sparq_dataset_t>> get_dataset(uint8_t id);
+        for (std::size_t i = 0; i < _datasets.size(); i++)
+        {
+            if (_datasets[i].id == id)
+            {
+                _datasets.erase(_datasets.begin() + i);
+
+                if (_datasets.empty())
+                {
+                    first_receive_timestamp = 0;
+                    current_absolute_sample = 0;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void delete_all_datasets()
+    {
+        std::cout << "Deleting all datasets ...\n";
+        std::lock_guard lock(_data_mutex);
+
+        std::vector<uint8_t> ids(_datasets.size());
+
+        for (std::size_t i = 0; i < _datasets.size(); i++)
+        {
+            ids[i] = _datasets[i].id;
+        }
+
+        for (auto const& id : ids)
+        {
+            delete_dataset(id);
+        }
+    }
+
+    bool clear_dataset(uint8_t const id)
+    {
+        std::lock_guard lock(_data_mutex);
+
+        bool ds_found = false;
+        for (auto& ds : _datasets)
+        {
+            if (ds.id == id)
+            {
+                ds.clear();
+                ds_found = true;
+                break;
+            }
+        }
+
+        if (!ds_found)
+        {
+            return false;
+        }
+
+        // If all datasets are now empty, reset start time
+        for (auto const& ds : _datasets)
+        {
+            if (!ds.samples.empty())
+            {
+                return true;
+            }
+        }
+
+        first_receive_timestamp = 0;
+        current_absolute_sample = 0;
+        _timestamps.clear();
+        _rel_times.clear();
+
+        return true;
+    }
+
+    void clear_all_datasets()
+    {
+        std::cout << "Clearing all datasets ...\n";
+        for (auto const& ds : _datasets)
+        {
+            clear_dataset(ds.id);
+        }
+    }
+
+    void hide_all_datasets()
+    {
+        std::lock_guard lock(_data_mutex);
+        for (auto& ds : _datasets)
+        {
+            ds.hide = true;
+        }
+    }
+
+    void show_all_datasets()
+    {
+        std::lock_guard lock(_data_mutex);
+        for (auto& ds : _datasets)
+        {
+            ds.show = true;
+        }
+    }
+
+    std::optional<std::reference_wrapper<sparq_dataset_t>> get_dataset(uint8_t const id)
+    {
+        for (auto& ds : _datasets)
+        {
+            if (ds.id == id)
+            {
+                return ds;
+            }
+        }
+
+        return std::nullopt;
+    }
 
     uint8_t x_axis_select = 0;
     uint8_t x_fit_select = 1;
