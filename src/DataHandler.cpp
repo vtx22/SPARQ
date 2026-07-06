@@ -13,11 +13,12 @@ void DataHandler::receiver_loop()
             continue;
         }
 
-        auto const message = receive_message();
+        auto const received_message = receive_message();
         serial_lock.unlock();
 
-        if (message.valid)
+        if (received_message)
         {
+            auto const& message = received_message.value();
             std::lock_guard data_lock(_data_mutex);
 
             switch (message.message_type)
@@ -338,7 +339,7 @@ void DataHandler::show_all_datasets()
     }
 }
 
-sparq_message_t DataHandler::receive_message()
+std::optional<sparq_message_t> DataHandler::receive_message()
 {
     sparq_message_t message{};
     static bool in_message = false;
@@ -348,7 +349,7 @@ sparq_message_t DataHandler::receive_message()
 
     if (len <= 0 && _message_buffer.empty())
     {
-        return message;
+        return std::nullopt;
     }
 
     // Append to message buffer
@@ -374,7 +375,7 @@ sparq_message_t DataHandler::receive_message()
         if (!in_message)
         {
             _message_buffer.clear();
-            return message;
+            return std::nullopt;
         }
     }
 
@@ -383,7 +384,7 @@ sparq_message_t DataHandler::receive_message()
     // Message is not complete yet, header is incomplete
     if (_message_buffer.size() < SPARQ_MESSAGE_HEADER_LENGTH)
     {
-        return message;
+        return std::nullopt;
     }
 
     message.header.from_array(_message_buffer.data());
@@ -393,7 +394,7 @@ sparq_message_t DataHandler::receive_message()
         // Header checksum is wrong, clear the message buffer from that part
         _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
         in_message = false;
-        return message;
+        return std::nullopt;
     }
 
     auto const total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_CHECKSUM_LENGTH + message.header.payload_length;
@@ -401,7 +402,7 @@ sparq_message_t DataHandler::receive_message()
     if (_message_buffer.size() < total_message_length)
     {
         // Message is not complete yet
-        return message;
+        return std::nullopt;
     }
 
     // Finally we got a full message

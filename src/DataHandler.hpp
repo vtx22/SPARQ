@@ -64,7 +64,7 @@ public:
 
     void update();
     void receiver_loop();
-    sparq_message_t receive_message();
+    std::optional<sparq_message_t> receive_message();
 
     [[nodiscard]]
     constexpr std::vector<sparq_marker_t>& get_markers() noexcept
