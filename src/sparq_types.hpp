@@ -39,7 +39,7 @@ namespace spq::helper
      * @param value The value to add or remove from the set.
      */
     template <typename T>
-    constexpr void add_or_remove_from_set(std::unordered_set<T>& set, T const value) noexcept
+    constexpr void add_or_remove_from_set(std::unordered_set<T>& set, T const value)
     {
         if (set.contains(value))
         {

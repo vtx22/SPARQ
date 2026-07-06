@@ -57,7 +57,7 @@ void PlottingWindow::handle_plot_timeseries()
 
     uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
 
-    if (_config_handler.ini["downsampling"]["max_samples_type"] == "0" && datasets.size() != 0)
+    if (_config_handler.ini["downsampling"]["max_samples_type"] == "0" && !datasets.empty())
     {
         max_samples = static_cast<uint32_t>(std::round(max_samples / static_cast<double>(datasets.size())));
     }
