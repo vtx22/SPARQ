@@ -42,8 +42,25 @@ public:
         return LockedDatasets{_data_mutex, _datasets};
     }
 
-    DataHandler(Serial& sp, ConsoleWindow& console_window);
-    ~DataHandler();
+    DataHandler(Serial& sp, ConsoleWindow& console_window)
+        : _sp(sp),
+          _console_window(console_window)
+    {
+        _sp.set_timeouts(0xFFFF'FFFF, 0, 0, 0, 0);
+        _serial_buffer.reserve(static_cast<std::size_t>(SPARQ_MAX_MESSAGE_LENGTH) * 2);
+
+        _receive_thread = std::thread(&DataHandler::receiver_loop, this);
+        std::cout << "Starting receiver thread ...\n";
+    }
+
+    ~DataHandler()
+    {
+        _running = false;
+        if (_receive_thread.joinable())
+        {
+            _receive_thread.join();
+        }
+    }
 
     void update();
     void receiver_loop();

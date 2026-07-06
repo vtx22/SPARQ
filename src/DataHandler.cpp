@@ -1,25 +1,5 @@
 #include "DataHandler.hpp"
 
-DataHandler::DataHandler(Serial& sp, ConsoleWindow& console_window)
-    : _sp(sp),
-      _console_window(console_window)
-{
-    _sp.set_timeouts(0xFFFF'FFFF, 0, 0, 0, 0);
-    _serial_buffer.reserve(static_cast<std::size_t>(SPARQ_MAX_MESSAGE_LENGTH) * 2);
-
-    _receive_thread = std::thread(&DataHandler::receiver_loop, this);
-    std::cout << "Starting receiver thread ...\n";
-}
-
-DataHandler::~DataHandler()
-{
-    _running = false;
-    if (_receive_thread.joinable())
-    {
-        _receive_thread.join();
-    }
-}
-
 void DataHandler::receiver_loop()
 {
     while (_running)
@@ -160,8 +140,9 @@ void DataHandler::add_to_datasets(sparq_message_t const& message)
         }
 
         // Dataset already exists but might be empty
-        auto const new_sample = (ds->samples.size() == 0) ? static_cast<double>(current_absolute_sample)
-                                                          : (ds->samples.back() + 1.0);
+        auto const new_sample = ds->samples.empty()
+                                  ? static_cast<double>(current_absolute_sample)
+                                  : (ds->samples.back() + 1.0);
         auto const new_rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
         auto const new_abs_time = message.timestamp / 1000.0;
         auto const new_y_value = message.values[i];
@@ -236,7 +217,7 @@ bool DataHandler::add_dataset(sparq_dataset_t const& dataset)
         }
     }
 
-    _datasets.push_back(dataset);
+    _datasets.emplace_back(dataset);
     return true;
 }
 
@@ -263,7 +244,7 @@ bool DataHandler::delete_dataset(uint8_t const id)
         {
             _datasets.erase(_datasets.begin() + i);
 
-            if (_datasets.size() == 0)
+            if (_datasets.empty())
             {
                 first_receive_timestamp = 0;
                 current_absolute_sample = 0;
@@ -316,7 +297,7 @@ bool DataHandler::clear_dataset(uint8_t const id)
     // If all datasets are now empty, reset start time
     for (auto const& ds : _datasets)
     {
-        if (ds.samples.size() > 0)
+        if (!ds.samples.empty())
         {
             return true;
         }
