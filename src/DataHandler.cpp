@@ -341,7 +341,6 @@ void DataHandler::show_all_datasets()
 
 std::optional<sparq_message_t> DataHandler::receive_message()
 {
-    sparq_message_t message{};
     static bool in_message = false;
 
     // Read everything that's available
@@ -387,6 +386,7 @@ std::optional<sparq_message_t> DataHandler::receive_message()
         return std::nullopt;
     }
 
+    sparq_message_t message{};
     message.header.from_array(_message_buffer.data());
 
     if (message.header.checksum != spq::helper::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
