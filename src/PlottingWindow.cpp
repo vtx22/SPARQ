@@ -29,16 +29,16 @@ void PlottingWindow::update_plot_contents()
 
         switch (_plot_settings.type)
         {
-        case plot_type::timeseries:
+        case plot_type_t::timeseries:
             handle_plot_timeseries(datasets);
             break;
-        case plot_type::xy:
+        case plot_type_t::xy:
             handle_plot_xy(datasets);
             break;
-        case plot_type::single_value:
+        case plot_type_t::single_value:
             handle_plot_single_value(datasets);
             break;
-        case plot_type::heatmap:
+        case plot_type_t::heatmap:
             handle_plot_heatmap(datasets);
             break;
         default:
@@ -234,7 +234,7 @@ ImPlotFlags PlottingWindow::get_plot_flags() const
 {
     ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
 
-    if (_plot_settings.type == spq::plotting::plot_type::heatmap && _plot_settings.equal)
+    if (_plot_settings.type == spq::plotting::plot_type_t::heatmap && _plot_settings.equal)
     {
         plot_flags |= ImPlotFlags_Equal;
     }

@@ -83,7 +83,7 @@ enum class sparq_sender_command_t : uint8_t
 
 namespace spq::plotting
 {
-    enum class plot_type : uint8_t
+    enum class plot_type_t : uint8_t
     {
         timeseries,
         xy,
@@ -95,7 +95,7 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<char const*, static_cast<std::size_t>(plot_type::COUNT)> plot_type_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(plot_type_t::COUNT)> plot_type_names{
         "Timeseries",
         "XY",
         "Single Value",
@@ -104,7 +104,7 @@ namespace spq::plotting
         "Heatmap",
         "FFT"};
 
-    enum class x_fit : uint8_t
+    enum class x_fit_t : uint8_t
     {
         manual,
         all,
@@ -112,23 +112,23 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<char const*, static_cast<std::size_t>(x_fit::COUNT)> x_fit_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(x_fit_t::COUNT)> x_fit_names{
         "Manual",
         "All",
         "Last N"};
 
-    enum class y_fit : uint8_t
+    enum class y_fit_t : uint8_t
     {
         manual,
         all,
         COUNT
     };
 
-    constexpr std::array<char const*, static_cast<std::size_t>(y_fit::COUNT)> y_fit_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(y_fit_t::COUNT)> y_fit_names{
         "Manual",
         "All"};
 
-    struct heatmap_settings
+    struct heatmap_settings_t
     {
         bool normalize_xy = false;
         bool show_values = false;
@@ -142,16 +142,16 @@ namespace spq::plotting
         int smoothing_factor = 5;
     };
 
-    struct plot_settings
+    struct plot_settings_t
     {
         std::unordered_set<std::size_t> ids_to_plot{};
 
-        plot_type type{};
-        x_fit x_fit{};
-        y_fit y_fit{};
+        plot_type_t type{};
+        x_fit_t x_fit{};
+        y_fit_t y_fit{};
         bool equal{};
 
-        heatmap_settings heatmap_settings{};
+        heatmap_settings_t heatmap_settings{};
     };
 }
 

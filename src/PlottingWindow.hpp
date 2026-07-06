@@ -39,7 +39,7 @@ public:
     std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(sparq_dataset_t& dataset, std::size_t max_samples, double x_min, double x_max);
 
     [[nodiscard]]
-    spq::plotting::plot_settings& settings() noexcept
+    spq::plotting::plot_settings_t& settings() noexcept
     {
         return _plot_settings;
     }
@@ -72,7 +72,7 @@ private:
 
     bool _highlight_window = false;
     bool _highlight_colors_pushed = false;
-    spq::plotting::plot_settings _plot_settings;
+    spq::plotting::plot_settings_t _plot_settings;
     std::size_t _id{};
 
 protected:

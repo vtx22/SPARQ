@@ -241,7 +241,7 @@ constexpr std::optional<std::reference_wrapper<PlottingWindow>> SPARQ::find_plot
     return std::nullopt;
 }
 
-constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings>> SPARQ::get_selected_plot_settings() const noexcept
+constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings_t>> SPARQ::get_selected_plot_settings() const noexcept
 {
     if (!m_selected_plot_id)
     {

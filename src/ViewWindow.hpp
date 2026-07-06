@@ -9,7 +9,7 @@ class ViewWindow final : public Window
 {
 public:
     using CreatePlottingWindowCallback = std::function<void()>;
-    using GetSelectedPlotSettingsCallback = std::function<std::optional<std::reference_wrapper<spq::plotting::plot_settings>>()>;
+    using GetSelectedPlotSettingsCallback = std::function<std::optional<std::reference_wrapper<spq::plotting::plot_settings_t>>()>;
 
     ViewWindow(
         DataHandler& data_handler,
@@ -24,9 +24,9 @@ public:
     }
 
 private:
-    void show_plot_settings(spq::plotting::plot_settings& settings);
-    void show_heatmap_settings(spq::plotting::heatmap_settings& settings);
-    void show_axis_settings(spq::plotting::plot_settings& settings);
+    void show_plot_settings(spq::plotting::plot_settings_t& settings);
+    void show_heatmap_settings(spq::plotting::heatmap_settings_t& settings);
+    void show_axis_settings(spq::plotting::plot_settings_t& settings);
 
     CreatePlottingWindowCallback _on_create_plotting_window;
     GetSelectedPlotSettingsCallback _get_selected_plot_settings;
