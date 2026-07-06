@@ -2,7 +2,7 @@
 
 #include "Window.hpp"
 
-class StatisticsWindow : public Window
+class StatisticsWindow final : public Window
 {
 public:
     StatisticsWindow(DataHandler& data_handler)
@@ -10,5 +10,6 @@ public:
     {
     }
 
-    void update_content();
+protected:
+    void update_content() override;
 };

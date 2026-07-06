@@ -1,17 +1,19 @@
 #include "sparq.hpp"
 
 SPARQ::SPARQ()
-    : _sp(),
-      _console_window(),
-      _data_handler(_sp, _console_window),
-      _connection_window(_data_handler, _sp),
-      _plotting_window(_data_handler),
-      _data_window(_data_handler),
-      _measure_window(_data_handler),
-      _view_window(_data_handler),
-      _statistics_window(_data_handler),
-      _settings_window(_data_handler),
-      _debug_window(_data_handler)
+    : m_sp(),
+      m_console_window(),
+      m_data_handler(m_sp, m_console_window),
+      m_connection_window(m_data_handler, m_sp),
+      m_data_window(m_data_handler),
+      m_measure_window(m_data_handler),
+      m_view_window(
+          m_data_handler,
+          [this]() { add_plotting_window(); },
+          [this]() { return get_selected_plot_settings(); }),
+      m_statistics_window(m_data_handler),
+      m_settings_window(m_data_handler),
+      m_debug_window(m_data_handler)
 {
     register_windows();
 }
@@ -34,18 +36,20 @@ int SPARQ::init()
 
 void SPARQ::register_windows()
 {
-    _windows.clear();
+    m_fixed_windows.clear();
 
-    _windows.push_back(_connection_window);
-    _windows.push_back(_plotting_window);
-    _windows.push_back(_data_window);
-    _windows.push_back(_measure_window);
-    _windows.push_back(_view_window);
-    _windows.push_back(_statistics_window);
-    _windows.push_back(_settings_window);
+    m_fixed_windows.push_back(m_connection_window);
+    m_fixed_windows.push_back(m_data_window);
+    m_fixed_windows.push_back(m_measure_window);
+    m_fixed_windows.push_back(m_view_window);
+    m_fixed_windows.push_back(m_statistics_window);
+    m_fixed_windows.push_back(m_settings_window);
 #ifdef SPARQ_DEBUG_BUILD
-    _windows.push_back(_debug_window);
+    m_fixed_windows.push_back(m_debug_window);
 #endif
+
+    // add one default plotting window at startup
+    add_plotting_window();
 }
 
 int SPARQ::window_init()
@@ -57,13 +61,13 @@ int SPARQ::window_init()
     sf::ContextSettings settings;
     settings.antialiasingLevel = std::stoi(config.ini["graphics"]["antialiasing"]);
 
-    _render_window.create(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION, sf::Style::Default, settings);
+    m_render_window.create(sf::VideoMode(1280, 720), std::string("SPARQ - ") + SPARQ_VERSION, sf::Style::Default, settings);
 
     std::cout << "Loading " << SPARQ_ICON_FILE << " ...\n";
     sf::Image icon;
     if (icon.loadFromFile(SPARQ_ICON_FILE))
     {
-        _render_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+        m_render_window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     }
     else
     {
@@ -71,16 +75,16 @@ int SPARQ::window_init()
         ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Failed to load icon.png!"});
     }
 
-    _render_window.setFramerateLimit(SPARQ_MAX_FPS);
-    _render_window.setVerticalSyncEnabled(config.ini["graphics"]["vsync"] == "1");
+    m_render_window.setFramerateLimit(SPARQ_MAX_FPS);
+    m_render_window.setVerticalSyncEnabled(config.ini["graphics"]["vsync"] == "1");
 
 #ifdef SPARQ_WINDOWS_BUILD
     constexpr BOOL USE_DARK_MODE = true;
-    DwmSetWindowAttribute(_render_window.getSystemHandle(), 20, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
-    ShowWindow(_render_window.getSystemHandle(), SW_MAXIMIZE);
+    DwmSetWindowAttribute(m_render_window.getSystemHandle(), 20, &USE_DARK_MODE, sizeof(USE_DARK_MODE));
+    ShowWindow(m_render_window.getSystemHandle(), SW_MAXIMIZE);
 #endif
 
-    if (!ImGui::SFML::Init(_render_window))
+    if (!ImGui::SFML::Init(m_render_window))
     {
         std::cerr << "IMGUI SFML Window Init failed!\n";
         return -1;
@@ -126,10 +130,10 @@ int SPARQ::window_init()
 int SPARQ::run()
 {
     sf::Clock deltaClock;
-    while (_render_window.isOpen())
+    while (m_render_window.isOpen())
     {
         sf::Event event;
-        while (_render_window.pollEvent(event))
+        while (m_render_window.pollEvent(event))
         {
             ImGui::SFML::ProcessEvent(event);
 
@@ -142,32 +146,21 @@ int SPARQ::run()
             {
                 // update the view to the new size of the window
                 sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
-                _render_window.setView(sf::View(visibleArea));
+                m_render_window.setView(sf::View(visibleArea));
             }
         }
 
         // == UPDATE == //
-        ImGui::SFML::Update(_render_window, deltaClock.restart());
+        ImGui::SFML::Update(m_render_window, deltaClock.restart());
 
         // == DRAWING == //
         ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
 
-        _console_window.update();
-        for (auto& w : _windows)
-        {
-            w.get().draw();
-        }
+        update_windows();
+        update_notifications();
 
-        // Render Notifications
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 1.00f));
-        ImGui::RenderNotifications();
-        ImGui::PopStyleVar(2);
-        ImGui::PopStyleColor(1);
-
-        _render_window.clear(sf::Color(20, 20, 20, 255));
-        ImGui::SFML::Render(_render_window);
+        m_render_window.clear(sf::Color(20, 20, 20, 255));
+        ImGui::SFML::Render(m_render_window);
 
         if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
@@ -175,7 +168,7 @@ int SPARQ::run()
             ImGui::RenderPlatformWindowsDefault();
         }
 
-        _render_window.display();
+        m_render_window.display();
     }
 
     return close_app();
@@ -186,7 +179,97 @@ int SPARQ::close_app()
     ImPlot::DestroyContext();
     ImGui::SFML::Shutdown();
 
-    _render_window.close();
+    m_render_window.close();
 
     return 0;
+}
+
+void SPARQ::update_notifications() noexcept
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.f);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 1.00f));
+    ImGui::RenderNotifications();
+    ImGui::PopStyleVar(2);
+    ImGui::PopStyleColor(1);
+}
+
+void SPARQ::update_windows()
+{
+    m_console_window.update();
+
+    for (auto& w : m_fixed_windows)
+    {
+        w.get().draw();
+    }
+
+    for (auto const& pw : m_plotting_windows)
+    {
+        pw->draw();
+        pw->set_highlighted(false);
+
+        if (pw->is_selected())
+        {
+            m_selected_plot_id = pw->id();
+        }
+    }
+
+    cleanup_closed_plotting_windows();
+
+    if (m_selected_plot_id)
+    {
+        find_plot_by_id(*m_selected_plot_id)->get().set_highlighted(true);
+    }
+}
+
+constexpr void SPARQ::add_plotting_window()
+{
+    m_plotting_windows.push_back(
+        std::make_unique<PlottingWindow>(m_data_handler, m_next_id++));
+}
+
+constexpr std::optional<std::reference_wrapper<PlottingWindow>> SPARQ::find_plot_by_id(IDType const id) const noexcept
+{
+    for (auto const& plot : m_plotting_windows)
+    {
+        if (plot->id() == id)
+        {
+            return *plot;
+        }
+    }
+
+    return std::nullopt;
+}
+
+constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings>> SPARQ::get_selected_plot_settings() const noexcept
+{
+    if (!m_selected_plot_id)
+    {
+        return std::nullopt;
+    }
+
+    if (auto const& plot = find_plot_by_id(*m_selected_plot_id))
+    {
+        return plot->get().settings();
+    }
+
+    return std::nullopt;
+}
+
+constexpr void SPARQ::cleanup_closed_plotting_windows() noexcept
+{
+    // Delete windows that should close and deselect if it was selected
+    std::erase_if(m_plotting_windows, [this](auto const& w) {
+        if (!w->close_triggered())
+        {
+            return false;
+        }
+
+        if (m_selected_plot_id && w->id() == *m_selected_plot_id)
+        {
+            m_selected_plot_id = std::nullopt;
+        }
+
+        return true;
+    });
 }

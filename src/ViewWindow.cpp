@@ -2,188 +2,103 @@
 
 void ViewWindow::update_content()
 {
-    if (ImGui::CollapsingHeader("Plot Type"))
+    if (ImGui::Button("Add Plot"))
     {
-        menu_plot_type();
+        _on_create_plotting_window();
     }
+
+    ImGui::SeparatorText("Plot Settings");
+
+    auto settings = _get_selected_plot_settings();
+
+    if (!settings)
+    {
+        ImGui::Text("Select a plotting window to edit its settings.");
+        return;
+    }
+
+    auto& plot_settings = settings->get();
+
+    show_plot_settings(plot_settings);
+
+    auto& ds = _data_handler.get_datasets_editable();
+
+    for (auto& d : ds)
+    {
+        constexpr ImVec4 button_color{0.f, 0.5f, 1.f, 1.f};
+        auto const button_state_color = plot_settings.ids_to_plot.contains(d.id) ? button_color : ImVec4{};
+
+        ImGui::PushStyleColor(ImGuiCol_Button, button_state_color);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, button_state_color);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, button_state_color);
+        ImGui::PushStyleColor(ImGuiCol_Border, button_color);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.f);
+
+        if (ImGui::Button(d.name_with_id.c_str()))
+        {
+            spq::helper::add_or_remove_from_set(plot_settings.ids_to_plot, static_cast<std::size_t>(d.id));
+        }
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(4);
+    }
+}
+
+void ViewWindow::show_plot_settings(spq::plotting::plot_settings& settings)
+{
+    using namespace spq::plotting;
+
+    auto selected_plot_type = static_cast<int>(settings.type);
+    if (ImGui::Combo("Type", &selected_plot_type, plot_type_names.data(), plot_type_names.size()))
+    {
+        settings.type = static_cast<plot_type>(selected_plot_type);
+    }
+
+    show_axis_settings(settings);
+
+    switch (settings.type)
+    {
+    case plot_type::timeseries:
+        break;
+    case plot_type::single_value:
+        break;
+    case plot_type::heatmap:
+        show_heatmap_settings(settings.heatmap_settings);
+        break;
+    default:
+        break;
+    }
+}
+
+void ViewWindow::show_heatmap_settings(spq::plotting::heatmap_settings& settings)
+{
+}
+
+void ViewWindow::show_axis_settings(spq::plotting::plot_settings& settings)
+{
+    using namespace spq::plotting;
+
+    auto const spacing_right = 3.5f * ImGui::GetFontSize();
+    ImGui::PushItemWidth(-spacing_right);
 
     if (ImGui::CollapsingHeader("X Axis"))
     {
-        menu_x_axis();
+        auto selected_x_fit_type = static_cast<int>(settings.x_fit);
+        if (ImGui::Combo("X Fit", &selected_x_fit_type, x_fit_names.data(), x_fit_names.size()))
+        {
+            settings.x_fit = static_cast<x_fit>(selected_x_fit_type);
+        }
     }
 
     if (ImGui::CollapsingHeader("Y Axis"))
     {
-        menu_y_axis();
-    }
-}
-
-void ViewWindow::menu_plot_type()
-{
-    constexpr std::array plot_types{"Line", "Heatmap"};
-    if (ImGui::BeginCombo("##PLOT TYPE", plot_types[(int)_data_handler.plot_settings.type]))
-    {
-        for (std::size_t n = 0; n < plot_types.size(); n++)
+        auto selected_y_fit_type = static_cast<int>(settings.y_fit);
+        if (ImGui::Combo("Y Fit", &selected_y_fit_type, y_fit_names.data(), y_fit_names.size()))
         {
-            auto const is_selected = (static_cast<uint8_t>(_data_handler.plot_settings.type) == n);
-
-            if (ImGui::Selectable(plot_types[n], is_selected))
-            {
-                _data_handler.plot_settings.type = static_cast<sparq_plot_t>(n);
-            }
-
-            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-            if (is_selected)
-            {
-                ImGui::SetItemDefaultFocus();
-            }
-        }
-        ImGui::EndCombo();
-    }
-
-    if (_data_handler.plot_settings.type == sparq_plot_t::HEATMAP)
-    {
-        auto& hms = _data_handler.plot_settings.heatmap_settings;
-
-        ImGui::SetNextItemWidth(100);
-        ImGui::InputInt("##HMI_R", &hms.rows);
-        ImGui::SameLine();
-        ImGui::Text("x");
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(100);
-        ImGui::InputInt("###HMI_C", &hms.cols);
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(100);
-        ImGui::Checkbox("Equal", &hms.equal);
-
-        ImGui::Checkbox("Values", &hms.show_values);
-        ImGui::SameLine();
-        ImGui::Checkbox("Smooth", &hms.smooth);
-        ImGui::SameLine();
-        if (ImGui::InputInt("Factor", &hms.smoothing_factor))
-        {
-            if (hms.smoothing_factor < 1)
-            {
-                hms.smoothing_factor = 1;
-            }
-        }
-
-        ImGui::Checkbox("Autoscale", &hms.autoscale);
-        ImGui::SameLine();
-        ImGui::Checkbox("Invert", &hms.invert_scale);
-        if (hms.autoscale)
-        {
-            ImGui::BeginDisabled();
-        }
-
-        ImGui::InputFloat("Minimum Scale", &hms.scale_min);
-        ImGui::InputFloat("Maximum Scale", &hms.scale_max);
-
-        if (hms.autoscale)
-        {
-            ImGui::EndDisabled();
+            settings.y_fit = static_cast<y_fit>(selected_y_fit_type);
         }
     }
-}
 
-void ViewWindow::menu_x_axis()
-{
-    constexpr auto text_offset = 90;
-    ImGui::Text("Axis Unit");
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(text_offset);
-    ImGui::SetNextItemWidth(-std::numeric_limits<float>::min());
-    if (ImGui::BeginCombo("##X View", x_axis_types[_data_handler.x_axis_select].dropdown_name))
-    {
-        for (std::size_t n = 0; n < x_axis_types.size(); n++)
-        {
-            auto const is_selected = (_data_handler.x_axis_select == n);
-
-            if (ImGui::Selectable(x_axis_types[n].dropdown_name, is_selected))
-            {
-                _data_handler.x_axis_select = n;
-            }
-
-            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-            if (is_selected)
-            {
-                ImGui::SetItemDefaultFocus();
-            }
-        }
-        ImGui::EndCombo();
-    }
-
-    ImGui::Text("Fit");
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(text_offset);
-    ImGui::SetNextItemWidth(-200);
-    if (ImGui::BeginCombo("##X Fit", x_axis_fits[_data_handler.x_fit_select]))
-    {
-        for (std::size_t n = 0; n < x_axis_fits.size(); n++)
-        {
-            auto const is_selected = (_data_handler.x_fit_select == n);
-
-            if (ImGui::Selectable(x_axis_fits[n], is_selected))
-            {
-                _data_handler.x_fit_select = n;
-            }
-
-            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-            if (is_selected)
-            {
-                ImGui::SetItemDefaultFocus();
-            }
-        }
-        ImGui::EndCombo();
-    }
-
-    ImGui::SameLine();
-
-    if (_data_handler.x_fit_select != 2)
-    {
-        ImGui::BeginDisabled();
-    }
-
-    ImGui::SetNextItemWidth(-210);
-    ImGui::Text("N =");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(160);
-    ImGui::InputInt("##LastN", &_data_handler.last_n, 1, 10);
-    if (_data_handler.last_n < 2)
-    {
-        _data_handler.last_n = 2;
-    }
-
-    if (_data_handler.x_fit_select != 2)
-    {
-        ImGui::EndDisabled();
-    }
-}
-
-void ViewWindow::menu_y_axis()
-{
-    constexpr auto text_offset = 90;
-    ImGui::Text("Fit");
-    ImGui::SameLine();
-    ImGui::SetCursorPosX(text_offset);
-    ImGui::SetNextItemWidth(-FLT_MIN);
-    if (ImGui::BeginCombo("##Y Fit", y_axis_fits[_data_handler.y_fit_select]))
-    {
-        for (std::size_t n = 0; n < y_axis_fits.size(); n++)
-        {
-            auto const is_selected = (_data_handler.y_fit_select == n);
-
-            if (ImGui::Selectable(y_axis_fits[n], is_selected))
-            {
-                _data_handler.y_fit_select = n;
-            }
-
-            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-            if (is_selected)
-            {
-                ImGui::SetItemDefaultFocus();
-            }
-        }
-        ImGui::EndCombo();
-    }
+    ImGui::PopItemWidth();
 }

@@ -37,28 +37,43 @@
 class SPARQ
 {
 public:
+    using IDType = std::size_t;
+
     SPARQ();
 
     int init();
     int window_init();
     void register_windows();
+    void update_windows();
     int run();
     int close_app();
+    static void update_notifications() noexcept;
 
 private:
-    Serial _sp;
-    ConsoleWindow _console_window;
-    DataHandler _data_handler;
-    ConnectionWindow _connection_window;
-    PlottingWindow _plotting_window;
-    DataWindow _data_window;
-    MeasureWindow _measure_window;
-    ViewWindow _view_window;
-    StatisticsWindow _statistics_window;
-    SettingsWindow _settings_window;
-    DebugWindow _debug_window;
+    constexpr void add_plotting_window();
 
-    std::vector<std::reference_wrapper<Window>> _windows;
+    [[nodiscard]]
+    constexpr std::optional<std::reference_wrapper<PlottingWindow>> find_plot_by_id(IDType id) const noexcept;
+    [[nodiscard]]
+    constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings>> get_selected_plot_settings() const noexcept;
+    constexpr void cleanup_closed_plotting_windows() noexcept;
 
-    sf::RenderWindow _render_window;
+    Serial m_sp;
+    ConsoleWindow m_console_window;
+    DataHandler m_data_handler;
+    ConnectionWindow m_connection_window;
+    DataWindow m_data_window;
+    MeasureWindow m_measure_window;
+    ViewWindow m_view_window;
+    StatisticsWindow m_statistics_window;
+    SettingsWindow m_settings_window;
+    DebugWindow m_debug_window;
+
+    sf::RenderWindow m_render_window;
+
+    std::vector<std::reference_wrapper<Window>> m_fixed_windows;
+    std::vector<std::unique_ptr<PlottingWindow>> m_plotting_windows;
+
+    IDType m_next_id{};
+    std::optional<IDType> m_selected_plot_id{std::nullopt};
 };

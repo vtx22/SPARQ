@@ -24,12 +24,12 @@ void DataHandler::receiver_loop()
 {
     while (_running)
     {
-        std::unique_lock<std::mutex> serial_lock(_serial_mutex);
+        std::unique_lock serial_lock(_serial_mutex);
 
         if (!_sp.get_open())
         {
             serial_lock.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS));
+            std::this_thread::sleep_for(milliseconds(SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS));
             continue;
         }
 
@@ -38,7 +38,7 @@ void DataHandler::receiver_loop()
 
         if (message.valid)
         {
-            std::lock_guard<std::mutex> data_lock(_data_mutex);
+            std::lock_guard data_lock(_data_mutex);
 
             switch (message.message_type)
             {
@@ -55,9 +55,9 @@ void DataHandler::receiver_loop()
         }
 
         // Add sleep only once per fixed interval
-        static auto last_sleep_time = std::chrono::steady_clock::now();
-        auto const current_time = std::chrono::steady_clock::now();
-        if (std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_sleep_time).count() >= SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS)
+        static auto last_sleep_time = steady_clock::now();
+        auto const current_time = steady_clock::now();
+        if (std::chrono::duration_cast<milliseconds>(current_time - last_sleep_time).count() >= SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS)
         {
             std::this_thread::sleep_for(SPARQ_RECEIVE_LOOP_DELAY);
             last_sleep_time = current_time;
@@ -72,7 +72,7 @@ void DataHandler::update()
 
 void DataHandler::update_markers()
 {
-    std::lock_guard<std::mutex> lock(_data_mutex);
+    std::lock_guard lock(_data_mutex);
 
     for (auto& m : _markers)
     {
@@ -143,7 +143,7 @@ void DataHandler::add_to_datasets(sparq_message_t const& message)
         // The dataset does not exist, we have to create a new one
         if (ds == nullptr)
         {
-            std::cout << "DS not found, creating new one! ID: " << (int)message.ids[i] << "\n";
+            std::cout << "DS not found, creating new one! ID: " << static_cast<int>(message.ids[i]) << "\n";
 
             sparq_dataset_t ds_new;
 
@@ -184,7 +184,7 @@ void DataHandler::handle_command(sparq_message_t const& message)
         auto const id = message.command_data[0];
         auto const ds = get_dataset(id);
         auto const new_name = std::string(
-            reinterpret_cast<const char*>(&message.command_data[1]),
+            reinterpret_cast<char const*>(&message.command_data[1]),
             message.command_data.size() - 1);
 
         if (ds.has_value())
@@ -219,7 +219,7 @@ void DataHandler::handle_command(sparq_message_t const& message)
         delete_dataset(message.command_data[0]);
         break;
     case sparq_sender_command_t::SWITCH_PLOT_TYPE:
-        plot_settings.type = (sparq_plot_t)message.command_data[0];
+        // TODO: Reenable this later however possible: plot_settings.type = (spq::plotting::plot_type)message.command_data[0];
         break;
     default:
         break;
@@ -352,13 +352,13 @@ void DataHandler::show_all_datasets()
 
 sparq_message_t DataHandler::receive_message()
 {
-    sparq_message_t message;
+    sparq_message_t message{};
     static bool in_message = false;
 
-    // Read everything thats available
+    // Read everything that's available
     auto const len = _sp.read(_serial_buffer.data(), SPARQ_MAX_MESSAGE_LENGTH * 2);
 
-    if (len <= 0 && _message_buffer.size() == 0)
+    if (len <= 0 && _message_buffer.empty())
     {
         return message;
     }
@@ -446,7 +446,7 @@ void DataHandler::export_data_csv() const
     std::cout << "Exporting data to csv...\n";
     // std::lock_guard<std::mutex> lock(_data_mutex);
 
-    if (_datasets.size() == 0)
+    if (_datasets.empty())
     {
         std::cerr << "No data to export!\n";
         ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "No data to export!"});

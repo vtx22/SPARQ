@@ -6,9 +6,11 @@
 #include <bit>
 #include <chrono>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -18,8 +20,10 @@
 #include <ranges>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <tuple>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -27,3 +31,5 @@
     #include <dwmapi.h>
     #include <windows.h>
 #endif
+
+#include "Assertions.h"

@@ -34,16 +34,16 @@ void MeasureWindow::update_content()
     }
 }
 
-void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers)
+void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers) const
 {
-    if (markers.size() == 0)
+    if (markers.empty())
     {
         ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Markers");
     }
 
     if (ImGui::BeginTable("##MeasureMarkerTable", 7, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
-        std::lock_guard<std::mutex> lock(_data_handler.get_data_mutex());
+        std::lock_guard lock(_data_handler.get_data_mutex());
 
         std::vector<std::size_t> to_delete;
         for (std::size_t i = 0; i < markers.size(); i++)

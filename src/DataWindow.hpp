@@ -5,7 +5,7 @@
 #include "implot.h"
 #include "sparq_types.hpp"
 
-class DataWindow : public Window
+class DataWindow final : public Window
 {
 public:
     DataWindow(DataHandler& data_handler)
@@ -13,10 +13,11 @@ public:
     {
     }
 
-    void update_content();
-
-    void dataset_entries(std::vector<sparq_dataset_t>& datasets);
+    void dataset_entries(std::vector<sparq_dataset_t>& datasets) const;
 
 private:
     void show_datasets_section();
+
+protected:
+    void update_content() override;
 };

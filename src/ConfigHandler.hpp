@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImGuiNotify.hpp"
+#include "imgui.h"
 #include "implot.h"
 #include "mini/ini.h"
 #include "sparq_config.h"

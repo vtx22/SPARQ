@@ -9,7 +9,7 @@ ConnectionWindow::ConnectionWindow(DataHandler& data_handler, Serial& sp)
 
 void ConnectionWindow::update_content()
 {
-    std::lock_guard<std::mutex> lock(_data_handler.get_serial_mutex());
+    std::lock_guard lock(_data_handler.get_serial_mutex());
 
     ImGui::SeparatorText("Settings");
     _port_open = _sp.get_open();
@@ -54,13 +54,13 @@ void ConnectionWindow::update_content()
     // Baud Rate selection
     if (ImGui::BeginCombo("###BaudRateSelect", std::to_string(_baud_rate).c_str()))
     {
-        for (std::size_t n = 0; n < _available_baud_rates.size(); n++)
+        for (auto const& rate : _available_baud_rates)
         {
-            auto const is_selected = (_baud_rate == _available_baud_rates[n]);
+            auto const is_selected = _baud_rate == rate;
 
-            if (ImGui::Selectable(std::to_string(_available_baud_rates[n]).c_str(), is_selected))
+            if (ImGui::Selectable(std::to_string(rate).c_str(), is_selected))
             {
-                _baud_rate = _available_baud_rates[n];
+                _baud_rate = rate;
             }
 
             // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)

@@ -31,6 +31,26 @@ namespace spq::helper
 
         return cs;
     }
+
+    /**
+     * @brief Adds or removes a value from an unordered set. If the value is already present, it will be removed; if it is not present, it will be added.
+     * @tparam T The type of the elements in the unordered set.
+     * @param set The unordered set to modify.
+     * @param value The value to add or remove from the set.
+     */
+    template <typename T>
+    constexpr void add_or_remove_from_set(std::unordered_set<T>& set, T const value)
+    {
+        if (set.contains(value))
+        {
+            set.erase(value);
+        }
+        else
+        {
+            set.insert(value);
+        }
+    }
+
 }
 
 enum class sparq_header_control_t : uint8_t
@@ -61,10 +81,89 @@ enum class sparq_sender_command_t : uint8_t
     SWITCH_PLOT_TYPE,      // Remote switch the plot type (e.g. line, heatmap, etc.)
 };
 
-enum class sparq_plot_t : uint8_t
+namespace spq::plotting
 {
-    LINE,
-    HEATMAP,
+    enum class plot_type : uint8_t
+    {
+        timeseries,
+        xy,
+        single_value,
+        bar,
+        pie,
+        heatmap,
+        fft,
+        COUNT
+    };
+
+    constexpr std::array<char const*, static_cast<std::size_t>(plot_type::COUNT)> plot_type_names{
+        "Timeseries",
+        "XY",
+        "Single Value",
+        "Bar Chart",
+        "Pie Chart",
+        "Heatmap",
+        "FFT"};
+
+    enum class x_fit : uint8_t
+    {
+        manual,
+        all,
+        last_n,
+        COUNT
+    };
+
+    constexpr std::array<char const*, static_cast<std::size_t>(x_fit::COUNT)> x_fit_names{
+        "Manual",
+        "All",
+        "Last N"};
+
+    enum class y_fit : uint8_t
+    {
+        manual,
+        all,
+        COUNT
+    };
+
+    constexpr std::array<char const*, static_cast<std::size_t>(y_fit::COUNT)> y_fit_names{
+        "Manual",
+        "All"};
+
+    struct heatmap_settings
+    {
+        bool normalize_xy = false;
+        bool show_values = false;
+        float scale_min = 0;
+        float scale_max = 100;
+        bool autoscale = false;
+        bool invert_scale = false;
+        int rows = 1;
+        int cols = 1;
+        bool smooth = false;
+        int smoothing_factor = 5;
+    };
+
+    struct plot_settings
+    {
+        std::unordered_set<std::size_t> ids_to_plot{};
+
+        plot_type type{};
+        x_fit x_fit{};
+        y_fit y_fit{};
+        bool equal{};
+
+        heatmap_settings heatmap_settings{};
+    };
+}
+
+struct sparq_marker_t
+{
+    std::string name = "M";
+    double x = 0;
+    double y = 0;
+    uint8_t ds_index;
+    int16_t ds_id = -1;
+    bool hidden = false;
+    ImVec4 color = ImVec4(1, 1, 1, 1);
 };
 
 struct sparq_dataset_t
@@ -72,7 +171,8 @@ struct sparq_dataset_t
     int16_t id = 0;
     char name_buffer[64] = {0};
     std::string name;
-    ImVec4 color = ImVec4(1, 0, 0, 1);
+    std::string name_with_id;
+    ImVec4 color{1.f, 0.f, 0.f, 1.f};
     bool toggle_visibility = false;
     bool show = false;
     bool hide = false;
@@ -107,6 +207,7 @@ struct sparq_dataset_t
     void set_name(std::string const& new_name) noexcept
     {
         name = new_name;
+        name_with_id = name + " [" + std::to_string(id) + "]";
         std::snprintf(name_buffer, sizeof(name_buffer), "%s", name.c_str());
     }
 };
@@ -173,18 +274,18 @@ struct sparq_message_t
     [[nodiscard]]
     constexpr double buffer_to_double(uint8_t const* data) const noexcept
     {
-        const auto msg_endian = static_cast<bool>(
+        auto const msg_endian = static_cast<bool>(
             header.control & static_cast<uint8_t>(sparq_header_control_t::LSB_FIRST));
 
-        const uint32_t value32 = [&] {
-            const uint32_t le = (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
-            const uint32_t be = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
+        uint32_t const value32 = [&] {
+            uint32_t const le = (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
+            uint32_t const be = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
             return (msg_endian == spq::helper::is_little_endian()) ? le : be;
         }();
 
-        const auto is_integer = static_cast<bool>(
+        auto const is_integer = static_cast<bool>(
             header.control & static_cast<uint8_t>(sparq_header_control_t::INTEGER));
-        const auto is_signed = static_cast<bool>(
+        auto const is_signed = static_cast<bool>(
             header.control & static_cast<uint8_t>(sparq_header_control_t::SIGNED));
 
         if (!is_integer)
@@ -200,7 +301,7 @@ struct sparq_message_t
         return static_cast<double>(value32);
     }
 
-    constexpr void parse_msg_id_pair(const uint8_t* data)
+    constexpr void parse_msg_id_pair(uint8_t const* data)
     {
         nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
         ids.resize(nval);
@@ -279,48 +380,3 @@ struct sparq_message_t
     }
 };
 
-struct sparq_axis_t
-{
-    char const* dropdown_name;
-    char const* axis_label;
-};
-
-struct sparq_marker_t
-{
-    std::string name = "M";
-    double x = 0;
-    double y = 0;
-    uint8_t ds_index;
-    int16_t ds_id = -1;
-    bool hidden = false;
-    ImVec4 color = ImVec4(1, 1, 1, 1);
-};
-
-struct sparq_heatmap_settings_t
-{
-    bool normalize_xy = false;
-    bool equal = false;
-    bool show_values = false;
-    float scale_min = 0;
-    float scale_max = 100;
-    bool autoscale = false;
-    bool invert_scale = false;
-    int rows = 1;
-    int cols = 1;
-    bool smooth = false;
-    int smoothing_factor = 5;
-};
-
-struct sparq_plot_settings_t
-{
-    sparq_plot_t type = sparq_plot_t::LINE;
-    sparq_heatmap_settings_t heatmap_settings;
-};
-
-const sparq_axis_t X_AX_SAMPLES = {.dropdown_name = "Samples", .axis_label = "Samples"};
-const sparq_axis_t X_AX_REL_TIME = {.dropdown_name = "Relative Time", .axis_label = "Time [s]"};
-const sparq_axis_t X_AX_ABS_TIME = {.dropdown_name = "Date Time", .axis_label = "Date"};
-
-const std::array<sparq_axis_t, 3> x_axis_types = {X_AX_SAMPLES, X_AX_REL_TIME, X_AX_ABS_TIME};
-const std::array<char const*, 3> x_axis_fits = {"Manual", "Fit All", "Last N"};
-const std::array<char const*, 2> y_axis_fits = {"Manual", "Fit All"};
