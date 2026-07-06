@@ -96,7 +96,7 @@ void DataWindow::show_datasets_section()
         }
         ImGui::SameLine();
 
-        if (_data_handler.no_datasets())
+        if (_data_handler.empty())
         {
             ImGui::BeginDisabled();
         }
@@ -136,7 +136,7 @@ void DataWindow::show_datasets_section()
             _data_handler.show_all_datasets();
         }
 
-        if (!just_deleted && _data_handler.no_datasets())
+        if (!just_deleted && _data_handler.empty())
         {
             ImGui::EndDisabled();
         }

@@ -329,7 +329,7 @@ public:
     }
 
     [[nodiscard]]
-    bool no_datasets()
+    bool empty()
     {
         std::scoped_lock lock{_data_mutex};
         return _datasets.empty();
