@@ -50,7 +50,7 @@ void PlottingWindow::update_plot_contents()
 void PlottingWindow::handle_plot_timeseries()
 {
     auto const dataset_lock = _data_handler.datasets();
-    auto& datasets = dataset_lock.datasets;
+    auto& datasets = dataset_lock.get();
 
     ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
 
@@ -125,7 +125,7 @@ void PlottingWindow::handle_plot_single_value()
 void PlottingWindow::handle_plot_heatmap()
 {
     auto const dataset_lock = _data_handler.datasets();
-    auto& datasets = dataset_lock.datasets;
+    auto const& datasets = dataset_lock.get();
 
     auto const& hms = _plot_settings.heatmap_settings;
 

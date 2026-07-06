@@ -13,7 +13,7 @@ class DataHandler
 {
 public:
     /**
-     * @brief A RAII clas that locks the data mutex and provides access to the datasets.
+     * @brief A RAII class that locks the data mutex and provides access to the datasets.
      * @details This struct is used to ensure thread-safe access to the datasets while holding a lock on the data mutex.
      * It is returned by the datasets() function, which locks the data mutex and returns an instance of this struct.
      */
@@ -26,9 +26,14 @@ public:
         {
         }
 
-        std::vector<sparq_dataset_t>& datasets;
+        [[nodiscard]]
+        constexpr auto& get() const noexcept
+        {
+            return datasets;
+        }
 
     private:
+        std::vector<sparq_dataset_t>& datasets;
         std::unique_lock<std::mutex> lock{};
     };
 
@@ -80,7 +85,7 @@ public:
     }
 
     [[nodiscard]]
-    auto get_max_rel_time()
+    double get_max_rel_time()
     {
         std::lock_guard lock(_data_mutex);
 
@@ -109,12 +114,6 @@ public:
             _datasets | std::views::transform([](auto const& ds) {
                 return ds.absolute_times.back();
             }));
-    }
-
-    [[nodiscard]]
-    constexpr std::mutex& get_data_mutex() noexcept
-    {
-        return _data_mutex;
     }
 
     [[nodiscard]]

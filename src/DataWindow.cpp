@@ -89,7 +89,7 @@ void DataWindow::show_datasets_section()
     if (ImGui::CollapsingHeader("Serial Datasets"))
     {
         auto const dataset_lock = _data_handler.datasets();
-        auto& datasets = dataset_lock.datasets;
+        auto& datasets = dataset_lock.get();
 
         if (ImGui::Button("Import"))
         {

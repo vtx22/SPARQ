@@ -22,7 +22,7 @@ void ViewWindow::update_content()
     show_plot_settings(plot_settings);
 
     auto const dataset_lock = _data_handler.datasets();
-    auto& datasets = dataset_lock.datasets;
+    auto& datasets = dataset_lock.get();
 
     for (auto& d : datasets)
     {
