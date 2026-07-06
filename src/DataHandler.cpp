@@ -46,11 +46,6 @@ void DataHandler::receiver_loop()
     }
 }
 
-void DataHandler::update()
-{
-    update_markers();
-}
-
 void DataHandler::update_markers()
 {
     std::lock_guard lock(_data_mutex);
