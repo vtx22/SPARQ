@@ -5,9 +5,12 @@ void DataWindow::update_content()
     show_datasets_section();
 }
 
-void DataWindow::dataset_entries(std::vector<sparq_dataset_t>& datasets) const
+void DataWindow::dataset_entries() const
 {
-    if (datasets.size() == 0)
+    auto const dataset_lock = _data_handler.datasets();
+    auto& datasets = dataset_lock.get();
+
+    if (datasets.empty())
     {
         ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Data");
     }
@@ -88,15 +91,12 @@ void DataWindow::show_datasets_section()
 {
     if (ImGui::CollapsingHeader("Serial Datasets"))
     {
-        auto const dataset_lock = _data_handler.datasets();
-        auto& datasets = dataset_lock.get();
-
         if (ImGui::Button("Import"))
         {
         }
         ImGui::SameLine();
 
-        if (datasets.empty())
+        if (_data_handler.no_datasets())
         {
             ImGui::BeginDisabled();
         }
@@ -136,14 +136,14 @@ void DataWindow::show_datasets_section()
             _data_handler.show_all_datasets();
         }
 
-        if (!just_deleted && datasets.empty())
+        if (!just_deleted && _data_handler.no_datasets())
         {
             ImGui::EndDisabled();
         }
 
         ImGui::Separator();
 
-        dataset_entries(datasets);
+        dataset_entries();
     }
 
     if (ImGui::CollapsingHeader("Synthetic Datasets"))

@@ -255,6 +255,8 @@ std::optional<std::reference_wrapper<sparq_dataset_t>> DataHandler::get_dataset(
 
 bool DataHandler::delete_dataset(uint8_t const id)
 {
+    std::lock_guard lock(_data_mutex);
+
     for (std::size_t i = 0; i < _datasets.size(); i++)
     {
         if (_datasets[i].id == id)
@@ -277,6 +279,8 @@ bool DataHandler::delete_dataset(uint8_t const id)
 void DataHandler::delete_all_datasets()
 {
     std::cout << "Deleting all datasets ...\n";
+    std::lock_guard lock(_data_mutex);
+
     std::vector<uint8_t> ids(_datasets.size());
 
     for (std::size_t i = 0; i < _datasets.size(); i++)
@@ -292,6 +296,7 @@ void DataHandler::delete_all_datasets()
 
 bool DataHandler::clear_dataset(uint8_t const id)
 {
+    std::lock_guard lock(_data_mutex);
     bool ds_found = false;
     for (auto& ds : _datasets)
     {
@@ -336,6 +341,7 @@ void DataHandler::clear_all_datasets()
 
 void DataHandler::hide_all_datasets()
 {
+    std::lock_guard lock(_data_mutex);
     for (auto& ds : _datasets)
     {
         ds.hide = true;
@@ -344,6 +350,7 @@ void DataHandler::hide_all_datasets()
 
 void DataHandler::show_all_datasets()
 {
+    std::lock_guard lock(_data_mutex);
     for (auto& ds : _datasets)
     {
         ds.show = true;
@@ -441,10 +448,12 @@ sparq_message_t DataHandler::receive_message()
     return message;
 }
 
-void DataHandler::export_data_csv() const
+void DataHandler::export_data_csv()
 {
     std::cout << "Exporting data to csv...\n";
-    
+
+    std::lock_guard lock{_data_mutex};
+
     if (_datasets.empty())
     {
         std::cerr << "No data to export!\n";

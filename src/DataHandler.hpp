@@ -75,19 +75,19 @@ public:
 
     int last_n = 10;
 
-    void export_data_csv() const;
+    void export_data_csv();
 
     [[nodiscard]]
     auto get_max_sample()
     {
-        std::lock_guard lock(_data_mutex);
+        std::lock_guard lock{_data_mutex};
         return static_cast<double>(current_absolute_sample);
     }
 
     [[nodiscard]]
     double get_max_rel_time()
     {
-        std::lock_guard lock(_data_mutex);
+        std::lock_guard lock{_data_mutex};
 
         if (_datasets.empty())
         {
@@ -101,9 +101,9 @@ public:
     }
 
     [[nodiscard]]
-    auto get_max_abs_time()
+    double get_max_abs_time()
     {
-        std::lock_guard lock(_data_mutex);
+        std::lock_guard lock{_data_mutex};
 
         if (_datasets.empty())
         {
@@ -120,6 +120,13 @@ public:
     constexpr std::mutex& get_serial_mutex() noexcept
     {
         return _serial_mutex;
+    }
+
+    [[nodiscard]]
+    bool no_datasets()
+    {
+        std::lock_guard lock{_data_mutex};
+        return _datasets.empty();
     }
 
 private:
