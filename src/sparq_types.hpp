@@ -83,7 +83,7 @@ enum class sparq_sender_command_t : uint8_t
 
 namespace spq::plotting
 {
-    enum class plot_type : uint8_t
+    enum class plot_type_t : uint8_t
     {
         timeseries,
         xy,
@@ -95,7 +95,7 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<char const*, static_cast<std::size_t>(plot_type::COUNT)> plot_type_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(plot_type_t::COUNT)> plot_type_names{
         "Timeseries",
         "XY",
         "Single Value",
@@ -104,7 +104,7 @@ namespace spq::plotting
         "Heatmap",
         "FFT"};
 
-    enum class x_fit : uint8_t
+    enum class x_fit_t : uint8_t
     {
         manual,
         all,
@@ -112,72 +112,72 @@ namespace spq::plotting
         COUNT
     };
 
-    constexpr std::array<char const*, static_cast<std::size_t>(x_fit::COUNT)> x_fit_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(x_fit_t::COUNT)> x_fit_names{
         "Manual",
         "All",
         "Last N"};
 
-    enum class y_fit : uint8_t
+    enum class y_fit_t : uint8_t
     {
         manual,
         all,
         COUNT
     };
 
-    constexpr std::array<char const*, static_cast<std::size_t>(y_fit::COUNT)> y_fit_names{
+    constexpr std::array<char const*, static_cast<std::size_t>(y_fit_t::COUNT)> y_fit_names{
         "Manual",
         "All"};
 
-    struct heatmap_settings
+    struct heatmap_settings_t
     {
-        bool normalize_xy = false;
-        bool show_values = false;
-        float scale_min = 0;
-        float scale_max = 100;
-        bool autoscale = false;
-        bool invert_scale = false;
-        int rows = 1;
-        int cols = 1;
-        bool smooth = false;
-        int smoothing_factor = 5;
+        bool normalize_xy{};
+        bool show_values{};
+        float scale_min{};
+        float scale_max{100.f};
+        bool autoscale{};
+        bool invert_scale{};
+        int rows{1};
+        int cols{1};
+        bool smooth{};
+        int smoothing_factor{5};
     };
 
-    struct plot_settings
+    struct plot_settings_t
     {
         std::unordered_set<std::size_t> ids_to_plot{};
 
-        plot_type type{};
-        x_fit x_fit{};
-        y_fit y_fit{};
+        plot_type_t type{};
+        x_fit_t x_fit{};
+        y_fit_t y_fit{};
         bool equal{};
 
-        heatmap_settings heatmap_settings{};
+        heatmap_settings_t heatmap_settings{};
     };
 }
 
 struct sparq_marker_t
 {
-    std::string name = "M";
-    double x = 0;
-    double y = 0;
-    uint8_t ds_index;
-    int16_t ds_id = -1;
-    bool hidden = false;
-    ImVec4 color = ImVec4(1, 1, 1, 1);
+    std::string name{"M"};
+    double x{};
+    double y{};
+    uint8_t ds_index{};
+    int16_t ds_id{-1};
+    bool hidden{};
+    ImVec4 color{1.f, 1.f, 1.f, 1.f};
 };
 
 struct sparq_dataset_t
 {
-    int16_t id = 0;
+    int16_t id{};
     char name_buffer[64] = {0};
-    std::string name;
-    std::string name_with_id;
+    std::string name{};
+    std::string name_with_id{};
     ImVec4 color{1.f, 0.f, 0.f, 1.f};
-    bool toggle_visibility = false;
-    bool show = false;
-    bool hide = false;
-    bool hidden = false;
-    bool display_square = false;
+    bool toggle_visibility{};
+    bool show{};
+    bool hide{};
+    bool hidden{};
+    bool display_square{};
 
     std::vector<double> absolute_times;
     std::vector<double> relative_times;
@@ -233,7 +233,7 @@ struct sparq_message_header_t
         signature = buffer[0];
         control = buffer[1];
 
-        auto const message_endianess = static_cast<bool>(control & (uint8_t)sparq_header_control_t::LSB_FIRST);
+        auto const message_endianess = static_cast<bool>(control & static_cast<uint8_t>(sparq_header_control_t::LSB_FIRST));
 
         if (message_endianess == spq::helper::is_little_endian())
         {
@@ -263,12 +263,12 @@ struct sparq_message_t
     std::vector<uint8_t> ids;
     std::vector<double> values;
     uint16_t checksum{};
-    bool valid = false;
+    bool valid{};
     uint64_t timestamp{};
-    std::string string_data;
-    sparq_message_type_t message_type;
-    sparq_sender_command_t command_type;
-    std::vector<uint8_t> command_data;
+    std::string string_data{};
+    sparq_message_type_t message_type{};
+    sparq_sender_command_t command_type{};
+    std::vector<uint8_t> command_data{};
     uint16_t nval{};
 
     [[nodiscard]]

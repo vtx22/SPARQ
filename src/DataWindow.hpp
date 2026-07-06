@@ -13,7 +13,7 @@ public:
     {
     }
 
-    void dataset_entries(std::vector<sparq_dataset_t>& datasets) const;
+    void dataset_entries() const;
 
 private:
     void show_datasets_section();

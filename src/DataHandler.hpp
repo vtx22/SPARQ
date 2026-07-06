@@ -12,24 +12,42 @@ using namespace std::chrono;
 class DataHandler
 {
 public:
+    /**
+     * @brief A RAII class that locks the data mutex and provides access to the datasets.
+     * @details This struct is used to ensure thread-safe access to the datasets while holding a lock on the data mutex.
+     * It is returned by the datasets() function, which locks the data mutex and returns an instance of this struct.
+     */
+    class LockedDatasets
+    {
+    public:
+        LockedDatasets(std::mutex& m, std::vector<sparq_dataset_t>& d)
+            : datasets{d},
+              lock{m}
+        {
+        }
+
+        [[nodiscard]]
+        constexpr auto& get() const noexcept
+        {
+            return datasets;
+        }
+
+    private:
+        std::vector<sparq_dataset_t>& datasets;
+        std::unique_lock<std::mutex> lock{};
+    };
+
+    LockedDatasets datasets()
+    {
+        return LockedDatasets{_data_mutex, _datasets};
+    }
+
     DataHandler(Serial& sp, ConsoleWindow& console_window);
     ~DataHandler();
 
     void update();
     void receiver_loop();
     sparq_message_t receive_message();
-
-    [[nodiscard]]
-    constexpr std::vector<sparq_dataset_t> const& get_datasets() const noexcept
-    {
-        return _datasets;
-    }
-
-    [[nodiscard]]
-    constexpr std::vector<sparq_dataset_t>& get_datasets_editable() noexcept
-    {
-        return _datasets;
-    }
 
     [[nodiscard]]
     constexpr std::vector<sparq_marker_t>& get_markers() noexcept
@@ -57,19 +75,19 @@ public:
 
     int last_n = 10;
 
-    void export_data_csv() const;
+    void export_data_csv();
 
     [[nodiscard]]
     auto get_max_sample()
     {
-        std::lock_guard lock(_data_mutex);
+        std::lock_guard lock{_data_mutex};
         return static_cast<double>(current_absolute_sample);
     }
 
     [[nodiscard]]
-    auto get_max_rel_time()
+    double get_max_rel_time()
     {
-        std::lock_guard lock(_data_mutex);
+        std::lock_guard lock{_data_mutex};
 
         if (_datasets.empty())
         {
@@ -83,9 +101,9 @@ public:
     }
 
     [[nodiscard]]
-    auto get_max_abs_time()
+    double get_max_abs_time()
     {
-        std::lock_guard lock(_data_mutex);
+        std::lock_guard lock{_data_mutex};
 
         if (_datasets.empty())
         {
@@ -99,15 +117,16 @@ public:
     }
 
     [[nodiscard]]
-    constexpr std::mutex& get_data_mutex() noexcept
-    {
-        return _data_mutex;
-    }
-
-    [[nodiscard]]
     constexpr std::mutex& get_serial_mutex() noexcept
     {
         return _serial_mutex;
+    }
+
+    [[nodiscard]]
+    bool no_datasets()
+    {
+        std::lock_guard lock{_data_mutex};
+        return _datasets.empty();
     }
 
 private:

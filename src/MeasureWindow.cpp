@@ -43,8 +43,6 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers) 
 
     if (ImGui::BeginTable("##MeasureMarkerTable", 7, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
-        std::lock_guard lock(_data_handler.get_data_mutex());
-
         std::vector<std::size_t> to_delete;
         for (std::size_t i = 0; i < markers.size(); i++)
         {
@@ -57,7 +55,8 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers) 
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(200);
 
-            auto const& datasets = _data_handler.get_datasets();
+            auto const dataset_lock = _data_handler.datasets();
+            auto& datasets = dataset_lock.get();
 
             std::string ds_selector_name = std::to_string(markers[i].ds_id);
             if (markers[i].ds_id != -1 && datasets[markers[i].ds_index].name.length() > 0)

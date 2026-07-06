@@ -39,7 +39,7 @@ public:
     std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(sparq_dataset_t& dataset, std::size_t max_samples, double x_min, double x_max);
 
     [[nodiscard]]
-    spq::plotting::plot_settings& settings() noexcept
+    spq::plotting::plot_settings_t& settings() noexcept
     {
         return _plot_settings;
     }
@@ -60,10 +60,10 @@ private:
     void update_plot_contents();
     void update_markers() const;
 
-    void handle_plot_timeseries();
-    void handle_plot_xy();
-    void handle_plot_single_value();
-    void handle_plot_heatmap();
+    void handle_plot_timeseries(std::vector<sparq_dataset_t>& datasets);
+    void handle_plot_xy(std::vector<sparq_dataset_t>& datasets);
+    void handle_plot_single_value(std::vector<sparq_dataset_t>& datasets);
+    void handle_plot_heatmap(std::vector<sparq_dataset_t> const& datasets);
 
     void update_window_name();
 
@@ -72,7 +72,7 @@ private:
 
     bool _highlight_window = false;
     bool _highlight_colors_pushed = false;
-    spq::plotting::plot_settings _plot_settings;
+    spq::plotting::plot_settings_t _plot_settings;
     std::size_t _id{};
 
 protected:

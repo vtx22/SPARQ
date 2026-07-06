@@ -55,7 +55,7 @@ private:
     [[nodiscard]]
     constexpr std::optional<std::reference_wrapper<PlottingWindow>> find_plot_by_id(IDType id) const noexcept;
     [[nodiscard]]
-    constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings>> get_selected_plot_settings() const noexcept;
+    constexpr std::optional<std::reference_wrapper<spq::plotting::plot_settings_t>> get_selected_plot_settings() const noexcept;
     constexpr void cleanup_closed_plotting_windows() noexcept;
 
     Serial m_sp;

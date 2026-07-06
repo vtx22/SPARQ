@@ -2,8 +2,6 @@
 
 void PlottingWindow::update_content()
 {
-    std::lock_guard lock(_data_handler.get_data_mutex());
-
     update_window_name(); // TODO: Update only on plot type change
     update_plot_contents();
     show_highlighting_rectangle();
@@ -26,20 +24,22 @@ void PlottingWindow::update_plot_contents()
     if (ImPlot::BeginPlot("##Plot", ImVec2(-1, -1), get_plot_flags()))
     {
         update_markers();
+        auto const dataset_lock = _data_handler.datasets();
+        auto& datasets = dataset_lock.get();
 
         switch (_plot_settings.type)
         {
-        case plot_type::timeseries:
-            handle_plot_timeseries();
+        case plot_type_t::timeseries:
+            handle_plot_timeseries(datasets);
             break;
-        case plot_type::xy:
-            handle_plot_xy();
+        case plot_type_t::xy:
+            handle_plot_xy(datasets);
             break;
-        case plot_type::single_value:
-            handle_plot_single_value();
+        case plot_type_t::single_value:
+            handle_plot_single_value(datasets);
             break;
-        case plot_type::heatmap:
-            handle_plot_heatmap();
+        case plot_type_t::heatmap:
+            handle_plot_heatmap(datasets);
             break;
         default:
             break;
@@ -49,10 +49,8 @@ void PlottingWindow::update_plot_contents()
     }
 }
 
-void PlottingWindow::handle_plot_timeseries()
+void PlottingWindow::handle_plot_timeseries(std::vector<sparq_dataset_t>& datasets)
 {
-    auto& datasets = _data_handler.get_datasets_editable();
-
     ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
 
     uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
@@ -115,18 +113,16 @@ void PlottingWindow::handle_plot_timeseries()
     }
 }
 
-void PlottingWindow::handle_plot_xy()
+void PlottingWindow::handle_plot_xy(std::vector<sparq_dataset_t>& datasets)
 {
 }
 
-void PlottingWindow::handle_plot_single_value()
+void PlottingWindow::handle_plot_single_value(std::vector<sparq_dataset_t>& datasets)
 {
 }
 
-void PlottingWindow::handle_plot_heatmap()
+void PlottingWindow::handle_plot_heatmap(std::vector<sparq_dataset_t> const& datasets)
 {
-    auto& datasets = _data_handler.get_datasets_editable();
-
     auto const& hms = _plot_settings.heatmap_settings;
 
     std::vector<float> values(hms.cols * hms.rows);
@@ -238,7 +234,7 @@ ImPlotFlags PlottingWindow::get_plot_flags() const
 {
     ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
 
-    if (_plot_settings.type == spq::plotting::plot_type::heatmap && _plot_settings.equal)
+    if (_plot_settings.type == spq::plotting::plot_type_t::heatmap && _plot_settings.equal)
     {
         plot_flags |= ImPlotFlags_Equal;
     }

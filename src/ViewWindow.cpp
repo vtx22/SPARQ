@@ -21,9 +21,10 @@ void ViewWindow::update_content()
 
     show_plot_settings(plot_settings);
 
-    auto& ds = _data_handler.get_datasets_editable();
+    auto const dataset_lock = _data_handler.datasets();
+    auto& datasets = dataset_lock.get();
 
-    for (auto& d : ds)
+    for (auto& d : datasets)
     {
         constexpr ImVec4 button_color{0.f, 0.5f, 1.f, 1.f};
         auto const button_state_color = plot_settings.ids_to_plot.contains(d.id) ? button_color : ImVec4{};
@@ -45,25 +46,25 @@ void ViewWindow::update_content()
     }
 }
 
-void ViewWindow::show_plot_settings(spq::plotting::plot_settings& settings)
+void ViewWindow::show_plot_settings(spq::plotting::plot_settings_t& settings)
 {
     using namespace spq::plotting;
 
     auto selected_plot_type = static_cast<int>(settings.type);
     if (ImGui::Combo("Type", &selected_plot_type, plot_type_names.data(), plot_type_names.size()))
     {
-        settings.type = static_cast<plot_type>(selected_plot_type);
+        settings.type = static_cast<plot_type_t>(selected_plot_type);
     }
 
     show_axis_settings(settings);
 
     switch (settings.type)
     {
-    case plot_type::timeseries:
+    case plot_type_t::timeseries:
         break;
-    case plot_type::single_value:
+    case plot_type_t::single_value:
         break;
-    case plot_type::heatmap:
+    case plot_type_t::heatmap:
         show_heatmap_settings(settings.heatmap_settings);
         break;
     default:
@@ -71,11 +72,11 @@ void ViewWindow::show_plot_settings(spq::plotting::plot_settings& settings)
     }
 }
 
-void ViewWindow::show_heatmap_settings(spq::plotting::heatmap_settings& settings)
+void ViewWindow::show_heatmap_settings(spq::plotting::heatmap_settings_t& settings)
 {
 }
 
-void ViewWindow::show_axis_settings(spq::plotting::plot_settings& settings)
+void ViewWindow::show_axis_settings(spq::plotting::plot_settings_t& settings)
 {
     using namespace spq::plotting;
 
@@ -87,7 +88,7 @@ void ViewWindow::show_axis_settings(spq::plotting::plot_settings& settings)
         auto selected_x_fit_type = static_cast<int>(settings.x_fit);
         if (ImGui::Combo("X Fit", &selected_x_fit_type, x_fit_names.data(), x_fit_names.size()))
         {
-            settings.x_fit = static_cast<x_fit>(selected_x_fit_type);
+            settings.x_fit = static_cast<x_fit_t>(selected_x_fit_type);
         }
     }
 
@@ -96,7 +97,7 @@ void ViewWindow::show_axis_settings(spq::plotting::plot_settings& settings)
         auto selected_y_fit_type = static_cast<int>(settings.y_fit);
         if (ImGui::Combo("Y Fit", &selected_y_fit_type, y_fit_names.data(), y_fit_names.size()))
         {
-            settings.y_fit = static_cast<y_fit>(selected_y_fit_type);
+            settings.y_fit = static_cast<y_fit_t>(selected_y_fit_type);
         }
     }
 
