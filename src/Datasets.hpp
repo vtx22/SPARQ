@@ -162,7 +162,6 @@ public:
     /**
      * @brief Deletes a dataset with the given ID from the list of datasets.
      * @param id The ID of the dataset to delete.
-     * @return True if the dataset was deleted, false if no dataset with the given ID was found.
      */
     constexpr void delete_dataset(std::size_t const id)
     {

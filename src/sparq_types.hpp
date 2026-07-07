@@ -161,14 +161,14 @@ struct sparq_marker_t
     double x{};
     double y{};
     uint8_t ds_index{};
-    int16_t ds_id{-1};
+    int16_t ds_id{-1}; // TODO: Make this a size_t and handle the case where no dataset is selected
     bool hidden{};
     ImVec4 color{1.f, 1.f, 1.f, 1.f};
 };
 
 struct sparq_dataset_t
 {
-    int16_t id{};
+    std::size_t id{};
     char name_buffer[64] = {0};
     std::string name{};
     std::string name_with_id{};
