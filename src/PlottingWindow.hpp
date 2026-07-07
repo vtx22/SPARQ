@@ -22,12 +22,11 @@ class PlottingWindow final : public Window
 public:
     PlottingWindow(DataHandler& data_handler, std::size_t const id)
         : Window(
-              std::string(spq::plotting::internal::window_name_prefix)
-                  + spq::plotting::internal::window_name_id_prefix
-                  + std::to_string(id),
+              {},
               data_handler),
           _id(id)
     {
+        update_window_name();
     }
 
     void config_limits_n_values() const;

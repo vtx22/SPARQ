@@ -2,7 +2,15 @@
 
 void PlottingWindow::update_content(Datasets& datasets)
 {
-    update_window_name(); // TODO: Update only on plot type change
+    using namespace spq::plotting;
+
+    static plot_type_t prev_plot_type{};
+    if (_plot_settings.type != prev_plot_type)
+    {
+        prev_plot_type = _plot_settings.type;
+        update_window_name();
+    }
+
     update_plot_contents(datasets);
     show_highlighting_rectangle();
 }
@@ -10,7 +18,6 @@ void PlottingWindow::update_content(Datasets& datasets)
 void PlottingWindow::update_window_name()
 {
     using namespace spq::plotting;
-
     _name = internal::window_name_prefix;
     _name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
     _name += internal::window_name_id_prefix;
