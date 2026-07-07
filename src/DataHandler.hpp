@@ -41,26 +41,26 @@ public:
 
     LockedDatasets datasets()
     {
-        return LockedDatasets{_data_mutex, m_datasets};
+        return LockedDatasets{m_data_mutex, m_datasets};
     }
 
     DataHandler(Serial& sp, ConsoleWindow& console_window)
-        : _sp(sp),
-          _console_window(console_window)
+        : m_sp(sp),
+          m_console_window(console_window)
     {
-        _sp.set_timeouts(0xFFFF'FFFF, 0, 0, 0, 0);
-        _serial_buffer.reserve(static_cast<std::size_t>(SPARQ_MAX_MESSAGE_LENGTH) * 2);
+        m_sp.set_timeouts(0xFFFF'FFFF, 0, 0, 0, 0);
+        m_serial_buffer.reserve(static_cast<std::size_t>(SPARQ_MAX_MESSAGE_LENGTH) * 2);
 
-        _receive_thread = std::thread(&DataHandler::receiver_loop, this);
+        m_receive_thread = std::thread(&DataHandler::receiver_loop, this);
         std::cout << "Starting receiver thread ...\n";
     }
 
     ~DataHandler()
     {
-        _running = false;
-        if (_receive_thread.joinable())
+        m_running = false;
+        if (m_receive_thread.joinable())
         {
-            _receive_thread.join();
+            m_receive_thread.join();
         }
     }
 
@@ -75,7 +75,7 @@ public:
     [[nodiscard]]
     constexpr std::vector<sparq_marker_t>& get_markers() noexcept
     {
-        return _markers;
+        return m_markers;
     }
 
     void update_markers();
@@ -91,23 +91,23 @@ public:
     [[nodiscard]]
     constexpr std::mutex& get_serial_mutex() noexcept
     {
-        return _serial_mutex;
+        return m_serial_mutex;
     }
 
 private:
     void handle_command(sparq_message_t const& message);
 
-    Serial& _sp;
-    ConsoleWindow& _console_window;
+    Serial& m_sp;
+    ConsoleWindow& m_console_window;
 
-    std::vector<uint8_t> _serial_buffer;
-    std::vector<uint8_t> _message_buffer;
+    std::vector<uint8_t> m_serial_buffer;
+    std::vector<uint8_t> m_message_buffer;
 
-    std::vector<sparq_marker_t> _markers;
+    std::vector<sparq_marker_t> m_markers;
 
-    std::thread _receive_thread;
-    std::atomic<bool> _running = true;
-    std::mutex _data_mutex, _serial_mutex;
+    std::thread m_receive_thread;
+    std::atomic<bool> m_running = true;
+    std::mutex m_data_mutex, m_serial_mutex;
 
     Datasets m_datasets{};
 };
