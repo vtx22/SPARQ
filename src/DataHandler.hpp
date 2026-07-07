@@ -12,7 +12,7 @@ class DataHandler final
 {
 public:
     /**
-     * @brief A RAII class that locks the data mutex and provides access to the datasets were the lock is linked to the lifetime of the object.
+     * @brief A RAII class that locks the data mutex and provides access to the datasets where the lock is linked to the lifetime of the object.
      * @details This class is used to ensure thread-safe access to the datasets while holding a lock on the data mutex.
      * It is returned by the datasets() function, which locks the data mutex and returns an instance of this struct.
      * The lock is released when the instance of this struct goes out of scope.
