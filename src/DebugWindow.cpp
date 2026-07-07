@@ -34,7 +34,7 @@ void DebugWindow::update_content(Datasets& datasets)
         static int id{};
 
         ImGui::InputInt("ID", &id);
-        id = std::clamp(id, 0, 255);
+        id = std::max(id, 0);
 
         char name_buf[64] = {0};
         ImGui::InputText("Name", name_buf, sizeof(name_buf));
@@ -45,7 +45,7 @@ void DebugWindow::update_content(Datasets& datasets)
 
         if (ImGui::Button("Add"))
         {
-            sparq_dataset_t ds{.id = static_cast<int16_t>(id)};
+            sparq_dataset_t ds{.id = static_cast<std::size_t>(id)};
             ds.set_name(std::string{std::strlen(name_buf) == 0 ? functions.at(selected) : name_buf});
 
             constexpr auto N = 1000;
