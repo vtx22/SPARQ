@@ -10,17 +10,17 @@ class Window
 {
 public:
     Window(std::string name, DataHandler& data_handler)
-        : _name(std::move(name)),
+        : m_name(std::move(name)),
           m_data_handler(data_handler),
-          _config_handler(ConfigHandler::get_instance())
+          m_config_handler(ConfigHandler::get_instance())
     {
     }
 
     Window(std::string name, DataHandler& data_handler, ImGuiWindowFlags const flags)
-        : _name(std::move(name)),
-          window_flags(flags),
+        : m_name(std::move(name)),
+          m_window_flags(flags),
           m_data_handler(data_handler),
-          _config_handler(ConfigHandler::get_instance())
+          m_config_handler(ConfigHandler::get_instance())
     {
     }
 
@@ -36,9 +36,9 @@ public:
         before_imgui_begin();
 
         bool should_stay_open = true;
-        if (ImGui::Begin(_name.c_str(), has_close_button() ? &should_stay_open : nullptr, window_flags))
+        if (ImGui::Begin(m_name.c_str(), has_close_button() ? &should_stay_open : nullptr, m_window_flags))
         {
-            _is_selected = ImGui::IsWindowFocused();
+            m_is_selected = ImGui::IsWindowFocused();
 
             auto const dataset_lock = m_data_handler.datasets();
             update_content(dataset_lock.get());
@@ -46,7 +46,7 @@ public:
 
         if (!should_stay_open)
         {
-            _close_triggered = true;
+            m_close_triggered = true;
         }
 
         ImGui::End();
@@ -61,7 +61,7 @@ public:
     [[nodiscard]]
     constexpr bool close_triggered() const noexcept
     {
-        return _close_triggered;
+        return m_close_triggered;
     }
 
     /**
@@ -71,7 +71,7 @@ public:
     [[nodiscard]]
     constexpr bool is_selected() const noexcept
     {
-        return _is_selected;
+        return m_is_selected;
     }
 
 protected:
@@ -113,12 +113,12 @@ protected:
         return false;
     }
 
-    std::string _name{};
-    ImGuiWindowFlags window_flags{};
+    std::string m_name{};
+    ImGuiWindowFlags m_window_flags{};
     DataHandler& m_data_handler;
-    ConfigHandler& _config_handler;
+    ConfigHandler& m_config_handler;
 
 private:
-    bool _close_triggered{};
-    bool _is_selected{};
+    bool m_close_triggered{};
+    bool m_is_selected{};
 };

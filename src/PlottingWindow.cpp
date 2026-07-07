@@ -18,10 +18,10 @@ void PlottingWindow::update_content(Datasets& datasets)
 void PlottingWindow::update_window_name()
 {
     using namespace spq::plotting;
-    _name = internal::window_name_prefix;
-    _name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
-    _name += internal::window_name_id_prefix;
-    _name += std::to_string(_id);
+    m_name = internal::window_name_prefix;
+    m_name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
+    m_name += internal::window_name_id_prefix;
+    m_name += std::to_string(_id);
 }
 
 void PlottingWindow::update_plot_contents(Datasets& datasets)
@@ -58,9 +58,9 @@ void PlottingWindow::handle_plot_timeseries(Datasets& datasets)
 {
     ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
 
-    uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
+    uint32_t max_samples = std::stoi(m_config_handler.ini["downsampling"]["max_samples"]);
 
-    if (_config_handler.ini["downsampling"]["max_samples_type"] == "0" && !datasets.empty())
+    if (m_config_handler.ini["downsampling"]["max_samples_type"] == "0" && !datasets.empty())
     {
         max_samples = static_cast<uint32_t>(std::round(max_samples / static_cast<double>(datasets.size())));
     }
@@ -262,7 +262,7 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
 {
     auto& d = dataset;
 
-    auto const downsampling_enabled = (_config_handler.ini["downsampling"]["enabled"] == "1");
+    auto const downsampling_enabled = (m_config_handler.ini["downsampling"]["enabled"] == "1");
     // No downsampling possible
     if (d.samples.empty() || d.samples.size() < max_samples || !downsampling_enabled)
     {
