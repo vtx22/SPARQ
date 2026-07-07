@@ -61,6 +61,32 @@ namespace spq::helper
         }
     }
 
+    [[nodiscard]]
+    constexpr uint8_t hex_chars_to_byte(char const high, char const low) noexcept
+    {
+        auto char_to_hex_value = [](char const c) -> uint8_t {
+            if (c == 0)
+            {
+                return 0;
+            }
+            if (c >= '0' && c <= '9')
+            {
+                return c - '0';
+            }
+            else if (c >= 'A' && c <= 'F')
+            {
+                return c - 'A' + 10;
+            }
+            else if (c >= 'a' && c <= 'f')
+            {
+                return c - 'a' + 10;
+            }
+            return 0;
+        };
+
+        return (char_to_hex_value(high) << 4) | char_to_hex_value(low);
+    }
+
 }
 
 enum class sparq_header_control_t : uint8_t
