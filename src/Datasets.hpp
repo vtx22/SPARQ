@@ -118,10 +118,8 @@ public:
     /**
      * @brief Clears the data of all datasets.
      */
-    void clear_all()
+    constexpr void clear_all() noexcept
     {
-        std::cout << "Clearing all datasets ...\n";
-
         for (auto const& d : m_datasets)
         {
             clear(d.id);
@@ -133,7 +131,7 @@ public:
      * @param id The ID of the dataset to clear.
      * @return True if the dataset was cleared, false if no dataset with the given ID was found.
      */
-    bool clear(std::size_t const id)
+    constexpr bool clear(std::size_t const id) noexcept
     {
         auto const dataset = get(id);
 
@@ -166,7 +164,7 @@ public:
      * @param id The ID of the dataset to delete.
      * @return True if the dataset was deleted, false if no dataset with the given ID was found.
      */
-    bool delete_dataset(std::size_t const id)
+    constexpr bool delete_dataset(std::size_t const id)
     {
         for (std::size_t i = 0; i < m_datasets.size(); i++)
         {
@@ -190,10 +188,8 @@ public:
     /**
      * @brief Deletes all datasets from the list of datasets.
      */
-    void delete_all()
+    constexpr void delete_all() noexcept
     {
-        std::cout << "Deleting all datasets ...\n";
-
         m_datasets.clear();
         m_first_receive_timestamp = 0;
         m_current_absolute_sample = 0;
