@@ -1,6 +1,6 @@
 #include "DebugWindow.hpp"
 
-void DebugWindow::update_content()
+void DebugWindow::update_content(Datasets& datasets)
 {
     ImGui::SeparatorText("Debug");
     ImGui::PushItemWidth(-FLT_MIN);
@@ -25,7 +25,7 @@ void DebugWindow::update_content()
                 ds.y_values.push_back(std::sin(angle));
             }
 
-            _data_handler.add_dataset(ds);
+            datasets.add_dataset(ds);
         }
     }
 
@@ -79,7 +79,7 @@ void DebugWindow::update_content()
                 }
             }
 
-            _data_handler.add_dataset(ds);
+            datasets.add_dataset(ds);
         }
     }
 }

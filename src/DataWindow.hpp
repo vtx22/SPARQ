@@ -13,11 +13,11 @@ public:
     {
     }
 
-    void dataset_entries() const;
+    void dataset_entries(Datasets& datasets) const;
 
 private:
-    void show_datasets_section();
+    void show_datasets_section(Datasets& datasets);
 
 protected:
-    void update_content() override;
+    void update_content(Datasets& datasets) override;
 };

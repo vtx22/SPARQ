@@ -13,8 +13,8 @@ public:
     {
     }
 
-    void measure_markers_table(std::vector<sparq_marker_t>& markers) const;
+    void measure_markers_table(std::vector<sparq_marker_t>& markers, Datasets& datasets) const;
 
 protected:
-    void update_content() override;
+    void update_content(Datasets& datasets) override;
 };

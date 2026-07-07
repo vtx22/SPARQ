@@ -1,9 +1,9 @@
 #include "PlottingWindow.hpp"
 
-void PlottingWindow::update_content()
+void PlottingWindow::update_content(Datasets& datasets)
 {
     update_window_name(); // TODO: Update only on plot type change
-    update_plot_contents();
+    update_plot_contents(datasets);
     show_highlighting_rectangle();
 }
 
@@ -17,15 +17,13 @@ void PlottingWindow::update_window_name()
     _name += std::to_string(_id);
 }
 
-void PlottingWindow::update_plot_contents()
+void PlottingWindow::update_plot_contents(Datasets& datasets)
 {
     using namespace spq::plotting;
 
     if (ImPlot::BeginPlot("##Plot", ImVec2(-1, -1), get_plot_flags()))
     {
         update_markers();
-        auto const dataset_lock = _data_handler.datasets();
-        auto& datasets = dataset_lock.get();
 
         switch (_plot_settings.type)
         {
@@ -49,7 +47,7 @@ void PlottingWindow::update_plot_contents()
     }
 }
 
-void PlottingWindow::handle_plot_timeseries(std::vector<sparq_dataset_t>& datasets)
+void PlottingWindow::handle_plot_timeseries(Datasets& datasets)
 {
     ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
 
@@ -61,7 +59,7 @@ void PlottingWindow::handle_plot_timeseries(std::vector<sparq_dataset_t>& datase
     }
 
     std::size_t i = 0;
-    for (auto& ds : datasets)
+    for (auto& ds : datasets.data())
     {
         if (!_plot_settings.ids_to_plot.contains(ds.id))
         {
@@ -90,38 +88,19 @@ void PlottingWindow::handle_plot_timeseries(std::vector<sparq_dataset_t>& datase
                 y_values.size());
         }
 
-        ImPlotItem* item = plot->Items.GetLegendItem(i);
-        if (ds.toggle_visibility)
-        {
-            item->Show = !item->Show;
-            ds.toggle_visibility = false;
-        }
-        if (ds.hide)
-        {
-            item->Show = false;
-            ds.hide = false;
-        }
-        if (ds.show)
-        {
-            item->Show = true;
-            ds.show = false;
-        }
-
-        ds.hidden = !item->Show;
-
         i++;
     }
 }
 
-void PlottingWindow::handle_plot_xy(std::vector<sparq_dataset_t>& datasets)
+void PlottingWindow::handle_plot_xy(Datasets& datasets)
 {
 }
 
-void PlottingWindow::handle_plot_single_value(std::vector<sparq_dataset_t>& datasets)
+void PlottingWindow::handle_plot_single_value(Datasets& datasets)
 {
 }
 
-void PlottingWindow::handle_plot_heatmap(std::vector<sparq_dataset_t> const& datasets)
+void PlottingWindow::handle_plot_heatmap(Datasets const& datasets)
 {
     auto const& hms = _plot_settings.heatmap_settings;
 
@@ -184,7 +163,7 @@ void PlottingWindow::handle_plot_heatmap(std::vector<sparq_dataset_t> const& dat
 
 void PlottingWindow::update_markers() const
 {
-    auto& markers = _data_handler.get_markers();
+    auto& markers = m_data_handler.get_markers();
 
     std::size_t id = 0;
     for (auto& m : markers)
@@ -292,14 +271,14 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
     }
 
     // For FIT_ALL x axis we have to keep the whole data length so ImPlot AutoFit works
-    if (_data_handler.x_fit_select == 1)
+    if (m_data_handler.x_fit_select == 1)
     {
         x_min = std::numeric_limits<double>::lowest();
         x_max = std::numeric_limits<double>::max();
     }
 
     std::vector<double>* x_values;
-    switch (_data_handler.x_axis_select)
+    switch (m_data_handler.x_axis_select)
     {
     default:
     case 0:
@@ -411,46 +390,46 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
 
 void PlottingWindow::config_limits_n_values() const
 {
-    switch (_data_handler.x_axis_select)
-    {
-    // Last N Samples
-    case 0:
-    {
-        auto const max_sample = static_cast<std::size_t>(round(_data_handler.get_max_sample())) - 1;
-        auto const min_sample = max_sample - static_cast<std::size_t>(_data_handler.last_n) + 1;
-
-        ImPlot::SetupAxisLimits(ImAxis_X1, min_sample, max_sample, ImPlotCond_Always);
-        break;
-    }
-    // Last N relative seconds
-    case 1:
-    {
-        auto const max_rel_time = _data_handler.get_max_rel_time();
-        auto min_rel_time = max_rel_time - _data_handler.last_n;
-
-        if (min_rel_time < 0)
-        {
-            min_rel_time = 0;
-        }
-
-        ImPlot::SetupAxisLimits(ImAxis_X1, min_rel_time, max_rel_time, ImPlotCond_Always);
-        break;
-    }
-    // Last N absolute seconds
-    case 2:
-    {
-        auto const max_abs_time = _data_handler.get_max_abs_time();
-        auto min_abs_time = max_abs_time - _data_handler.last_n;
-
-        if (min_abs_time < 0)
-        {
-            min_abs_time = 0;
-        }
-
-        ImPlot::SetupAxisLimits(ImAxis_X1, min_abs_time, max_abs_time, ImPlotCond_Always);
-        break;
-    }
-    }
+    // switch (_data_handler.x_axis_select)
+    // {
+    // // Last N Samples
+    // case 0:
+    // {
+    //     auto const max_sample = static_cast<std::size_t>(round(_data_handler.get_max_sample())) - 1;
+    //     auto const min_sample = max_sample - static_cast<std::size_t>(_data_handler.last_n) + 1;
+    //
+    //     ImPlot::SetupAxisLimits(ImAxis_X1, min_sample, max_sample, ImPlotCond_Always);
+    //     break;
+    // }
+    // // Last N relative seconds
+    // case 1:
+    // {
+    //     auto const max_rel_time = _data_handler.get_max_rel_time();
+    //     auto min_rel_time = max_rel_time - _data_handler.last_n;
+    //
+    //     if (min_rel_time < 0)
+    //     {
+    //         min_rel_time = 0;
+    //     }
+    //
+    //     ImPlot::SetupAxisLimits(ImAxis_X1, min_rel_time, max_rel_time, ImPlotCond_Always);
+    //     break;
+    // }
+    // // Last N absolute seconds
+    // case 2:
+    // {
+    //     auto const max_abs_time = _data_handler.get_max_abs_time();
+    //     auto min_abs_time = max_abs_time - _data_handler.last_n;
+    //
+    //     if (min_abs_time < 0)
+    //     {
+    //         min_abs_time = 0;
+    //     }
+    //
+    //     ImPlot::SetupAxisLimits(ImAxis_X1, min_abs_time, max_abs_time, ImPlotCond_Always);
+    //     break;
+    // }
+    // }
 }
 
 std::vector<float> PlottingWindow::bilinear_interpolate(std::vector<float> const& original_image, int const original_rows, int const original_cols, float const scale_factor)

@@ -1,6 +1,6 @@
 #include "ViewWindow.hpp"
 
-void ViewWindow::update_content()
+void ViewWindow::update_content(Datasets& datasets)
 {
     if (ImGui::Button("Add Plot"))
     {
@@ -21,10 +21,7 @@ void ViewWindow::update_content()
 
     show_plot_settings(plot_settings);
 
-    auto const dataset_lock = _data_handler.datasets();
-    auto& datasets = dataset_lock.get();
-
-    for (auto& d : datasets)
+    for (auto& d : datasets.data())
     {
         constexpr ImVec4 button_color{0.f, 0.5f, 1.f, 1.f};
         auto const button_state_color = plot_settings.ids_to_plot.contains(d.id) ? button_color : ImVec4{};
