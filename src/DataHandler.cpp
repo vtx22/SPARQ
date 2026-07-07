@@ -30,8 +30,13 @@ void DataHandler::receiver_loop()
                 handle_command(message);
                 break;
             default:
-                add_to_datasets(message);
+            {
+                auto const dataset_lock = datasets();
+                auto& datasets = dataset_lock.get();
+
+                datasets.add_from_message(message);
                 break;
+            }
             }
         }
 
@@ -48,8 +53,6 @@ void DataHandler::receiver_loop()
 
 void DataHandler::update_markers()
 {
-    std::lock_guard lock(_data_mutex);
-
     for (auto& m : _markers)
     {
         if (m.ds_id == -1)
@@ -57,7 +60,10 @@ void DataHandler::update_markers()
             continue;
         }
 
-        auto const& ds = _datasets[m.ds_index];
+        auto const dataset_lock = datasets();
+        auto& datasets = dataset_lock.get();
+
+        auto const& ds = datasets[m.ds_index];
 
         if (ds.samples.size() < 2)
         {
@@ -88,69 +94,11 @@ void DataHandler::update_markers()
     }
 }
 
-void DataHandler::add_to_datasets(sparq_message_t const& message)
-{
-    if (first_receive_timestamp == 0)
-    {
-        first_receive_timestamp = message.timestamp;
-    }
-
-    _timestamps.emplace_back(message.timestamp);
-    _rel_times.emplace_back((message.timestamp - first_receive_timestamp) / 1000.0);
-
-    if (!_console_window.TextOnly)
-    {
-        _console_window.add_data_to_log(message.ids.data(), message.values.data(), message.nval);
-    }
-
-    for (uint16_t i = 0; i < message.nval; i++)
-    {
-        sparq_dataset_t* ds = nullptr;
-
-        for (auto& d : _datasets)
-        {
-            if (d.id == message.ids[i])
-            {
-                ds = &d;
-                break;
-            }
-        }
-
-        // The dataset does not exist, we have to create a new one
-        if (ds == nullptr)
-        {
-            std::cout << "DS not found, creating new one! ID: " << static_cast<int>(message.ids[i]) << "\n";
-
-            sparq_dataset_t ds_new;
-
-            ds_new.id = message.ids[i];
-            ds_new.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + _datasets.size());
-
-            auto const rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
-            auto const abs_time = message.timestamp / 1000.0;
-
-            ds_new.append_raw_values(current_absolute_sample, rel_time, abs_time, message.values[i]);
-            _datasets.push_back(ds_new);
-
-            continue;
-        }
-
-        // Dataset already exists but might be empty
-        auto const new_sample = ds->samples.empty()
-                                  ? static_cast<double>(current_absolute_sample)
-                                  : (ds->samples.back() + 1.0);
-        auto const new_rel_time = (message.timestamp - first_receive_timestamp) / 1000.0;
-        auto const new_abs_time = message.timestamp / 1000.0;
-        auto const new_y_value = message.values[i];
-
-        ds->append_raw_values(new_sample, new_rel_time, new_abs_time, new_y_value);
-    }
-
-    current_absolute_sample++;
-}
-
 void DataHandler::handle_command(sparq_message_t const& message)
 {
+    auto const dataset_lock = datasets();
+    auto& datasets = dataset_lock.get();
+
     switch (message.command_type)
     {
     case sparq_sender_command_t::CLEAR_CONSOLE:
@@ -159,7 +107,7 @@ void DataHandler::handle_command(sparq_message_t const& message)
     case sparq_sender_command_t::SET_DATASET_NAME:
     {
         auto const id = message.command_data[0];
-        auto const ds = get_dataset(id);
+        auto const ds = datasets.get(id);
         auto const new_name = std::string(
             reinterpret_cast<char const*>(&message.command_data[1]),
             message.command_data.size() - 1);
@@ -175,25 +123,25 @@ void DataHandler::handle_command(sparq_message_t const& message)
             sparq_dataset_t new_ds;
             new_ds.id = id;
             new_ds.name = new_name;
-            new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + _datasets.size());
+            new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + datasets.size());
             std::strncpy(new_ds.name_buffer, new_name.c_str(), sizeof(new_ds.name_buffer));
 
-            add_dataset(new_ds);
+            datasets.add_dataset(new_ds);
         }
 
         break;
     }
     case sparq_sender_command_t::CLEAR_ALL_DATASETS:
-        clear_all_datasets();
+        datasets.clear_all();
         break;
     case sparq_sender_command_t::DELETE_ALL_DATASETS:
-        delete_all_datasets();
+        datasets.delete_all();
         break;
     case sparq_sender_command_t::CLEAR_SINGLE_DATASET:
-        clear_dataset(message.command_data[0]);
+        datasets.clear(message.command_data[0]);
         break;
     case sparq_sender_command_t::DELETE_SINGLE_DATASET:
-        delete_dataset(message.command_data[0]);
+        datasets.delete_dataset(message.command_data[0]);
         break;
     case sparq_sender_command_t::SWITCH_PLOT_TYPE:
         // TODO: Reenable this later however possible: plot_settings.type = (spq::plotting::plot_type)message.command_data[0];
@@ -298,9 +246,10 @@ void DataHandler::export_data_csv()
 {
     std::cout << "Exporting data to csv...\n";
 
-    std::lock_guard lock{_data_mutex};
+    auto const dataset_lock = datasets();
+    auto& datasets = dataset_lock.get();
 
-    if (_datasets.empty())
+    if (datasets.empty())
     {
         std::cerr << "No data to export!\n";
         ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "No data to export!"});
@@ -318,7 +267,7 @@ void DataHandler::export_data_csv()
 
     file << "sample,relative time [s],timestamp";
 
-    for (auto const& ds : _datasets)
+    for (auto const& ds : datasets.data())
     {
         file << "," << std::to_string(ds.id);
 
@@ -330,15 +279,18 @@ void DataHandler::export_data_csv()
 
     file << "\n";
 
-    for (std::size_t i = 0; i < current_absolute_sample; i++)
+    auto const& rel_times = datasets.get_relative_times();
+    auto const& timestamps = datasets.get_timestamps();
+
+    for (std::size_t i = 0; i < datasets.get_current_absolute_sample(); i++)
     {
-        file << std::to_string(i) << "," << std::to_string(_rel_times[i]) << "," << std::to_string(_timestamps[i]) << ",";
+        file << std::to_string(i) << "," << std::to_string(rel_times[i]) << "," << std::to_string(timestamps[i]) << ",";
 
         std::size_t ds_count = 0;
-        for (auto const& ds : _datasets)
+        for (auto const& ds : datasets.data())
         {
             constexpr auto eps = 1e-9;
-            auto const it = std::lower_bound(ds.samples.begin(), ds.samples.end(), static_cast<double>(i) - eps);
+            auto const it = std::ranges::lower_bound(ds.samples.begin(), ds.samples.end(), static_cast<double>(i) - eps);
 
             if (it != ds.samples.end() && std::fabs(*it - static_cast<double>(i)) <= eps)
             {
@@ -346,7 +298,7 @@ void DataHandler::export_data_csv()
                 file << std::to_string(ds.y_values[idx]);
             }
 
-            if (ds_count++ < _datasets.size() - 1)
+            if (ds_count++ < datasets.size() - 1)
             {
                 file << ",";
             }

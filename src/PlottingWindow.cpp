@@ -411,46 +411,46 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
 
 void PlottingWindow::config_limits_n_values() const
 {
-    switch (_data_handler.x_axis_select)
-    {
-    // Last N Samples
-    case 0:
-    {
-        auto const max_sample = static_cast<std::size_t>(round(_data_handler.get_max_sample())) - 1;
-        auto const min_sample = max_sample - static_cast<std::size_t>(_data_handler.last_n) + 1;
-
-        ImPlot::SetupAxisLimits(ImAxis_X1, min_sample, max_sample, ImPlotCond_Always);
-        break;
-    }
-    // Last N relative seconds
-    case 1:
-    {
-        auto const max_rel_time = _data_handler.get_max_rel_time();
-        auto min_rel_time = max_rel_time - _data_handler.last_n;
-
-        if (min_rel_time < 0)
-        {
-            min_rel_time = 0;
-        }
-
-        ImPlot::SetupAxisLimits(ImAxis_X1, min_rel_time, max_rel_time, ImPlotCond_Always);
-        break;
-    }
-    // Last N absolute seconds
-    case 2:
-    {
-        auto const max_abs_time = _data_handler.get_max_abs_time();
-        auto min_abs_time = max_abs_time - _data_handler.last_n;
-
-        if (min_abs_time < 0)
-        {
-            min_abs_time = 0;
-        }
-
-        ImPlot::SetupAxisLimits(ImAxis_X1, min_abs_time, max_abs_time, ImPlotCond_Always);
-        break;
-    }
-    }
+    // switch (_data_handler.x_axis_select)
+    // {
+    // // Last N Samples
+    // case 0:
+    // {
+    //     auto const max_sample = static_cast<std::size_t>(round(_data_handler.get_max_sample())) - 1;
+    //     auto const min_sample = max_sample - static_cast<std::size_t>(_data_handler.last_n) + 1;
+    //
+    //     ImPlot::SetupAxisLimits(ImAxis_X1, min_sample, max_sample, ImPlotCond_Always);
+    //     break;
+    // }
+    // // Last N relative seconds
+    // case 1:
+    // {
+    //     auto const max_rel_time = _data_handler.get_max_rel_time();
+    //     auto min_rel_time = max_rel_time - _data_handler.last_n;
+    //
+    //     if (min_rel_time < 0)
+    //     {
+    //         min_rel_time = 0;
+    //     }
+    //
+    //     ImPlot::SetupAxisLimits(ImAxis_X1, min_rel_time, max_rel_time, ImPlotCond_Always);
+    //     break;
+    // }
+    // // Last N absolute seconds
+    // case 2:
+    // {
+    //     auto const max_abs_time = _data_handler.get_max_abs_time();
+    //     auto min_abs_time = max_abs_time - _data_handler.last_n;
+    //
+    //     if (min_abs_time < 0)
+    //     {
+    //         min_abs_time = 0;
+    //     }
+    //
+    //     ImPlot::SetupAxisLimits(ImAxis_X1, min_abs_time, max_abs_time, ImPlotCond_Always);
+    //     break;
+    // }
+    // }
 }
 
 std::vector<float> PlottingWindow::bilinear_interpolate(std::vector<float> const& original_image, int const original_rows, int const original_cols, float const scale_factor)

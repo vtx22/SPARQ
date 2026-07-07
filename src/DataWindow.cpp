@@ -62,7 +62,7 @@ void DataWindow::dataset_entries() const
                                          + "##CLEAR" + i_str;
             if (ImGui::Button(clear_text.c_str()))
             {
-                _data_handler.clear_dataset(datasets[i].id);
+                datasets.clear(datasets[i].id);
             }
 
             ImGui::TableSetColumnIndex(6);
@@ -82,7 +82,7 @@ void DataWindow::dataset_entries() const
 
         for (auto const id : to_delete)
         {
-            _data_handler.delete_dataset(id);
+            datasets.delete_dataset(id);
         }
     }
 }
@@ -113,7 +113,7 @@ void DataWindow::show_datasets_section()
 
         if (ImGui::Button("Clear All"))
         {
-            _data_handler.clear_all_datasets();
+            datasets.clear_all();
         }
 
         ImGui::SameLine();
@@ -121,7 +121,7 @@ void DataWindow::show_datasets_section()
         bool just_deleted = false;
         if (ImGui::Button("Delete All"))
         {
-            _data_handler.delete_all_datasets();
+            datasets.delete_all();
             just_deleted = true;
         }
 
