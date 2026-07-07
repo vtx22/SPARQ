@@ -18,7 +18,7 @@ public:
      */
     constexpr void show_all() noexcept
     {
-        for (auto& ds : datasets)
+        for (auto& ds : m_datasets)
         {
             ds.show = true;
         }
@@ -26,7 +26,7 @@ public:
 
     constexpr void hide_all() noexcept
     {
-        for (auto& ds : datasets)
+        for (auto& ds : m_datasets)
         {
             ds.hide = true;
         }
@@ -35,24 +35,24 @@ public:
     [[nodiscard]]
     constexpr auto& data() noexcept
     {
-        return datasets;
+        return m_datasets;
     }
 
     [[nodiscard]]
     constexpr bool empty() const noexcept
     {
-        return datasets.empty();
+        return m_datasets.empty();
     }
 
     [[nodiscard]]
     constexpr auto size() const noexcept
     {
-        return datasets.size();
+        return m_datasets.size();
     }
 
     constexpr auto& operator[](std::size_t const index) noexcept
     {
-        return datasets[index];
+        return m_datasets[index];
     }
 
     /**
@@ -62,7 +62,7 @@ public:
      */
     constexpr std::optional<std::reference_wrapper<sparq_dataset_t>> get(std::size_t const id) noexcept
     {
-        for (auto& ds : datasets)
+        for (auto& ds : m_datasets)
         {
             if (ds.id == id)
             {
@@ -96,12 +96,12 @@ public:
             return false;
         }
 
-        datasets.emplace_back(dataset);
+        m_datasets.emplace_back(dataset);
         return true;
     }
 
 private:
-    std::vector<sparq_dataset_t> datasets;
+    std::vector<sparq_dataset_t> m_datasets;
 };
 
 class DataHandler final
