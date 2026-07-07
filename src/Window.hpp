@@ -113,7 +113,7 @@ protected:
         return false;
     }
 
-    std::string m_name{};
+    std::string m_window_name{};
     ImGuiWindowFlags m_window_flags{};
     DataHandler& m_data_handler;
     ConfigHandler& m_config_handler;

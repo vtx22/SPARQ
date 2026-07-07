@@ -18,10 +18,10 @@ void PlottingWindow::update_content(Datasets& datasets)
 void PlottingWindow::update_window_name()
 {
     using namespace spq::plotting;
-    m_name = internal::window_name_prefix;
-    m_name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
-    m_name += internal::window_name_id_prefix;
-    m_name += std::to_string(_id);
+    m_window_name = internal::window_name_prefix;
+    m_window_name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
+    m_window_name += internal::window_name_id_prefix;
+    m_window_name += std::to_string(_id);
 }
 
 void PlottingWindow::update_plot_contents(Datasets& datasets)
