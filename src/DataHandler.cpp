@@ -201,7 +201,7 @@ std::optional<sparq_message_t> DataHandler::receive_message()
     sparq_message_t message{};
     message.header.from_array(_message_buffer.data());
 
-    if (message.header.checksum != spq::helper::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
+    if (message.header.checksum != spq::helper::xor8_cs(_message_buffer, SPARQ_MESSAGE_HEADER_LENGTH - 1))
     {
         // Header checksum is wrong, clear the message buffer from that part
         _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
@@ -226,7 +226,7 @@ std::optional<sparq_message_t> DataHandler::receive_message()
     message.valid = true;
     if (message.header.control & static_cast<uint8_t>(sparq_header_control_t::CS_EN))
     {
-        message.valid = (message.checksum == spq::helper::xor8_cs(_message_buffer.data(), total_message_length - 1));
+        message.valid = (message.checksum == spq::helper::xor8_cs(_message_buffer, total_message_length - 1));
     }
 
     if (!message.valid)
