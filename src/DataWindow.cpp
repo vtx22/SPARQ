@@ -5,7 +5,7 @@ void DataWindow::update_content(Datasets& datasets)
     show_datasets_section(datasets);
 }
 
-void DataWindow::dataset_entries(Datasets& datasets) const
+void DataWindow::show_dataset_entries(Datasets& datasets) const
 {
     if (datasets.empty())
     {
@@ -17,12 +17,12 @@ void DataWindow::dataset_entries(Datasets& datasets) const
         std::vector<uint8_t> to_delete;
         for (std::size_t i = 0; i < datasets.size(); i++)
         {
-            std::string const i_str = std::to_string(i);
+            auto const i_str = std::to_string(i);
 
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("  %d", datasets[i].id);
+            ImGui::Text("  %zu", datasets[i].id);
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(150);
             char* name_buffer = datasets[i].name_buffer;
@@ -106,7 +106,7 @@ void DataWindow::show_datasets_section(Datasets& datasets)
 
         ImGui::SameLine();
 
-        bool just_deleted = false;
+        bool just_deleted{};
         if (ImGui::Button("Delete All"))
         {
             datasets.delete_all();
@@ -122,7 +122,7 @@ void DataWindow::show_datasets_section(Datasets& datasets)
 
         ImGui::Separator();
 
-        dataset_entries(datasets);
+        show_dataset_entries(datasets);
     }
 
     if (ImGui::CollapsingHeader("Synthetic Datasets"))

@@ -8,11 +8,12 @@
 class MeasureWindow final : public Window
 {
 public:
-    MeasureWindow(DataHandler& data_handler)
+    explicit MeasureWindow(DataHandler& data_handler)
         : Window(ICON_FA_RULER_HORIZONTAL "  Measure", data_handler)
     {
     }
 
+private:
     void measure_markers_table(std::vector<sparq_marker_t>& markers, Datasets& datasets) const;
 
 protected:
