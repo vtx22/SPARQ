@@ -86,7 +86,7 @@ public:
 
     int last_n = 10;
 
-    void export_data_csv(Datasets& datasets);
+    void export_data_csv(Datasets const& datasets);
 
     [[nodiscard]]
     constexpr std::mutex& get_serial_mutex() noexcept

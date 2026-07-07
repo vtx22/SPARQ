@@ -242,7 +242,7 @@ std::optional<sparq_message_t> DataHandler::receive_message()
     return message;
 }
 
-void DataHandler::export_data_csv(Datasets& datasets)
+void DataHandler::export_data_csv(Datasets const& datasets)
 {
     std::cout << "Exporting data to csv...\n";
 

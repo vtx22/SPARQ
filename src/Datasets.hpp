@@ -41,6 +41,16 @@ public:
     }
 
     /**
+     * @brief Gets a read-only reference to the vector of datasets.
+     * @return A const reference to the vector of datasets.
+     */
+    [[nodiscard]]
+    constexpr auto const& data() const noexcept
+    {
+        return m_datasets;
+    }
+
+    /**
      * @brief Checks if the vector of datasets is empty.
      * @return True if the vector of datasets is empty, false otherwise.
      */
