@@ -24,7 +24,7 @@ public:
         : Window(
               {},
               data_handler),
-          _id(id)
+          m_id(id)
     {
         update_window_name();
     }
@@ -40,22 +40,34 @@ public:
     [[nodiscard]]
     spq::plotting::plot_settings_t& settings() noexcept
     {
-        return _plot_settings;
+        return m_plot_settings;
     }
 
     [[nodiscard]]
     constexpr auto id() const noexcept
     {
-        return _id;
+        return m_id;
     }
 
     constexpr void set_highlighted(bool const highlight) noexcept
     {
-        _highlight_window = highlight;
+        m_highlight_window = highlight;
     }
 
 private:
-    ImPlotFlags get_plot_flags() const;
+    [[nodiscard]]
+    constexpr ImPlotFlags get_plot_flags() const noexcept
+    {
+        ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
+
+        if (m_plot_settings.type == spq::plotting::plot_type_t::heatmap && m_plot_settings.equal)
+        {
+            plot_flags |= ImPlotFlags_Equal;
+        }
+
+        return plot_flags;
+    }
+
     void update_plot_contents(Datasets& datasets);
     void update_markers() const;
 
@@ -64,15 +76,22 @@ private:
     void handle_plot_single_value(Datasets& datasets);
     void handle_plot_heatmap(Datasets const& datasets);
 
-    void update_window_name();
+    void update_window_name()
+    {
+        using namespace spq::plotting;
+        m_window_name = internal::window_name_prefix;
+        m_window_name += plot_type_names.at(static_cast<uint8_t>(m_plot_settings.type));
+        m_window_name += internal::window_name_id_prefix;
+        m_window_name += std::to_string(m_id);
+    }
 
     std::vector<double> _x_downsampled, _x_in_view;
     std::vector<double> _y_downsampled, _y_in_view;
 
-    bool _highlight_window = false;
-    bool _highlight_colors_pushed = false;
-    spq::plotting::plot_settings_t _plot_settings;
-    std::size_t _id{};
+    bool m_highlight_window = false;
+    bool m_highlight_colors_pushed = false;
+    spq::plotting::plot_settings_t m_plot_settings;
+    std::size_t m_id{};
 
 protected:
     void update_content(Datasets& datasets) override;

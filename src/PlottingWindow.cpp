@@ -5,23 +5,14 @@ void PlottingWindow::update_content(Datasets& datasets)
     using namespace spq::plotting;
 
     static plot_type_t prev_plot_type{};
-    if (_plot_settings.type != prev_plot_type)
+    if (m_plot_settings.type != prev_plot_type)
     {
-        prev_plot_type = _plot_settings.type;
+        prev_plot_type = m_plot_settings.type;
         update_window_name();
     }
 
     update_plot_contents(datasets);
     show_highlighting_rectangle();
-}
-
-void PlottingWindow::update_window_name()
-{
-    using namespace spq::plotting;
-    m_window_name = internal::window_name_prefix;
-    m_window_name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
-    m_window_name += internal::window_name_id_prefix;
-    m_window_name += std::to_string(_id);
 }
 
 void PlottingWindow::update_plot_contents(Datasets& datasets)
@@ -32,7 +23,7 @@ void PlottingWindow::update_plot_contents(Datasets& datasets)
     {
         update_markers();
 
-        switch (_plot_settings.type)
+        switch (m_plot_settings.type)
         {
         case plot_type_t::timeseries:
             handle_plot_timeseries(datasets);
@@ -68,7 +59,7 @@ void PlottingWindow::handle_plot_timeseries(Datasets& datasets)
     std::size_t i = 0;
     for (auto& ds : datasets.data())
     {
-        if (!_plot_settings.ids_to_plot.contains(ds.id))
+        if (!m_plot_settings.ids_to_plot.contains(ds.id))
         {
             continue;
         }
@@ -109,7 +100,7 @@ void PlottingWindow::handle_plot_single_value(Datasets& datasets)
 
 void PlottingWindow::handle_plot_heatmap(Datasets const& datasets)
 {
-    auto const& hms = _plot_settings.heatmap_settings;
+    auto const& hms = m_plot_settings.heatmap_settings;
 
     std::vector<float> values(hms.cols * hms.rows);
 
@@ -187,7 +178,7 @@ void PlottingWindow::update_markers() const
 
 constexpr void PlottingWindow::show_highlighting_rectangle() const
 {
-    if (!_highlight_window)
+    if (!m_highlight_window)
     {
         return;
     }
@@ -216,23 +207,11 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
         border_width);
 }
 
-ImPlotFlags PlottingWindow::get_plot_flags() const
-{
-    ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
-
-    if (_plot_settings.type == spq::plotting::plot_type_t::heatmap && _plot_settings.equal)
-    {
-        plot_flags |= ImPlotFlags_Equal;
-    }
-
-    return plot_flags;
-}
-
 void PlottingWindow::before_imgui_begin()
 {
     // Add highlight styles. Keep in sync with after_imgui_end()
-    _highlight_colors_pushed = _highlight_window;
-    if (_highlight_colors_pushed)
+    m_highlight_colors_pushed = m_highlight_window;
+    if (m_highlight_colors_pushed)
     {
         constexpr auto color = spq::styling::plot_highlight_color;
         ImGui::PushStyleColor(ImGuiCol_TitleBg, color);
@@ -248,7 +227,7 @@ void PlottingWindow::before_imgui_begin()
 void PlottingWindow::after_imgui_end()
 {
     // Remove highlight styles. Keep in sync with before_imgui_begin()
-    if (_highlight_colors_pushed)
+    if (m_highlight_colors_pushed)
     {
         ImGui::PopStyleColor(7);
     }
