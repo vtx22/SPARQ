@@ -10,14 +10,14 @@ class Window
 {
 public:
     Window(std::string name, DataHandler& data_handler)
-        : m_name(std::move(name)),
+        : m_window_name(std::move(name)),
           m_data_handler(data_handler),
           m_config_handler(ConfigHandler::get_instance())
     {
     }
 
     Window(std::string name, DataHandler& data_handler, ImGuiWindowFlags const flags)
-        : m_name(std::move(name)),
+        : m_window_name(std::move(name)),
           m_window_flags(flags),
           m_data_handler(data_handler),
           m_config_handler(ConfigHandler::get_instance())
@@ -36,7 +36,7 @@ public:
         before_imgui_begin();
 
         bool should_stay_open = true;
-        if (ImGui::Begin(m_name.c_str(), has_close_button() ? &should_stay_open : nullptr, m_window_flags))
+        if (ImGui::Begin(m_window_name.c_str(), has_close_button() ? &should_stay_open : nullptr, m_window_flags))
         {
             m_is_selected = ImGui::IsWindowFocused();
 
