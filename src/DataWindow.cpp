@@ -1,8 +1,8 @@
 #include "DataWindow.hpp"
 
-void DataWindow::update_content()
+void DataWindow::update_content(Datasets& datasets)
 {
-    show_datasets_section();
+    show_datasets_section(datasets);
 }
 
 void DataWindow::dataset_entries(Datasets& datasets) const
@@ -84,13 +84,10 @@ void DataWindow::dataset_entries(Datasets& datasets) const
     }
 }
 
-void DataWindow::show_datasets_section()
+void DataWindow::show_datasets_section(Datasets& datasets)
 {
     if (ImGui::CollapsingHeader("Serial Datasets"))
     {
-        auto const dataset_lock = _data_handler.datasets();
-        auto& datasets = dataset_lock.get();
-
         if (ImGui::Button("Import"))
         {
         }
@@ -103,7 +100,7 @@ void DataWindow::show_datasets_section()
 
         if (ImGui::Button("Export"))
         {
-            _data_handler.export_data_csv();
+            m_data_handler.export_data_csv(datasets);
         }
 
         ImGui::SameLine();

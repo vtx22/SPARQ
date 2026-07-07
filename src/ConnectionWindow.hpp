@@ -7,7 +7,7 @@
 class ConnectionWindow final : public Window
 {
 protected:
-    void update_content() override;
+    void update_content(Datasets& datasets) override;
 
 public:
     ConnectionWindow(DataHandler& data_handler, Serial& sp);

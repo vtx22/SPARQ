@@ -11,7 +11,7 @@ class Window
 public:
     Window(std::string name, DataHandler& data_handler)
         : _name(std::move(name)),
-          _data_handler(data_handler),
+          m_data_handler(data_handler),
           _config_handler(ConfigHandler::get_instance())
     {
     }
@@ -19,7 +19,7 @@ public:
     Window(std::string name, DataHandler& data_handler, ImGuiWindowFlags const flags)
         : _name(std::move(name)),
           window_flags(flags),
-          _data_handler(data_handler),
+          m_data_handler(data_handler),
           _config_handler(ConfigHandler::get_instance())
     {
     }
@@ -39,7 +39,9 @@ public:
         if (ImGui::Begin(_name.c_str(), has_close_button() ? &should_stay_open : nullptr, window_flags))
         {
             _is_selected = ImGui::IsWindowFocused();
-            update_content();
+
+            auto const dataset_lock = m_data_handler.datasets();
+            update_content(dataset_lock.get());
         }
 
         if (!should_stay_open)
@@ -76,8 +78,9 @@ protected:
     /**
      * @brief Updates the content of the window. This function is called every frame between the windows ImGui::Begin() and ImGui::End() calls.
      * Derived classes should implement this function to define the specific content of the window.
+     * @param datasets A reference to the datasets managed by the DataHandler, allowing derived classes to access and manipulate the data as needed.
      */
-    virtual void update_content() = 0;
+    virtual void update_content(Datasets& datasets) = 0;
 
     /**
      * @brief Called before the ImGui::Begin() call in the draw() function. Derived classes can override this function to perform any necessary setup or state changes before the window is drawn.
@@ -110,7 +113,7 @@ protected:
 
     std::string _name{};
     ImGuiWindowFlags window_flags{};
-    DataHandler& _data_handler;
+    DataHandler& m_data_handler;
     ConfigHandler& _config_handler;
 
 private:

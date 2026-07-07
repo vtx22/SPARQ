@@ -15,5 +15,5 @@ private:
     bool _settings_changed = false;
 
 protected:
-    void update_content() override;
+    void update_content(Datasets& datasets) override;
 };

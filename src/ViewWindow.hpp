@@ -32,5 +32,5 @@ private:
     GetSelectedPlotSettingsCallback _get_selected_plot_settings;
 
 protected:
-    void update_content() override;
+    void update_content(Datasets& datasets) override;
 };

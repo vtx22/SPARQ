@@ -7,9 +7,9 @@ ConnectionWindow::ConnectionWindow(DataHandler& data_handler, Serial& sp)
     update_com_ports_dropdown();
 }
 
-void ConnectionWindow::update_content()
+void ConnectionWindow::update_content(Datasets& datasets)
 {
-    std::lock_guard lock(_data_handler.get_serial_mutex());
+    std::scoped_lock lock(m_data_handler.get_serial_mutex());
 
     ImGui::SeparatorText("Settings");
     _port_open = _sp.get_open();

@@ -1,6 +1,6 @@
 #include "ViewWindow.hpp"
 
-void ViewWindow::update_content()
+void ViewWindow::update_content(Datasets& datasets)
 {
     if (ImGui::Button("Add Plot"))
     {
@@ -20,9 +20,6 @@ void ViewWindow::update_content()
     auto& plot_settings = settings->get();
 
     show_plot_settings(plot_settings);
-
-    auto const dataset_lock = _data_handler.datasets();
-    auto& datasets = dataset_lock.get();
 
     for (auto& d : datasets.data())
     {

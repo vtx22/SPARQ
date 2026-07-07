@@ -1,8 +1,8 @@
 #include "MeasureWindow.hpp"
 
-void MeasureWindow::update_content()
+void MeasureWindow::update_content(Datasets& datasets)
 {
-    auto& markers = _data_handler.get_markers();
+    auto& markers = m_data_handler.get_markers();
 
     if (ImGui::CollapsingHeader("Markers"))
     {
@@ -30,11 +30,11 @@ void MeasureWindow::update_content()
 
         ImGui::Separator();
 
-        measure_markers_table(markers);
+        measure_markers_table(markers, datasets);
     }
 }
 
-void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers) const
+void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers, Datasets& datasets) const
 {
     if (markers.empty())
     {
@@ -54,9 +54,6 @@ void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers) 
             ImGui::Text(markers[i].name.c_str());
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(200);
-
-            auto const dataset_lock = _data_handler.datasets();
-            auto& datasets = dataset_lock.get();
 
             std::string ds_selector_name = std::to_string(markers[i].ds_id);
             if (markers[i].ds_id != -1 && datasets[markers[i].ds_index].name.length() > 0)

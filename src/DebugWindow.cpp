@@ -1,10 +1,7 @@
 #include "DebugWindow.hpp"
 
-void DebugWindow::update_content()
+void DebugWindow::update_content(Datasets& datasets)
 {
-    auto const dataset_lock = _data_handler.datasets();
-    auto& datasets = dataset_lock.get();
-
     ImGui::SeparatorText("Debug");
     ImGui::PushItemWidth(-FLT_MIN);
 

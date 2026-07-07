@@ -55,6 +55,11 @@ public:
         return m_datasets[index];
     }
 
+    constexpr auto const& operator[](std::size_t const index) const noexcept
+    {
+        return m_datasets[index];
+    }
+
     /**
      * @brief Gets a reference to a dataset with the given ID.
      * @param id The ID of the dataset to get.
@@ -388,7 +393,7 @@ public:
 
     int last_n = 10;
 
-    void export_data_csv();
+    void export_data_csv(Datasets& datasets);
 
     [[nodiscard]]
     constexpr std::mutex& get_serial_mutex() noexcept
@@ -397,7 +402,6 @@ public:
     }
 
 private:
-    void add_to_datasets(sparq_message_t const& message);
     void handle_command(sparq_message_t const& message);
 
     Serial& _sp;

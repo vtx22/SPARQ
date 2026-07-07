@@ -5,7 +5,7 @@ SettingsWindow::SettingsWindow(DataHandler& data_handler)
 {
 }
 
-void SettingsWindow::update_content()
+void SettingsWindow::update_content(Datasets& datasets)
 {
     show_graphics_settings();
     show_downsampling_settings();
