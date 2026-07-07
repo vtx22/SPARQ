@@ -1,4 +1,4 @@
-#include "../PlottingWindow.hpp"
+#include "PlottingWindow.hpp"
 
 void PlottingWindow::update_content(Datasets& datasets)
 {

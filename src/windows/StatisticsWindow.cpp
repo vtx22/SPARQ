@@ -1,4 +1,4 @@
-#include "../StatisticsWindow.hpp"
+#include "StatisticsWindow.hpp"
 
 void StatisticsWindow::update_content(Datasets& datasets)
 {

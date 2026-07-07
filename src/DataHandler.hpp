@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ConsoleWindow.hpp"
 #include "Datasets.hpp"
 #include "ImGuiNotify.hpp"
 #include "implot.h"
 #include "serial.hpp"
 #include "sparq_config.h"
 #include "sparq_types.hpp"
+#include "windows/ConsoleWindow.hpp"
 
 class DataHandler final
 {

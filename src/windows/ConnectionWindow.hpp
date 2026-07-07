@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../ImGuiNotify.hpp"
-#include "../Window.hpp"
+#include "Window.hpp"
 #include "serial.hpp"
 
 namespace spq::connection::internal

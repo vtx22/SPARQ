@@ -1,4 +1,4 @@
-#include "../DebugWindow.hpp"
+#include "DebugWindow.hpp"
 
 void DebugWindow::update_content(Datasets& datasets)
 {

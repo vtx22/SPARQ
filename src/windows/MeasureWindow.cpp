@@ -1,4 +1,4 @@
-#include "../MeasureWindow.hpp"
+#include "MeasureWindow.hpp"
 
 void MeasureWindow::update_content(Datasets& datasets)
 {
