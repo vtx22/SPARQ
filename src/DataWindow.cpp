@@ -91,12 +91,15 @@ void DataWindow::show_datasets_section()
 {
     if (ImGui::CollapsingHeader("Serial Datasets"))
     {
+        auto const dataset_lock = _data_handler.datasets();
+        auto& datasets = dataset_lock.get();
+
         if (ImGui::Button("Import"))
         {
         }
         ImGui::SameLine();
 
-        if (_data_handler.empty())
+        if (datasets.empty())
         {
             ImGui::BeginDisabled();
         }
@@ -126,17 +129,17 @@ void DataWindow::show_datasets_section()
 
         if (ImGui::Button("Hide All"))
         {
-            _data_handler.hide_all_datasets();
+            datasets.hide_all();
         }
 
         ImGui::SameLine();
 
         if (ImGui::Button("Show All"))
         {
-            _data_handler.show_all_datasets();
+            datasets.show_all();
         }
 
-        if (!just_deleted && _data_handler.empty())
+        if (!just_deleted && datasets.empty())
         {
             ImGui::EndDisabled();
         }

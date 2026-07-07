@@ -9,18 +9,113 @@
 
 using namespace std::chrono;
 
+class Datasets final
+{
+public:
+    /**
+     * @brief Shows all datasets.
+     * @details This function sets the show flag of all datasets to true, making them visible in the plot.
+     */
+    constexpr void show_all() noexcept
+    {
+        for (auto& ds : datasets)
+        {
+            ds.show = true;
+        }
+    }
+
+    constexpr void hide_all() noexcept
+    {
+        for (auto& ds : datasets)
+        {
+            ds.hide = true;
+        }
+    }
+
+    [[nodiscard]]
+    constexpr auto& data() noexcept
+    {
+        return datasets;
+    }
+
+    [[nodiscard]]
+    constexpr bool empty() const noexcept
+    {
+        return datasets.empty();
+    }
+
+    [[nodiscard]]
+    constexpr auto size() const noexcept
+    {
+        return datasets.size();
+    }
+
+    constexpr auto& operator[](std::size_t const index) noexcept
+    {
+        return datasets[index];
+    }
+
+    /**
+     * @brief Gets a reference to a dataset with the given ID.
+     * @param id The ID of the dataset to get.
+     * @return An optional reference to the dataset, or std::nullopt if no dataset with the given ID was found.
+     */
+    constexpr std::optional<std::reference_wrapper<sparq_dataset_t>> get(std::size_t const id) noexcept
+    {
+        for (auto& ds : datasets)
+        {
+            if (ds.id == id)
+            {
+                return ds;
+            }
+        }
+
+        return std::nullopt;
+    }
+
+    /**
+     * @brief Checks if a dataset with the given ID exists.
+     * @param id The ID of the dataset to check.
+     * @return True if a dataset with the given ID exists, false otherwise.
+     */
+    constexpr bool exists(std::size_t const id) noexcept
+    {
+        return get(id).has_value();
+    }
+
+    /**
+     * @brief Adds a new dataset to the list of datasets.
+     * @attention If a dataset with the same ID already exists, the new dataset will not be added.
+     * @param dataset The dataset to add.
+     * @return True if the dataset was added, false if a dataset with the same ID already exists.
+     */
+    constexpr bool add_dataset(sparq_dataset_t const& dataset)
+    {
+        if (exists(dataset.id))
+        {
+            return false;
+        }
+
+        datasets.emplace_back(dataset);
+        return true;
+    }
+
+private:
+    std::vector<sparq_dataset_t> datasets;
+};
+
 class DataHandler final
 {
 public:
     /**
      * @brief A RAII class that locks the data mutex and provides access to the datasets.
-     * @details This struct is used to ensure thread-safe access to the datasets while holding a lock on the data mutex.
+     * @details This class is used to ensure thread-safe access to the datasets while holding a lock on the data mutex.
      * It is returned by the datasets() function, which locks the data mutex and returns an instance of this struct.
      */
     class LockedDatasets
     {
     public:
-        LockedDatasets(std::mutex& m, std::vector<sparq_dataset_t>& d)
+        LockedDatasets(std::mutex& m, Datasets& d)
             : m_datasets{d},
               m_lock{m}
         {
@@ -43,13 +138,13 @@ public:
         }
 
     private:
-        std::vector<sparq_dataset_t>& m_datasets;
+        Datasets& m_datasets;
         std::unique_lock<std::mutex> m_lock{};
     };
 
     LockedDatasets datasets()
     {
-        return LockedDatasets{_data_mutex, _datasets};
+        return LockedDatasets{_data_mutex, m_datasets};
     }
 
     DataHandler(Serial& sp, ConsoleWindow& console_window)
@@ -89,29 +184,6 @@ public:
     void update_markers();
 
     /**
-     * @brief Adds a new dataset to the list of datasets.
-     * @attention If a dataset with the same ID already exists, the new dataset will not be added.
-     * @attention This function locks the data mutex!
-     * @param dataset The dataset to add.
-     * @return True if the dataset was added, false if a dataset with the same ID already exists.
-     */
-    bool add_dataset(sparq_dataset_t const& dataset)
-    {
-        std::scoped_lock lock{_data_mutex};
-
-        for (auto const& ds : _datasets)
-        {
-            if (dataset.id == ds.id)
-            {
-                return false;
-            }
-        }
-
-        _datasets.emplace_back(dataset);
-        return true;
-    }
-
-    /**
      * @brief Deletes a dataset with the given ID from the list of datasets.
      * @attention This function locks the data mutex!
      * @param id The ID of the dataset to delete.
@@ -121,13 +193,13 @@ public:
     {
         std::scoped_lock lock{_data_mutex};
 
-        for (std::size_t i = 0; i < _datasets.size(); i++)
+        for (std::size_t i = 0; i < m_datasets.size(); i++)
         {
-            if (_datasets[i].id == id)
+            if (m_datasets[i].id == id)
             {
-                _datasets.erase(_datasets.begin() + i);
+                m_datasets.data().erase(m_datasets.data().begin() + i);
 
-                if (_datasets.empty())
+                if (m_datasets.empty())
                 {
                     first_receive_timestamp = 0;
                     current_absolute_sample = 0;
@@ -149,11 +221,11 @@ public:
         std::cout << "Deleting all datasets ...\n";
         std::unique_lock lock(_data_mutex);
 
-        std::vector<uint8_t> ids(_datasets.size());
+        std::vector<uint8_t> ids(m_datasets.size());
 
-        for (std::size_t i = 0; i < _datasets.size(); i++)
+        for (std::size_t i = 0; i < m_datasets.size(); i++)
         {
-            ids[i] = _datasets[i].id;
+            ids[i] = m_datasets[i].id;
         }
 
         lock.unlock();
@@ -174,7 +246,7 @@ public:
         std::scoped_lock lock{_data_mutex};
 
         bool ds_found = false;
-        for (auto& ds : _datasets)
+        for (auto& ds : m_datasets.data())
         {
             if (ds.id == id)
             {
@@ -190,7 +262,7 @@ public:
         }
 
         // If all datasets are now empty, reset start time
-        for (auto const& ds : _datasets)
+        for (auto const& ds : m_datasets.data())
         {
             if (!ds.samples.empty())
             {
@@ -215,11 +287,11 @@ public:
         std::cout << "Clearing all datasets ...\n";
         std::unique_lock lock(_data_mutex);
 
-        std::vector<uint8_t> ids(_datasets.size());
+        std::vector<uint8_t> ids(m_datasets.size());
 
-        for (std::size_t i = 0; i < _datasets.size(); i++)
+        for (std::size_t i = 0; i < m_datasets.size(); i++)
         {
-            ids[i] = _datasets[i].id;
+            ids[i] = m_datasets[i].id;
         }
 
         lock.unlock();
@@ -227,52 +299,6 @@ public:
         {
             clear_dataset(id);
         }
-    }
-
-    /**
-     * @brief Hides all datasets.
-     * @attention This function locks the data mutex!
-     */
-    void hide_all_datasets()
-    {
-        std::scoped_lock lock{_data_mutex};
-        for (auto& ds : _datasets)
-        {
-            ds.hide = true;
-        }
-    }
-
-    /**
-     * @brief Shows all datasets.
-     * @attention This function locks the data mutex!
-     */
-    void show_all_datasets()
-    {
-        std::scoped_lock lock{_data_mutex};
-        for (auto& ds : _datasets)
-        {
-            ds.show = true;
-        }
-    }
-
-    /**
-     * @brief Gets a reference to a dataset with the given ID.
-     * @attention This function locks the data mutex!
-     * @param id The ID of the dataset to get.
-     * @return An optional reference to the dataset, or std::nullopt if no dataset with the given ID was found.
-     */
-    std::optional<std::reference_wrapper<sparq_dataset_t>> get_dataset(uint8_t const id)
-    {
-        std::scoped_lock lock{_data_mutex};
-        for (auto& ds : _datasets)
-        {
-            if (ds.id == id)
-            {
-                return ds;
-            }
-        }
-
-        return std::nullopt;
     }
 
     uint8_t x_axis_select = 0;
@@ -295,13 +321,13 @@ public:
     {
         std::scoped_lock lock{_data_mutex};
 
-        if (_datasets.empty())
+        if (m_datasets.empty())
         {
             return 0.0;
         }
 
         return std::ranges::max(
-            _datasets | std::views::transform([](auto const& ds) {
+            m_datasets.data() | std::views::transform([](auto const& ds) {
                 return ds.relative_times.back();
             }));
     }
@@ -311,13 +337,13 @@ public:
     {
         std::scoped_lock lock{_data_mutex};
 
-        if (_datasets.empty())
+        if (m_datasets.empty())
         {
             return 0.0;
         }
 
         return std::ranges::max(
-            _datasets | std::views::transform([](auto const& ds) {
+            m_datasets.data() | std::views::transform([](auto const& ds) {
                 return ds.absolute_times.back();
             }));
     }
@@ -328,16 +354,12 @@ public:
         return _serial_mutex;
     }
 
-    [[nodiscard]]
-    bool empty()
-    {
-        std::scoped_lock lock{_data_mutex};
-        return _datasets.empty();
-    }
-
 private:
-    uint32_t current_absolute_sample = 0;
-    uint64_t first_receive_timestamp = 0;
+    void add_to_datasets(sparq_message_t const& message);
+    void handle_command(sparq_message_t const& message);
+
+    uint32_t current_absolute_sample{};
+    uint64_t first_receive_timestamp{};
 
     Serial& _sp;
     ConsoleWindow& _console_window;
@@ -345,16 +367,14 @@ private:
     std::vector<uint8_t> _serial_buffer;
     std::vector<uint8_t> _message_buffer;
 
-    std::vector<sparq_dataset_t> _datasets;
     std::vector<uint64_t> _timestamps;
     std::vector<float> _rel_times;
 
     std::vector<sparq_marker_t> _markers;
 
-    void add_to_datasets(sparq_message_t const& message);
-    void handle_command(sparq_message_t const& message);
-
     std::thread _receive_thread;
     std::atomic<bool> _running = true;
     std::mutex _data_mutex, _serial_mutex;
+
+    Datasets m_datasets{};
 };

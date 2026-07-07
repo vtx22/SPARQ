@@ -25,7 +25,7 @@ void PlottingWindow::update_plot_contents()
     {
         update_markers();
         auto const dataset_lock = _data_handler.datasets();
-        auto& datasets = dataset_lock.get();
+        auto& datasets = dataset_lock.get().data();
 
         switch (_plot_settings.type)
         {
