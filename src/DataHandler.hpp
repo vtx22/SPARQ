@@ -14,7 +14,7 @@ class Datasets final
 public:
     /**
      * @brief Shows all datasets.
-     * @details This function sets the show flag of all datasets to true, making them visible in the plot.
+     * @details This function sets the show flag of all datasets to true, making them visible in all plots.
      */
     constexpr void show_all() noexcept
     {
@@ -24,6 +24,10 @@ public:
         }
     }
 
+    /**
+     * @brief Hides all datasets.
+     * @details This function sets the hide flag of all datasets to true, making them invisible in all plots.
+     */
     constexpr void hide_all() noexcept
     {
         for (auto& ds : m_datasets)
@@ -32,18 +36,30 @@ public:
         }
     }
 
+    /**
+     * @brief Gets a reference to the vector of datasets.
+     * @return A reference to the vector of datasets.
+     */
     [[nodiscard]]
     constexpr auto& data() noexcept
     {
         return m_datasets;
     }
 
+    /**
+     * @brief Checks if the vector of datasets is empty.
+     * @return True if the vector of datasets is empty, false otherwise.
+     */
     [[nodiscard]]
     constexpr bool empty() const noexcept
     {
         return m_datasets.empty();
     }
 
+    /**
+     * @brief Gets the number of stored datasets.
+     * @return The number of stored datasets.
+     */
     [[nodiscard]]
     constexpr auto size() const noexcept
     {
@@ -189,6 +205,10 @@ public:
         m_current_absolute_sample = 0;
     }
 
+    /**
+     * @brief Adds data from a received message to the appropriate dataset.
+     * @param message The received message containing the data to add.
+     */
     void add_from_message(sparq_message_t const& message)
     {
         if (m_first_receive_timestamp == 0)
@@ -250,12 +270,20 @@ public:
         m_current_absolute_sample++;
     }
 
+    /**
+     * @brief Gets the maximum sample number across all datasets.
+     * @return The maximum sample number as a double.
+     */
     [[nodiscard]]
     constexpr auto get_max_sample() const noexcept
     {
         return static_cast<double>(m_current_absolute_sample);
     }
 
+    /**
+     * @brief Gets the maximum relative time across all datasets.
+     * @return The maximum relative time as a double.
+     */
     [[nodiscard]]
     constexpr double get_max_rel_time() const noexcept
     {
@@ -270,6 +298,10 @@ public:
             }));
     }
 
+    /**
+     * @brief Gets the maximum absolute time across all datasets.
+     * @return The maximum absolute time.
+     */
     [[nodiscard]]
     constexpr double get_max_abs_time() const noexcept
     {
@@ -284,24 +316,40 @@ public:
             }));
     }
 
+    /**
+     * @brief Gets the current absolute sample number.
+     * @return The current absolute sample number.
+     */
     [[nodiscard]]
     constexpr auto get_current_absolute_sample() const noexcept
     {
         return m_current_absolute_sample;
     }
 
+    /**
+     * @brief Gets the timestamp of the first received message.
+     * @return The timestamp of the first received message.
+     */
     [[nodiscard]]
     constexpr auto get_first_receive_timestamp() const noexcept
     {
         return m_first_receive_timestamp;
     }
 
+    /**
+     * @brief Gets a reference to the vector of timestamps.
+     * @return A reference to the vector of timestamps.
+     */
     [[nodiscard]]
     constexpr auto const& get_timestamps() const noexcept
     {
         return m_timestamps;
     }
 
+    /**
+     * @brief Gets a reference to the vector of relative times.
+     * @return A reference to the vector of relative times.
+     */
     [[nodiscard]]
     constexpr auto const& get_relative_times() const noexcept
     {
@@ -311,7 +359,7 @@ public:
 private:
     std::vector<sparq_dataset_t> m_datasets;
 
-    uint32_t m_current_absolute_sample{};
+    std::size_t m_current_absolute_sample{};
     uint64_t m_first_receive_timestamp{};
     std::vector<uint64_t> m_timestamps;
     std::vector<float> m_rel_times;
