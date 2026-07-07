@@ -207,32 +207,6 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
         border_width);
 }
 
-void PlottingWindow::before_imgui_begin()
-{
-    // Add highlight styles. Keep in sync with after_imgui_end()
-    m_highlight_colors_pushed = m_highlight_window;
-    if (m_highlight_colors_pushed)
-    {
-        constexpr auto color = spq::styling::plot_highlight_color;
-        ImGui::PushStyleColor(ImGuiCol_TitleBg, color);
-        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, color);
-        ImGui::PushStyleColor(ImGuiCol_Tab, color);
-        ImGui::PushStyleColor(ImGuiCol_TabActive, color);
-        ImGui::PushStyleColor(ImGuiCol_TabHovered, color);
-        ImGui::PushStyleColor(ImGuiCol_TabUnfocused, color);
-        ImGui::PushStyleColor(ImGuiCol_TabUnfocusedActive, color);
-    }
-}
-
-void PlottingWindow::after_imgui_end()
-{
-    // Remove highlight styles. Keep in sync with before_imgui_begin()
-    if (m_highlight_colors_pushed)
-    {
-        ImGui::PopStyleColor(7);
-    }
-}
-
 std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_downsampled(
     sparq_dataset_t& dataset,
     std::size_t const max_samples,
