@@ -5,11 +5,8 @@ void DataWindow::update_content()
     show_datasets_section();
 }
 
-void DataWindow::dataset_entries() const
+void DataWindow::dataset_entries(Datasets& datasets) const
 {
-    auto const dataset_lock = _data_handler.datasets();
-    auto& datasets = dataset_lock.get();
-
     if (datasets.empty())
     {
         ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Data");
@@ -146,7 +143,7 @@ void DataWindow::show_datasets_section()
 
         ImGui::Separator();
 
-        dataset_entries();
+        dataset_entries(datasets);
     }
 
     if (ImGui::CollapsingHeader("Synthetic Datasets"))
