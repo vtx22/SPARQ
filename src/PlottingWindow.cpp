@@ -88,25 +88,6 @@ void PlottingWindow::handle_plot_timeseries(Datasets& datasets)
                 y_values.size());
         }
 
-        ImPlotItem* item = plot->Items.GetLegendItem(i);
-        if (ds.toggle_visibility)
-        {
-            item->Show = !item->Show;
-            ds.toggle_visibility = false;
-        }
-        if (ds.hide)
-        {
-            item->Show = false;
-            ds.hide = false;
-        }
-        if (ds.show)
-        {
-            item->Show = true;
-            ds.show = false;
-        }
-
-        ds.hidden = !item->Show;
-
         i++;
     }
 }

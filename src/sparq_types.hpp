@@ -173,9 +173,6 @@ struct sparq_dataset_t
     std::string name{};
     std::string name_with_id{};
     ImVec4 color{1.f, 0.f, 0.f, 1.f};
-    bool toggle_visibility{};
-    bool show{};
-    bool hide{};
     bool hidden{};
     bool display_square{};
 

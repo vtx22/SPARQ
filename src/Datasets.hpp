@@ -14,7 +14,7 @@ public:
     {
         for (auto& ds : m_datasets)
         {
-            ds.show = true;
+            ds.hidden = false;
         }
     }
 
@@ -26,7 +26,7 @@ public:
     {
         for (auto& ds : m_datasets)
         {
-            ds.hide = true;
+            ds.hidden = true;
         }
     }
 

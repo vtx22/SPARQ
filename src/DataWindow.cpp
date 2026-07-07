@@ -12,7 +12,7 @@ void DataWindow::dataset_entries(Datasets& datasets) const
         ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Data");
     }
 
-    if (ImGui::BeginTable("##DatasetEditorTable", 8, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+    if (ImGui::BeginTable("##DatasetEditorTable", 7, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
     {
         std::vector<uint8_t> to_delete;
         for (std::size_t i = 0; i < datasets.size(); i++)
@@ -37,16 +37,9 @@ void DataWindow::dataset_entries(Datasets& datasets) const
                 ("##DsColor" + i_str).c_str(),
                 reinterpret_cast<float*>(&datasets[i].color),
                 ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+
             ImGui::TableSetColumnIndex(3);
 
-            std::string const hide_text = std::string(datasets[i].hidden ? ICON_FA_EYE_SLASH : ICON_FA_EYE)
-                                        + "##HIDE" + i_str;
-            if (ImGui::Button(hide_text.c_str()))
-            {
-                datasets[i].toggle_visibility = true;
-            }
-
-            ImGui::TableSetColumnIndex(4);
             std::string const wave_type_text = std::string(datasets[i].display_square ? ICON_FA_WAVE_SQUARE : ICON_FA_MINUS)
                                              + "##WAVE" + i_str;
             if (ImGui::Button(wave_type_text.c_str()))
@@ -54,7 +47,8 @@ void DataWindow::dataset_entries(Datasets& datasets) const
                 datasets[i].display_square = !datasets[i].display_square;
             }
 
-            ImGui::TableSetColumnIndex(5);
+            ImGui::TableSetColumnIndex(4);
+
             std::string const clear_text = std::string(ICON_FA_SQUARE_XMARK)
                                          + "##CLEAR" + i_str;
             if (ImGui::Button(clear_text.c_str()))
@@ -62,7 +56,7 @@ void DataWindow::dataset_entries(Datasets& datasets) const
                 datasets.clear(datasets[i].id);
             }
 
-            ImGui::TableSetColumnIndex(6);
+            ImGui::TableSetColumnIndex(5);
 
             std::string const del_text = std::string(ICON_FA_TRASH)
                                        + "##DEL" + i_str;
@@ -71,7 +65,7 @@ void DataWindow::dataset_entries(Datasets& datasets) const
                 to_delete.push_back(datasets[i].id);
             }
 
-            ImGui::TableSetColumnIndex(7);
+            ImGui::TableSetColumnIndex(6);
             ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "%zu", datasets[i].y_values.size());
         }
 
@@ -120,18 +114,6 @@ void DataWindow::show_datasets_section(Datasets& datasets)
         }
 
         ImGui::SameLine();
-
-        if (ImGui::Button("Hide All"))
-        {
-            datasets.hide_all();
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Show All"))
-        {
-            datasets.show_all();
-        }
 
         if (!just_deleted && datasets.empty())
         {
