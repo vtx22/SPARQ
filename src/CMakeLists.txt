@@ -1,10 +1,10 @@
 ﻿# ─────────────────────────────────────────────
 #  Collect sources
 # ─────────────────────────────────────────────
-file(GLOB OWN_SOURCES     CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-file(GLOB IMGUI_SOURCES   CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp")
-file(GLOB IMSFML_SOURCES  CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/imgui-sfml/*.cpp")
-file(GLOB IMPLOT_SOURCES  CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/implot/*.cpp")
+file(GLOB OWN_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB IMGUI_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp")
+file(GLOB IMSFML_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/imgui-sfml/*.cpp")
+file(GLOB IMPLOT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/implot/*.cpp")
 file(GLOB IMSTYLE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ImStyles/*.cpp")
 
 set(ALL_SOURCES
@@ -36,7 +36,7 @@ endif()
 #  Executable
 # ─────────────────────────────────────────────
 add_executable(${PROJECT_NAME} ${ALL_SOURCES})
-
+add_subdirectory(windows)
 # ─────────────────────────────────────────────
 #  Include directories
 # ─────────────────────────────────────────────
@@ -135,13 +135,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/src/default-configs/config.ini
-        ${CMAKE_SOURCE_DIR}/src/default-configs/imgui.ini
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    ${CMAKE_SOURCE_DIR}/src/default-configs/config.ini
+    ${CMAKE_SOURCE_DIR}/src/default-configs/imgui.ini
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>
 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/src/assets
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+    ${CMAKE_SOURCE_DIR}/src/assets
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
 
     COMMENT "Copying runtime assets..."
 )

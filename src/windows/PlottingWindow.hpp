@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../sparq_types.hpp"
 #include "Window.hpp"
 #include "implot.h"
 #include "implot_internal.h"
-#include "sparq_types.hpp"
 
 namespace spq::styling
 {

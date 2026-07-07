@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../sparq_types.hpp"
 #include "Window.hpp"
 #include "imgui-SFML.h"
 #include "implot.h"
-#include "sparq_types.hpp"
 
 class MeasureWindow final : public Window
 {

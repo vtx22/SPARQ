@@ -24,15 +24,15 @@
 
 #include "DataHandler.hpp"
 
-#include "ConnectionWindow.hpp"
-#include "ConsoleWindow.hpp"
-#include "DataWindow.hpp"
-#include "DebugWindow.hpp"
-#include "MeasureWindow.hpp"
-#include "PlottingWindow.hpp"
-#include "SettingsWindow.hpp"
-#include "StatisticsWindow.hpp"
-#include "ViewWindow.hpp"
+#include "windows/ConnectionWindow.hpp"
+#include "windows/ConsoleWindow.hpp"
+#include "windows/DataWindow.hpp"
+#include "windows/DebugWindow.hpp"
+#include "windows/MeasureWindow.hpp"
+#include "windows/PlottingWindow.hpp"
+#include "windows/SettingsWindow.hpp"
+#include "windows/StatisticsWindow.hpp"
+#include "windows/ViewWindow.hpp"
 
 class SPARQ
 {
