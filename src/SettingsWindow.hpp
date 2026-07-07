@@ -5,7 +5,7 @@
 class SettingsWindow final : public Window
 {
 public:
-    SettingsWindow(DataHandler& data_handler);
+    explicit SettingsWindow(DataHandler& data_handler);
 
     void show_downsampling_settings();
     void show_graphics_settings();

@@ -13,20 +13,30 @@ constexpr uint8_t SPARQ_DEFAULT_SIGNATURE = 0xFF;
 
 namespace spq::helper
 {
+    /**
+     * @brief Checks if the system is little-endian.
+     * @return true if the system is little-endian, false otherwise.
+     */
     [[nodiscard]]
     constexpr bool is_little_endian() noexcept
     {
         return std::endian::native == std::endian::little;
     }
 
+    /**
+     * @brief Computes the XOR checksum of a given data span.
+     * @param data The span of data to compute the checksum for.
+     * @param length The number of bytes to consider from the data span.
+     * @return The computed XOR checksum as a uint8_t.
+     */
     [[nodiscard]]
-    constexpr auto xor8_cs(uint8_t const* data, std::size_t const length) noexcept
+    constexpr uint8_t xor8_cs(std::span<const uint8_t> const data, std::size_t const length) noexcept
     {
-        uint8_t cs = 0x00;
+        uint8_t cs{};
 
-        for (std::size_t i = 0; i < length; i++)
+        for (auto const& b : data.first(std::min(length, data.size())))
         {
-            cs ^= data[i];
+            cs ^= b;
         }
 
         return cs;
@@ -49,6 +59,32 @@ namespace spq::helper
         {
             set.insert(value);
         }
+    }
+
+    [[nodiscard]]
+    constexpr uint8_t hex_chars_to_byte(char const high, char const low) noexcept
+    {
+        auto char_to_hex_value = [](char const c) -> uint8_t {
+            if (c == 0)
+            {
+                return 0;
+            }
+            if (c >= '0' && c <= '9')
+            {
+                return c - '0';
+            }
+            else if (c >= 'A' && c <= 'F')
+            {
+                return c - 'A' + 10;
+            }
+            else if (c >= 'a' && c <= 'f')
+            {
+                return c - 'a' + 10;
+            }
+            return 0;
+        };
+
+        return (char_to_hex_value(high) << 4) | char_to_hex_value(low);
     }
 
 }
@@ -161,14 +197,14 @@ struct sparq_marker_t
     double x{};
     double y{};
     uint8_t ds_index{};
-    int16_t ds_id{-1};
+    int16_t ds_id{-1}; // TODO: Make this a size_t and handle the case where no dataset is selected
     bool hidden{};
     ImVec4 color{1.f, 1.f, 1.f, 1.f};
 };
 
 struct sparq_dataset_t
 {
-    int16_t id{};
+    std::size_t id{};
     char name_buffer[64] = {0};
     std::string name{};
     std::string name_with_id{};

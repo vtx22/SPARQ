@@ -2,19 +2,17 @@
 
 void PlottingWindow::update_content(Datasets& datasets)
 {
-    update_window_name(); // TODO: Update only on plot type change
-    update_plot_contents(datasets);
-    show_highlighting_rectangle();
-}
-
-void PlottingWindow::update_window_name()
-{
     using namespace spq::plotting;
 
-    _name = internal::window_name_prefix;
-    _name += plot_type_names.at(static_cast<uint8_t>(_plot_settings.type));
-    _name += internal::window_name_id_prefix;
-    _name += std::to_string(_id);
+    static plot_type_t prev_plot_type{};
+    if (m_plot_settings.type != prev_plot_type)
+    {
+        prev_plot_type = m_plot_settings.type;
+        update_window_name();
+    }
+
+    update_plot_contents(datasets);
+    show_highlighting_rectangle();
 }
 
 void PlottingWindow::update_plot_contents(Datasets& datasets)
@@ -25,7 +23,7 @@ void PlottingWindow::update_plot_contents(Datasets& datasets)
     {
         update_markers();
 
-        switch (_plot_settings.type)
+        switch (m_plot_settings.type)
         {
         case plot_type_t::timeseries:
             handle_plot_timeseries(datasets);
@@ -51,9 +49,9 @@ void PlottingWindow::handle_plot_timeseries(Datasets& datasets)
 {
     ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
 
-    uint32_t max_samples = std::stoi(_config_handler.ini["downsampling"]["max_samples"]);
+    uint32_t max_samples = std::stoi(m_config_handler.ini["downsampling"]["max_samples"]);
 
-    if (_config_handler.ini["downsampling"]["max_samples_type"] == "0" && !datasets.empty())
+    if (m_config_handler.ini["downsampling"]["max_samples_type"] == "0" && !datasets.empty())
     {
         max_samples = static_cast<uint32_t>(std::round(max_samples / static_cast<double>(datasets.size())));
     }
@@ -61,7 +59,7 @@ void PlottingWindow::handle_plot_timeseries(Datasets& datasets)
     std::size_t i = 0;
     for (auto& ds : datasets.data())
     {
-        if (!_plot_settings.ids_to_plot.contains(ds.id))
+        if (!m_plot_settings.ids_to_plot.contains(ds.id))
         {
             continue;
         }
@@ -102,7 +100,7 @@ void PlottingWindow::handle_plot_single_value(Datasets& datasets)
 
 void PlottingWindow::handle_plot_heatmap(Datasets const& datasets)
 {
-    auto const& hms = _plot_settings.heatmap_settings;
+    auto const& hms = m_plot_settings.heatmap_settings;
 
     std::vector<float> values(hms.cols * hms.rows);
 
@@ -180,7 +178,7 @@ void PlottingWindow::update_markers() const
 
 constexpr void PlottingWindow::show_highlighting_rectangle() const
 {
-    if (!_highlight_window)
+    if (!m_highlight_window)
     {
         return;
     }
@@ -209,44 +207,6 @@ constexpr void PlottingWindow::show_highlighting_rectangle() const
         border_width);
 }
 
-ImPlotFlags PlottingWindow::get_plot_flags() const
-{
-    ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
-
-    if (_plot_settings.type == spq::plotting::plot_type_t::heatmap && _plot_settings.equal)
-    {
-        plot_flags |= ImPlotFlags_Equal;
-    }
-
-    return plot_flags;
-}
-
-void PlottingWindow::before_imgui_begin()
-{
-    // Add highlight styles. Keep in sync with after_imgui_end()
-    _highlight_colors_pushed = _highlight_window;
-    if (_highlight_colors_pushed)
-    {
-        constexpr auto color = spq::styling::plot_highlight_color;
-        ImGui::PushStyleColor(ImGuiCol_TitleBg, color);
-        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, color);
-        ImGui::PushStyleColor(ImGuiCol_Tab, color);
-        ImGui::PushStyleColor(ImGuiCol_TabActive, color);
-        ImGui::PushStyleColor(ImGuiCol_TabHovered, color);
-        ImGui::PushStyleColor(ImGuiCol_TabUnfocused, color);
-        ImGui::PushStyleColor(ImGuiCol_TabUnfocusedActive, color);
-    }
-}
-
-void PlottingWindow::after_imgui_end()
-{
-    // Remove highlight styles. Keep in sync with before_imgui_begin()
-    if (_highlight_colors_pushed)
-    {
-        ImGui::PopStyleColor(7);
-    }
-}
-
 std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_downsampled(
     sparq_dataset_t& dataset,
     std::size_t const max_samples,
@@ -255,7 +215,7 @@ std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_dow
 {
     auto& d = dataset;
 
-    auto const downsampling_enabled = (_config_handler.ini["downsampling"]["enabled"] == "1");
+    auto const downsampling_enabled = (m_config_handler.ini["downsampling"]["enabled"] == "1");
     // No downsampling possible
     if (d.samples.empty() || d.samples.size() < max_samples || !downsampling_enabled)
     {

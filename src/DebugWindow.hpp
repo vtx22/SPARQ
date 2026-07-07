@@ -5,7 +5,7 @@
 class DebugWindow final : public Window
 {
 public:
-    DebugWindow(DataHandler& data_handler)
+    explicit DebugWindow(DataHandler& data_handler)
         : Window(ICON_FA_CODE "  Debug", data_handler)
     {
     }

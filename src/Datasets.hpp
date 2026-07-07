@@ -41,6 +41,16 @@ public:
     }
 
     /**
+     * @brief Gets a read-only reference to the vector of datasets.
+     * @return A const reference to the vector of datasets.
+     */
+    [[nodiscard]]
+    constexpr auto const& data() const noexcept
+    {
+        return m_datasets;
+    }
+
+    /**
      * @brief Checks if the vector of datasets is empty.
      * @return True if the vector of datasets is empty, false otherwise.
      */
@@ -118,10 +128,8 @@ public:
     /**
      * @brief Clears the data of all datasets.
      */
-    void clear_all()
+    constexpr void clear_all() noexcept
     {
-        std::cout << "Clearing all datasets ...\n";
-
         for (auto const& d : m_datasets)
         {
             clear(d.id);
@@ -133,7 +141,7 @@ public:
      * @param id The ID of the dataset to clear.
      * @return True if the dataset was cleared, false if no dataset with the given ID was found.
      */
-    bool clear(std::size_t const id)
+    constexpr bool clear(std::size_t const id) noexcept
     {
         auto const dataset = get(id);
 
@@ -164,36 +172,25 @@ public:
     /**
      * @brief Deletes a dataset with the given ID from the list of datasets.
      * @param id The ID of the dataset to delete.
-     * @return True if the dataset was deleted, false if no dataset with the given ID was found.
      */
-    bool delete_dataset(std::size_t const id)
+    constexpr void delete_dataset(std::size_t const id)
     {
-        for (std::size_t i = 0; i < m_datasets.size(); i++)
+        std::erase_if(m_datasets, [id](auto const& ds) {
+            return ds.id == id;
+        });
+
+        if (m_datasets.empty())
         {
-            if (m_datasets[i].id == id)
-            {
-                m_datasets.erase(m_datasets.begin() + i);
-
-                if (m_datasets.empty())
-                {
-                    m_first_receive_timestamp = 0;
-                    m_current_absolute_sample = 0;
-                }
-
-                return true;
-            }
+            m_first_receive_timestamp = 0;
+            m_current_absolute_sample = 0;
         }
-
-        return false;
     }
 
     /**
      * @brief Deletes all datasets from the list of datasets.
      */
-    void delete_all()
+    constexpr void delete_all() noexcept
     {
-        std::cout << "Deleting all datasets ...\n";
-
         m_datasets.clear();
         m_first_receive_timestamp = 0;
         m_current_absolute_sample = 0;

@@ -2,11 +2,13 @@
 
 void DataHandler::receiver_loop()
 {
-    while (_running)
-    {
-        std::unique_lock serial_lock(_serial_mutex);
+    using namespace std::chrono;
 
-        if (!_sp.get_open())
+    while (m_running)
+    {
+        std::unique_lock serial_lock(m_serial_mutex);
+
+        if (!m_sp.get_open())
         {
             serial_lock.unlock();
             std::this_thread::sleep_for(milliseconds(SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS));
@@ -19,12 +21,12 @@ void DataHandler::receiver_loop()
         if (received_message)
         {
             auto const& message = received_message.value();
-            std::scoped_lock lock{_data_mutex};
+            std::scoped_lock lock{m_data_mutex};
 
             switch (message.message_type)
             {
             case sparq_message_type_t::STRING:
-                _console_window.add_log(message.string_data.c_str());
+                m_console_window.add_log(message.string_data.c_str());
                 break;
             case sparq_message_type_t::SENDER_COMMAND:
                 handle_command(message);
@@ -53,7 +55,7 @@ void DataHandler::receiver_loop()
 
 void DataHandler::update_markers()
 {
-    for (auto& m : _markers)
+    for (auto& m : m_markers)
     {
         if (m.ds_id == -1)
         {
@@ -102,7 +104,7 @@ void DataHandler::handle_command(sparq_message_t const& message)
     switch (message.command_type)
     {
     case sparq_sender_command_t::CLEAR_CONSOLE:
-        _console_window.clear_log();
+        m_console_window.clear_log();
         break;
     case sparq_sender_command_t::SET_DATASET_NAME:
     {
@@ -156,26 +158,26 @@ std::optional<sparq_message_t> DataHandler::receive_message()
     static bool in_message = false;
 
     // Read everything that's available
-    auto const len = _sp.read(_serial_buffer.data(), SPARQ_MAX_MESSAGE_LENGTH * 2);
+    auto const len = m_sp.read(m_serial_buffer.data(), SPARQ_MAX_MESSAGE_LENGTH * 2);
 
-    if (len <= 0 && _message_buffer.empty())
+    if (len <= 0 && m_message_buffer.empty())
     {
         return std::nullopt;
     }
 
     // Append to message buffer
-    _message_buffer.insert(_message_buffer.end(), _serial_buffer.begin(), _serial_buffer.begin() + len);
+    m_message_buffer.insert(m_message_buffer.end(), m_serial_buffer.begin(), m_serial_buffer.begin() + len);
 
     if (!in_message)
     {
         // We are waiting for a new message, so check everything that we have for a signature
-        for (size_t i = 0; i < _message_buffer.size(); i++)
+        for (size_t i = 0; i < m_message_buffer.size(); i++)
         {
             // TODO: Replace with set signature
-            if (_message_buffer[i] == SPARQ_DEFAULT_SIGNATURE)
+            if (m_message_buffer[i] == SPARQ_DEFAULT_SIGNATURE)
             {
                 // Delete everything in font of the signature so that the current message is always at the front
-                _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + i);
+                m_message_buffer.erase(m_message_buffer.begin(), m_message_buffer.begin() + i);
 
                 in_message = true;
                 break;
@@ -185,7 +187,7 @@ std::optional<sparq_message_t> DataHandler::receive_message()
         // No signature found, ditch buffer
         if (!in_message)
         {
-            _message_buffer.clear();
+            m_message_buffer.clear();
             return std::nullopt;
         }
     }
@@ -193,32 +195,32 @@ std::optional<sparq_message_t> DataHandler::receive_message()
     // If we got here signature was detected and it is at the start of the buffer
 
     // Message is not complete yet, header is incomplete
-    if (_message_buffer.size() < SPARQ_MESSAGE_HEADER_LENGTH)
+    if (m_message_buffer.size() < SPARQ_MESSAGE_HEADER_LENGTH)
     {
         return std::nullopt;
     }
 
     sparq_message_t message{};
-    message.header.from_array(_message_buffer.data());
+    message.header.from_array(m_message_buffer.data());
 
-    if (message.header.checksum != spq::helper::xor8_cs(_message_buffer.data(), SPARQ_MESSAGE_HEADER_LENGTH - 1))
+    if (message.header.checksum != spq::helper::xor8_cs(m_message_buffer, SPARQ_MESSAGE_HEADER_LENGTH - 1))
     {
         // Header checksum is wrong, clear the message buffer from that part
-        _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
+        m_message_buffer.erase(m_message_buffer.begin(), m_message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
         in_message = false;
         return std::nullopt;
     }
 
     auto const total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_CHECKSUM_LENGTH + message.header.payload_length;
 
-    if (_message_buffer.size() < total_message_length)
+    if (m_message_buffer.size() < total_message_length)
     {
         // Message is not complete yet
         return std::nullopt;
     }
 
     // Finally we got a full message
-    message.from_array(_message_buffer.data());
+    message.from_array(m_message_buffer.data());
 
     in_message = false;
 
@@ -226,7 +228,7 @@ std::optional<sparq_message_t> DataHandler::receive_message()
     message.valid = true;
     if (message.header.control & static_cast<uint8_t>(sparq_header_control_t::CS_EN))
     {
-        message.valid = (message.checksum == spq::helper::xor8_cs(_message_buffer.data(), total_message_length - 1));
+        message.valid = (message.checksum == spq::helper::xor8_cs(m_message_buffer, total_message_length - 1));
     }
 
     if (!message.valid)
@@ -235,14 +237,15 @@ std::optional<sparq_message_t> DataHandler::receive_message()
     }
 
     // Save current timestep
+    using namespace std::chrono;
     message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
     // Clear the message from the buffer
-    _message_buffer.erase(_message_buffer.begin(), _message_buffer.begin() + total_message_length);
+    m_message_buffer.erase(m_message_buffer.begin(), m_message_buffer.begin() + total_message_length);
     return message;
 }
 
-void DataHandler::export_data_csv(Datasets& datasets)
+void DataHandler::export_datasets_csv(Datasets const& datasets)
 {
     std::cout << "Exporting data to csv...\n";
 
