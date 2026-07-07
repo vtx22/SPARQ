@@ -164,25 +164,17 @@ public:
      * @param id The ID of the dataset to delete.
      * @return True if the dataset was deleted, false if no dataset with the given ID was found.
      */
-    constexpr bool delete_dataset(std::size_t const id)
+    constexpr void delete_dataset(std::size_t const id)
     {
-        for (std::size_t i = 0; i < m_datasets.size(); i++)
+        std::erase_if(m_datasets, [id](auto const& ds) {
+            return ds.id == id;
+        });
+
+        if (m_datasets.empty())
         {
-            if (m_datasets[i].id == id)
-            {
-                m_datasets.erase(m_datasets.begin() + i);
-
-                if (m_datasets.empty())
-                {
-                    m_first_receive_timestamp = 0;
-                    m_current_absolute_sample = 0;
-                }
-
-                return true;
-            }
+            m_first_receive_timestamp = 0;
+            m_current_absolute_sample = 0;
         }
-
-        return false;
     }
 
     /**
