@@ -77,20 +77,22 @@ public:
 protected:
     /**
      * @brief Updates the content of the window. This function is called every frame between the windows ImGui::Begin() and ImGui::End() calls.
-     * Derived classes should implement this function to define the specific content of the window.
+     * @details Derived classes should implement this function to define the specific content of the window.
      * @param datasets A reference to the datasets managed by the DataHandler, allowing derived classes to access and manipulate the data as needed.
      */
     virtual void update_content(Datasets& datasets) = 0;
 
     /**
-     * @brief Called before the ImGui::Begin() call in the draw() function. Derived classes can override this function to perform any necessary setup or state changes before the window is drawn.
+     * @brief Called before the ImGui::Begin() call in the draw() function.
+     * @details Derived classes can override this function to perform any necessary setup or state changes before the window is drawn.
      */
     virtual void before_imgui_begin()
     {
     }
 
     /**
-     * @brief Called after the ImGui::End() call in the draw() function. Derived classes can override this function to perform any necessary cleanup or state changes after the window is drawn.
+     * @brief Called after the ImGui::End() call in the draw() function.
+     * @details Derived classes can override this function to perform any necessary cleanup or state changes after the window is drawn.
      */
     virtual void after_imgui_end()
     {
