@@ -1,9 +1,9 @@
 #pragma once
 
-#include "IconsFontAwesome6.h"
+#include "../IconsFontAwesome6.h"
+#include "../sparq_config.h"
 #include "imgui.h"
 #include "serial.hpp"
-#include "sparq_config.h"
 
 class ConsoleWindow
 {

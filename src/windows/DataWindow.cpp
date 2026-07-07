@@ -1,4 +1,4 @@
-#include "DataWindow.hpp"
+#include "../DataWindow.hpp"
 
 void DataWindow::update_content(Datasets& datasets)
 {

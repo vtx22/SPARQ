@@ -1,4 +1,4 @@
-#include "ViewWindow.hpp"
+#include "../ViewWindow.hpp"
 
 void ViewWindow::update_content(Datasets& datasets)
 {

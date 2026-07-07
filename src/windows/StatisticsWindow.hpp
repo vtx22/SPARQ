@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Window.hpp"
+#include "../Window.hpp"
 
 class StatisticsWindow final : public Window
 {

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Window.hpp"
+#include "../Window.hpp"
+#include "../sparq_types.hpp"
 #include "imgui-SFML.h"
 #include "implot.h"
-#include "sparq_types.hpp"
 
 class DataWindow final : public Window
 {
