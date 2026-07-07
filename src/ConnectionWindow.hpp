@@ -4,6 +4,11 @@
 #include "Window.hpp"
 #include "serial.hpp"
 
+namespace spq::connection::internal
+{
+    constexpr std::array available_baud_rates{4800, 9600, 19'200, 38'400, 57'600, 115'200, 230'400, 460'800, 921'600};
+}
+
 class ConnectionWindow final : public Window
 {
 public:
@@ -40,16 +45,16 @@ private:
         return m_com_ports.size();
     }
 
-    std::size_t m_current_id = 0;
+    std::size_t m_current_id{};
     std::vector<std::string> m_com_ports;
 
-    unsigned int m_baud_rate = 115'200;
-    std::array<int, 9> const m_available_baud_rates{4800u, 9600, 19'200, 38'400, 57'600, 115'200, 230'400, 460'800, 921'600};
-    char m_signature_chars[3] = {'F', 'F', 0};
-    uint8_t m_signature = 0xFF;
+    unsigned int m_baud_rate{115'200};
 
-    bool m_port_open = false;
-    std::size_t m_selected_comm_mode = 0;
+    char m_signature_chars[3] = {'F', 'F', 0};
+    uint8_t m_signature{0xFF};
+
+    bool m_port_open{};
+    std::size_t m_selected_comm_mode{};
 
     Serial& m_sp;
 
@@ -101,7 +106,7 @@ protected:
         // Baud Rate selection
         if (ImGui::BeginCombo("###BaudRateSelect", std::to_string(m_baud_rate).c_str()))
         {
-            for (auto const& rate : m_available_baud_rates)
+            for (auto const& rate : spq::connection::internal::available_baud_rates)
             {
                 auto const is_selected = m_baud_rate == rate;
 
