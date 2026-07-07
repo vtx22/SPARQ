@@ -22,7 +22,6 @@
     "SettingsWindow.cpp"
 
     "StatisticsWindow.hpp"
-    "StatisticsWindow.cpp"
 
     "ViewWindow.hpp"
     "ViewWindow.cpp"

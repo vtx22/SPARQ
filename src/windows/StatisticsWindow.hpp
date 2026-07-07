@@ -11,5 +11,8 @@ public:
     }
 
 protected:
-    void update_content(Datasets& datasets) override;
+    void update_content(Datasets& datasets) override
+    {
+        ImGui::Text("FPS: %d", static_cast<int>(round(ImGui::GetIO().Framerate)));
+    }
 };
