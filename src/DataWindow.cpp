@@ -94,7 +94,7 @@ void DataWindow::show_datasets_section(Datasets& datasets)
 
         if (ImGui::Button("Export"))
         {
-            m_data_handler.export_data_csv(datasets);
+            DataHandler::export_datasets_csv(datasets);
         }
 
         ImGui::SameLine();
