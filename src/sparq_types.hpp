@@ -13,17 +13,27 @@ constexpr uint8_t SPARQ_DEFAULT_SIGNATURE = 0xFF;
 
 namespace spq::helper
 {
+    /**
+     * @brief Checks if the system is little-endian.
+     * @return true if the system is little-endian, false otherwise.
+     */
     [[nodiscard]]
     constexpr bool is_little_endian() noexcept
     {
         return std::endian::native == std::endian::little;
     }
 
+    /**
+     * @brief Computes the XOR checksum of a given data span.
+     * @param data The span of data to compute the checksum for.
+     * @param length The number of bytes to consider from the data span.
+     * @return The computed XOR checksum as a uint8_t.
+     */
     [[nodiscard]]
     constexpr uint8_t xor8_cs(std::span<const uint8_t> const data, std::size_t const length) noexcept
     {
         uint8_t cs{};
-        
+
         for (auto const& b : data.first(std::min(length, data.size())))
         {
             cs ^= b;
