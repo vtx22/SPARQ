@@ -8,8 +8,6 @@
 #include "sparq_config.h"
 #include "sparq_types.hpp"
 
-using namespace std::chrono;
-
 class DataHandler final
 {
 public:

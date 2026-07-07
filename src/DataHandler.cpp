@@ -2,6 +2,8 @@
 
 void DataHandler::receiver_loop()
 {
+    using namespace std::chrono;
+
     while (m_running)
     {
         std::unique_lock serial_lock(m_serial_mutex);
@@ -235,6 +237,7 @@ std::optional<sparq_message_t> DataHandler::receive_message()
     }
 
     // Save current timestep
+    using namespace std::chrono;
     message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
     // Clear the message from the buffer
