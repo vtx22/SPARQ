@@ -2,7 +2,7 @@
 
 namespace spq::ui
 {
-    void DebugWindow::update_content(Datasets& datasets)
+    void DebugWindow::update_content(data::Datasets& datasets)
     {
         ImGui::SeparatorText("Debug");
         ImGui::PushItemWidth(-FLT_MIN);

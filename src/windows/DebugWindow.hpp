@@ -7,12 +7,12 @@ namespace spq::ui
     class DebugWindow final : public Window
     {
     public:
-        explicit DebugWindow(DataHandler& data_handler)
+        explicit DebugWindow(data::DataHandler& data_handler)
             : Window(ICON_FA_CODE "  Debug", data_handler)
         {
         }
 
     protected:
-        void update_content(Datasets& datasets) override;
+        void update_content(data::Datasets& datasets) override;
     };
 }

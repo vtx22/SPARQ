@@ -2,12 +2,12 @@
 
 namespace spq::ui
 {
-    SettingsWindow::SettingsWindow(DataHandler& data_handler)
+    SettingsWindow::SettingsWindow(data::DataHandler& data_handler)
         : Window(ICON_FA_GEAR "  Settings", data_handler)
     {
     }
 
-    void SettingsWindow::update_content(Datasets& datasets)
+    void SettingsWindow::update_content(data::Datasets& datasets)
     {
         show_graphics_settings();
         show_downsampling_settings();

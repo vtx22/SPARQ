@@ -7,13 +7,13 @@ namespace spq::ui
     class StatisticsWindow final : public Window
     {
     public:
-        explicit StatisticsWindow(DataHandler& data_handler)
+        explicit StatisticsWindow(data::DataHandler& data_handler)
             : Window(ICON_FA_MAGNIFYING_GLASS_CHART "  Statistics", data_handler)
         {
         }
 
     protected:
-        void update_content(Datasets& datasets) override
+        void update_content(data::Datasets& datasets) override
         {
             ImGui::Text("FPS: %d", static_cast<int>(round(ImGui::GetIO().Framerate)));
         }

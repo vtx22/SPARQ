@@ -4,7 +4,7 @@
 #include "Window.hpp"
 #include "serial.hpp"
 
-namespace spq::connection::internal
+namespace spq::connection
 {
     constexpr std::array available_baud_rates{4800u, 9600u, 19'200u, 38'400u, 57'600u, 115'200u, 230'400u, 460'800u, 921'600u};
 }
@@ -14,7 +14,7 @@ namespace spq::ui
     class ConnectionWindow final : public Window
     {
     public:
-        ConnectionWindow(DataHandler& data_handler, Serial& sp)
+        ConnectionWindow(data::DataHandler& data_handler, Serial& sp)
             : Window(ICON_FA_NETWORK_WIRED "  Connection", data_handler),
               m_sp(sp)
         {
@@ -61,7 +61,7 @@ namespace spq::ui
         Serial& m_sp;
 
     protected:
-        void update_content(Datasets& datasets) override
+        void update_content(data::Datasets& datasets) override
         {
             std::scoped_lock lock(m_data_handler.get_serial_mutex());
 
@@ -108,7 +108,7 @@ namespace spq::ui
             // Baud Rate selection
             if (ImGui::BeginCombo("###BaudRateSelect", std::to_string(m_baud_rate).c_str()))
             {
-                for (auto const& rate : spq::connection::internal::available_baud_rates)
+                for (auto const& rate : connection::available_baud_rates)
                 {
                     auto const is_selected = m_baud_rate == rate;
 

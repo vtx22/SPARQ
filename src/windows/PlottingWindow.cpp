@@ -2,7 +2,7 @@
 
 namespace spq::ui
 {
-    void PlottingWindow::update_content(Datasets& datasets)
+    void PlottingWindow::update_content(data::Datasets& datasets)
     {
         static plot_type_t prev_plot_type{};
         if (m_plot_settings.type != prev_plot_type)
@@ -15,7 +15,7 @@ namespace spq::ui
         show_highlighting_rectangle();
     }
 
-    void PlottingWindow::update_plot_contents(Datasets& datasets)
+    void PlottingWindow::update_plot_contents(data::Datasets& datasets)
     {
         if (ImPlot::BeginPlot("##Plot", ImVec2(-1, -1), get_plot_flags()))
         {
@@ -43,7 +43,7 @@ namespace spq::ui
         }
     }
 
-    void PlottingWindow::handle_plot_timeseries(Datasets& datasets)
+    void PlottingWindow::handle_plot_timeseries(data::Datasets& datasets)
     {
         uint32_t max_samples = std::stoi(m_config_handler.ini["downsampling"]["max_samples"]);
 
@@ -86,15 +86,15 @@ namespace spq::ui
         }
     }
 
-    void PlottingWindow::handle_plot_xy(Datasets& datasets)
+    void PlottingWindow::handle_plot_xy(data::Datasets& datasets)
     {
     }
 
-    void PlottingWindow::handle_plot_single_value(Datasets& datasets)
+    void PlottingWindow::handle_plot_single_value(data::Datasets& datasets)
     {
     }
 
-    void PlottingWindow::handle_plot_heatmap(Datasets const& datasets)
+    void PlottingWindow::handle_plot_heatmap(data::Datasets const& datasets)
     {
         auto const& hms = m_plot_settings.heatmap_settings;
 

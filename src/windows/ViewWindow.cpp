@@ -2,7 +2,7 @@
 
 namespace spq::ui
 {
-    void ViewWindow::update_content(Datasets& datasets)
+    void ViewWindow::update_content(data::Datasets& datasets)
     {
         if (ImGui::Button("Add Plot"))
         {

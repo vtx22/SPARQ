@@ -22,7 +22,7 @@ namespace spq::ui
     class PlottingWindow final : public Window
     {
     public:
-        PlottingWindow(DataHandler& data_handler, std::size_t const id)
+        PlottingWindow(data::DataHandler& data_handler, std::size_t const id)
             : Window(
                   {},
                   data_handler),
@@ -70,13 +70,13 @@ namespace spq::ui
             return plot_flags;
         }
 
-        void update_plot_contents(Datasets& datasets);
+        void update_plot_contents(data::Datasets& datasets);
         void update_markers() const;
 
-        void handle_plot_timeseries(Datasets& datasets);
-        void handle_plot_xy(Datasets& datasets);
-        void handle_plot_single_value(Datasets& datasets);
-        void handle_plot_heatmap(Datasets const& datasets);
+        void handle_plot_timeseries(data::Datasets& datasets);
+        void handle_plot_xy(data::Datasets& datasets);
+        void handle_plot_single_value(data::Datasets& datasets);
+        void handle_plot_heatmap(data::Datasets const& datasets);
 
         void update_window_name()
         {
@@ -96,7 +96,7 @@ namespace spq::ui
         std::size_t m_id{};
 
     protected:
-        void update_content(Datasets& datasets) override;
+        void update_content(data::Datasets& datasets) override;
 
         void before_imgui_begin() override
         {

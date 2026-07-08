@@ -11,14 +11,14 @@ namespace spq::ui
     class Window
     {
     public:
-        Window(std::string name, DataHandler& data_handler)
+        Window(std::string name, data::DataHandler& data_handler)
             : m_window_name(std::move(name)),
               m_data_handler(data_handler),
               m_config_handler(ConfigHandler::get_instance())
         {
         }
 
-        Window(std::string name, DataHandler& data_handler, ImGuiWindowFlags const flags)
+        Window(std::string name, data::DataHandler& data_handler, ImGuiWindowFlags const flags)
             : m_window_name(std::move(name)),
               m_window_flags(flags),
               m_data_handler(data_handler),
@@ -82,7 +82,7 @@ namespace spq::ui
          * @details Derived classes should implement this function to define the specific content of the window.
          * @param datasets A reference to the datasets managed by the DataHandler, allowing derived classes to access and manipulate the data as needed.
          */
-        virtual void update_content(Datasets& datasets) = 0;
+        virtual void update_content(data::Datasets& datasets) = 0;
 
         /**
          * @brief Called before the ImGui::Begin() call in the draw() function.
@@ -117,7 +117,7 @@ namespace spq::ui
 
         std::string m_window_name{};
         ImGuiWindowFlags m_window_flags{};
-        DataHandler& m_data_handler;
+        data::DataHandler& m_data_handler;
         ConfigHandler& m_config_handler;
 
     private:

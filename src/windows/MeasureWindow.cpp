@@ -2,7 +2,7 @@
 
 namespace spq::ui
 {
-    void MeasureWindow::update_content(Datasets& datasets)
+    void MeasureWindow::update_content(data::Datasets& datasets)
     {
         auto& markers = m_data_handler.get_markers();
 
@@ -36,7 +36,7 @@ namespace spq::ui
         }
     }
 
-    void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers, Datasets& datasets) const
+    void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers, data::Datasets& datasets) const
     {
         if (markers.empty())
         {

@@ -62,7 +62,7 @@ namespace spq
 
         Serial m_sp;
         ui::ConsoleWindow m_console_window;
-        DataHandler m_data_handler;
+        data::DataHandler m_data_handler;
         ui::ConnectionWindow m_connection_window;
         ui::DataWindow m_data_window;
         ui::MeasureWindow m_measure_window;

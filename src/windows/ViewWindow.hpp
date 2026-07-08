@@ -14,7 +14,7 @@ namespace spq::ui
         using GetSelectedPlotSettingsCallback = std::function<std::optional<std::reference_wrapper<spq::ui::plot_settings_t>>()>;
 
         ViewWindow(
-            DataHandler& data_handler,
+            data::DataHandler& data_handler,
             CreatePlottingWindowCallback on_create_plotting_window,
             GetSelectedPlotSettingsCallback get_selected_plot_settings)
             : Window(ICON_FA_SLIDERS "  View", data_handler),
@@ -34,6 +34,6 @@ namespace spq::ui
         GetSelectedPlotSettingsCallback _get_selected_plot_settings;
 
     protected:
-        void update_content(Datasets& datasets) override;
+        void update_content(data::Datasets& datasets) override;
     };
 }

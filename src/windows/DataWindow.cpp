@@ -2,12 +2,12 @@
 
 namespace spq::ui
 {
-    void DataWindow::update_content(Datasets& datasets)
+    void DataWindow::update_content(data::Datasets& datasets)
     {
         show_datasets_section(datasets);
     }
 
-    void DataWindow::show_dataset_entries(Datasets& datasets) const
+    void DataWindow::show_dataset_entries(data::Datasets& datasets) const
     {
         if (datasets.empty())
         {
@@ -80,7 +80,7 @@ namespace spq::ui
         }
     }
 
-    void DataWindow::show_datasets_section(Datasets& datasets)
+    void DataWindow::show_datasets_section(data::Datasets& datasets)
     {
         if (ImGui::CollapsingHeader("Serial Datasets"))
         {
@@ -96,7 +96,7 @@ namespace spq::ui
 
             if (ImGui::Button("Export"))
             {
-                DataHandler::export_datasets_csv(datasets);
+                data::DataHandler::export_datasets_csv(datasets);
             }
 
             ImGui::SameLine();

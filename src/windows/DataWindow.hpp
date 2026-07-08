@@ -10,16 +10,16 @@ namespace spq::ui
     class DataWindow final : public Window
     {
     public:
-        explicit DataWindow(DataHandler& data_handler)
+        explicit DataWindow(data::DataHandler& data_handler)
             : Window(ICON_FA_DATABASE "  Data", data_handler)
         {
         }
 
     private:
-        void show_dataset_entries(Datasets& datasets) const;
-        void show_datasets_section(Datasets& datasets);
+        void show_dataset_entries(data::Datasets& datasets) const;
+        void show_datasets_section(data::Datasets& datasets);
 
     protected:
-        void update_content(Datasets& datasets) override;
+        void update_content(data::Datasets& datasets) override;
     };
 }

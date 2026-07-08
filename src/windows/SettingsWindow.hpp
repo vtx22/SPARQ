@@ -7,7 +7,7 @@ namespace spq::ui
     class SettingsWindow final : public Window
     {
     public:
-        explicit SettingsWindow(DataHandler& data_handler);
+        explicit SettingsWindow(data::DataHandler& data_handler);
 
         void show_downsampling_settings();
         void show_graphics_settings();
@@ -17,6 +17,6 @@ namespace spq::ui
         bool _settings_changed = false;
 
     protected:
-        void update_content(Datasets& datasets) override;
+        void update_content(data::Datasets& datasets) override;
     };
 }
