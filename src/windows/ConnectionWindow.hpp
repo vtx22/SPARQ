@@ -6,7 +6,7 @@
 
 namespace spq::connection::internal
 {
-    constexpr std::array available_baud_rates{4800, 9600, 19'200, 38'400, 57'600, 115'200, 230'400, 460'800, 921'600};
+    constexpr std::array available_baud_rates{4800u, 9600u, 19'200u, 38'400u, 57'600u, 115'200u, 230'400u, 460'800u, 921'600u};
 }
 
 class ConnectionWindow final : public Window

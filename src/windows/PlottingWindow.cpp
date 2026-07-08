@@ -47,8 +47,6 @@ void PlottingWindow::update_plot_contents(Datasets& datasets)
 
 void PlottingWindow::handle_plot_timeseries(Datasets& datasets)
 {
-    ImPlotPlot* plot = ImPlot::GetCurrentContext()->CurrentPlot;
-
     uint32_t max_samples = std::stoi(m_config_handler.ini["downsampling"]["max_samples"]);
 
     if (m_config_handler.ini["downsampling"]["max_samples_type"] == "0" && !datasets.empty())

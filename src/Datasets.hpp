@@ -179,7 +179,7 @@ public:
             return ds.id == id;
         });
 
-        if (m_datasets.empty())
+        if (empty())
         {
             m_first_receive_timestamp = 0;
             m_current_absolute_sample = 0;
@@ -278,7 +278,7 @@ public:
     [[nodiscard]]
     constexpr double get_max_rel_time() const noexcept
     {
-        if (m_datasets.empty())
+        if (empty())
         {
             return 0.0;
         }
@@ -296,7 +296,7 @@ public:
     [[nodiscard]]
     constexpr double get_max_abs_time() const noexcept
     {
-        if (m_datasets.empty())
+        if (empty())
         {
             return 0.0;
         }

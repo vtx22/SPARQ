@@ -65,22 +65,19 @@ namespace spq::helper
     constexpr uint8_t hex_chars_to_byte(char const high, char const low) noexcept
     {
         auto char_to_hex_value = [](char const c) -> uint8_t {
-            if (c == 0)
-            {
-                return 0;
-            }
             if (c >= '0' && c <= '9')
             {
                 return c - '0';
             }
-            else if (c >= 'A' && c <= 'F')
+            if (c >= 'A' && c <= 'F')
             {
                 return c - 'A' + 10;
             }
-            else if (c >= 'a' && c <= 'f')
+            if (c >= 'a' && c <= 'f')
             {
                 return c - 'a' + 10;
             }
+
             return 0;
         };
 
@@ -328,10 +325,10 @@ struct sparq_message_t
 
         if (is_signed)
         {
-            return static_cast<double>(std::bit_cast<int32_t>(value32));
+            return std::bit_cast<int32_t>(value32);
         }
 
-        return static_cast<double>(value32);
+        return value32;
     }
 
     constexpr void parse_msg_id_pair(uint8_t const* data)
@@ -389,7 +386,7 @@ struct sparq_message_t
             return;
         }
 
-        message_type = (sparq_message_type_t)((header.control >> 2) & 0b11);
+        message_type = static_cast<sparq_message_type_t>(header.control >> 2 & 0b11);
 
         switch (message_type)
         {
