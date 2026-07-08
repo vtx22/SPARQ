@@ -29,10 +29,10 @@
 #include "windows/DataWindow.hpp"
 #include "windows/DebugWindow.hpp"
 #include "windows/MeasureWindow.hpp"
-#include "windows/PlottingWindow.hpp"
 #include "windows/SettingsWindow.hpp"
 #include "windows/StatisticsWindow.hpp"
 #include "windows/ViewWindow.hpp"
+#include "windows/plotting/PlottingWindow.hpp"
 
 namespace spq
 {
