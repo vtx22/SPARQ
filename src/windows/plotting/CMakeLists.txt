@@ -2,4 +2,5 @@
     "PlottingWindow.hpp"
     "PlottingWindow.cpp"
 
+    "TimeseriesPlottingWindow.hpp"
 )
