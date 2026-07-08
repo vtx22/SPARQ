@@ -73,23 +73,11 @@ namespace spq::ui
         }
 
     private:
-        [[nodiscard]]
-        constexpr ImPlotFlags get_plot_flags() const noexcept
-        {
-            ImPlotFlags plot_flags = ImPlotFlags_NoMenus;
-
-            if (m_plot_settings.type == spq::ui::plot_type_t::heatmap && m_plot_settings.equal)
-            {
-                plot_flags |= ImPlotFlags_Equal;
-            }
-
-            return plot_flags;
-        }
-
-        void update_plot_contents(data::Datasets& datasets)
+        void update_plot(data::Datasets& datasets)
         {
             if (ImPlot::BeginPlot("##Plot", ImVec2(-1, -1), get_plot_flags()))
             {
+                update_plot_contents(datasets);
                 ImPlot::EndPlot();
             }
         }
@@ -100,13 +88,21 @@ namespace spq::ui
         std::size_t const m_id{};
 
     protected:
-        void update_content(data::Datasets& datasets) override
+        [[nodiscard]]
+        virtual constexpr ImPlotFlags get_plot_flags() const
         {
-            update_plot_contents(datasets);
+            return {};
+        }
+
+        virtual void update_plot_contents(data::Datasets& datasets) = 0;
+
+        void update_content(data::Datasets& datasets) final
+        {
+            update_plot(datasets);
             show_highlighting_rectangle();
         }
 
-        void before_imgui_begin() override
+        void before_imgui_begin() final
         {
             // Add highlight styles. Keep in sync with after_imgui_end()
             m_highlight_colors_pushed = m_highlight_window;
@@ -123,7 +119,7 @@ namespace spq::ui
             }
         }
 
-        void after_imgui_end() override
+        void after_imgui_end() final
         {
             // Remove highlight styles. Keep in sync with before_imgui_begin()
             if (m_highlight_colors_pushed)
@@ -133,7 +129,7 @@ namespace spq::ui
         }
 
         [[nodiscard]]
-        constexpr bool has_close_button() const noexcept override
+        constexpr bool has_close_button() const noexcept final
         {
             return true;
         }

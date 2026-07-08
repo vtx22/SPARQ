@@ -14,7 +14,8 @@ namespace spq::ui
         {
         }
 
-        void handle_plot(data::Datasets& datasets)
+    protected:
+        void update_plot_contents(data::Datasets& datasets) override
         {
             uint32_t max_samples = std::stoi(m_config_handler.ini["downsampling"]["max_samples"]);
 
@@ -55,6 +56,12 @@ namespace spq::ui
 
                 i++;
             }
+        }
+
+        [[nodiscard]]
+        constexpr ImPlotFlags get_plot_flags() const override
+        {
+            return ImPlotFlags_NoMenus;
         }
     };
 }
