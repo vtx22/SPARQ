@@ -16,7 +16,7 @@ namespace spq::ui
         }
 
     private:
-        void measure_markers_table(std::vector<sparq_marker_t>& markers, data::Datasets& datasets) const;
+        void measure_markers_table(std::vector<marker_t>& markers, data::Datasets& datasets) const;
 
     protected:
         void update_content(data::Datasets& datasets) override;

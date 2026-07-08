@@ -86,34 +86,6 @@ namespace spq::helper
 
 }
 
-enum class sparq_header_control_t : uint8_t
-{
-    LSB_FIRST = (1 << 7),
-    CS_EN = (1 << 6),
-    MSG_TYPE = (1 << 2) + (1 << 3),
-    SIGNED = (1 << 1),
-    INTEGER = (1 << 0),
-};
-
-enum class sparq_message_type_t : uint8_t
-{
-    ID_PAIR = 0b00,
-    STRING = 0b01,
-    BULK_SINGLE_ID = 0b10,
-    SENDER_COMMAND = 0b11,
-};
-
-enum class sparq_sender_command_t : uint8_t
-{
-    CLEAR_CONSOLE,         // Remote clear the console
-    CLEAR_ALL_DATASETS,    // Remote clear all datasets data but keep the settings
-    CLEAR_SINGLE_DATASET,  // Remote clear a single datasets data but keep the settings
-    DELETE_ALL_DATASETS,   // Remote delete all datasets
-    DELETE_SINGLE_DATASET, // Remote delete single dataset
-    SET_DATASET_NAME,      // Remote set the name of a given dataset
-    SWITCH_PLOT_TYPE,      // Remote switch the plot type (e.g. line, heatmap, etc.)
-};
-
 namespace spq::ui
 {
     enum class plot_type_t : uint8_t
@@ -186,227 +158,258 @@ namespace spq::ui
 
         heatmap_settings_t heatmap_settings{};
     };
+
+    struct marker_t
+    {
+        std::string name{"M"};
+        double x{};
+        double y{};
+        uint8_t ds_index{};
+        int16_t ds_id{-1}; // TODO: Make this a size_t and handle the case where no dataset is selected
+        bool hidden{};
+        ImVec4 color{1.f, 1.f, 1.f, 1.f};
+    };
+
 }
 
-struct sparq_marker_t
+namespace spq::data
 {
-    std::string name{"M"};
-    double x{};
-    double y{};
-    uint8_t ds_index{};
-    int16_t ds_id{-1}; // TODO: Make this a size_t and handle the case where no dataset is selected
-    bool hidden{};
-    ImVec4 color{1.f, 1.f, 1.f, 1.f};
-};
-
-struct sparq_dataset_t
-{
-    std::size_t id{};
-    char name_buffer[64] = {0};
-    std::string name{};
-    std::string name_with_id{};
-    ImVec4 color{1.f, 0.f, 0.f, 1.f};
-    bool hidden{};
-    bool display_square{};
-
-    std::vector<double> absolute_times;
-    std::vector<double> relative_times;
-    std::vector<double> samples;
-    std::vector<double> y_values;
-
-    constexpr void append_raw_values(
-        double const sample,
-        double const rel_time,
-        double const abs_time,
-        double const y_value)
+    enum class header_control_t : uint8_t
     {
-        samples.push_back(sample);
-        relative_times.push_back(rel_time);
-        absolute_times.push_back(abs_time);
-        y_values.push_back(y_value);
-    }
+        LSB_FIRST = (1 << 7),
+        CS_EN = (1 << 6),
+        MSG_TYPE = (1 << 2) + (1 << 3),
+        SIGNED = (1 << 1),
+        INTEGER = (1 << 0),
+    };
 
-    constexpr void clear() noexcept
+    enum class message_type_t : uint8_t
     {
-        absolute_times.clear();
-        relative_times.clear();
-        samples.clear();
-        y_values.clear();
-    }
+        ID_PAIR = 0b00,
+        STRING = 0b01,
+        BULK_SINGLE_ID = 0b10,
+        SENDER_COMMAND = 0b11,
+    };
 
-    void set_name(std::string const& new_name) noexcept
+    enum class sender_command_t : uint8_t
     {
-        name = new_name;
-        name_with_id = name + " [" + std::to_string(id) + "]";
-        std::snprintf(name_buffer, sizeof(name_buffer), "%s", name.c_str());
-    }
-};
+        CLEAR_CONSOLE,         // Remote clear the console
+        CLEAR_ALL_DATASETS,    // Remote clear all datasets data but keep the settings
+        CLEAR_SINGLE_DATASET,  // Remote clear a single datasets data but keep the settings
+        DELETE_ALL_DATASETS,   // Remote delete all datasets
+        DELETE_SINGLE_DATASET, // Remote delete single dataset
+        SET_DATASET_NAME,      // Remote set the name of a given dataset
+        SWITCH_PLOT_TYPE,      // Remote switch the plot type (e.g. line, heatmap, etc.)
+    };
 
-struct sparq_message_header_t
-{
-    uint8_t signature{};
-    uint8_t control{};
-    uint16_t payload_length{};
-    uint8_t checksum{};
-
-    sparq_message_header_t()
+    struct dataset_t
     {
-    }
+        std::size_t id{};
+        char name_buffer[64] = {0};
+        std::string name{};
+        std::string name_with_id{};
+        ImVec4 color{1.f, 0.f, 0.f, 1.f};
+        bool hidden{};
+        bool display_square{};
 
-    sparq_message_header_t(uint8_t const* buffer)
-    {
-        from_array(buffer);
-    }
+        std::vector<double> absolute_times;
+        std::vector<double> relative_times;
+        std::vector<double> samples;
+        std::vector<double> y_values;
 
-    constexpr void from_array(uint8_t const* buffer) noexcept
-    {
-        signature = buffer[0];
-        control = buffer[1];
-
-        auto const message_endianess = static_cast<bool>(control & static_cast<uint8_t>(sparq_header_control_t::LSB_FIRST));
-
-        if (message_endianess == spq::helper::is_little_endian())
+        constexpr void append_raw_values(
+            double const sample,
+            double const rel_time,
+            double const abs_time,
+            double const y_value)
         {
-            payload_length = (buffer[2] << 8) + buffer[3];
-        }
-        else
-        {
-            payload_length = (buffer[3] << 8) + buffer[2];
+            samples.push_back(sample);
+            relative_times.push_back(rel_time);
+            absolute_times.push_back(abs_time);
+            y_values.push_back(y_value);
         }
 
-        checksum = buffer[4];
-    }
+        constexpr void clear() noexcept
+        {
+            absolute_times.clear();
+            relative_times.clear();
+            samples.clear();
+            y_values.clear();
+        }
 
-    constexpr void to_array(uint8_t* buffer) const noexcept
+        void set_name(std::string const& new_name) noexcept
+        {
+            name = new_name;
+            name_with_id = name + " [" + std::to_string(id) + "]";
+            std::snprintf(name_buffer, sizeof(name_buffer), "%s", name.c_str());
+        }
+    };
+
+    struct message_header_t
     {
-        buffer[0] = signature;
-        buffer[1] = control;
-        buffer[2] = payload_length >> 8;
-        buffer[3] = payload_length & 0xFF;
-        buffer[4] = checksum;
-    }
-};
+        uint8_t signature{};
+        uint8_t control{};
+        uint16_t payload_length{};
+        uint8_t checksum{};
 
-struct sparq_message_t
-{
-    sparq_message_header_t header;
-    std::vector<uint8_t> ids;
-    std::vector<double> values;
-    uint16_t checksum{};
-    bool valid{};
-    uint64_t timestamp{};
-    std::string string_data{};
-    sparq_message_type_t message_type{};
-    sparq_sender_command_t command_type{};
-    std::vector<uint8_t> command_data{};
-    uint16_t nval{};
+        message_header_t()
+        {
+        }
 
-    [[nodiscard]]
-    constexpr double buffer_to_double(uint8_t const* data) const noexcept
+        message_header_t(uint8_t const* buffer)
+        {
+            from_array(buffer);
+        }
+
+        constexpr void from_array(uint8_t const* buffer) noexcept
+        {
+            signature = buffer[0];
+            control = buffer[1];
+
+            auto const message_endianess = static_cast<bool>(control & static_cast<uint8_t>(header_control_t::LSB_FIRST));
+
+            if (message_endianess == spq::helper::is_little_endian())
+            {
+                payload_length = (buffer[2] << 8) + buffer[3];
+            }
+            else
+            {
+                payload_length = (buffer[3] << 8) + buffer[2];
+            }
+
+            checksum = buffer[4];
+        }
+
+        constexpr void to_array(uint8_t* buffer) const noexcept
+        {
+            buffer[0] = signature;
+            buffer[1] = control;
+            buffer[2] = payload_length >> 8;
+            buffer[3] = payload_length & 0xFF;
+            buffer[4] = checksum;
+        }
+    };
+
+    struct message_t
     {
-        auto const msg_endian = static_cast<bool>(
-            header.control & static_cast<uint8_t>(sparq_header_control_t::LSB_FIRST));
+        message_header_t header;
+        std::vector<uint8_t> ids;
+        std::vector<double> values;
+        uint16_t checksum{};
+        bool valid{};
+        uint64_t timestamp{};
+        std::string string_data{};
+        message_type_t message_type{};
+        sender_command_t command_type{};
+        std::vector<uint8_t> command_data{};
+        uint16_t nval{};
 
-        uint32_t const value32 = [&] {
-            uint32_t const le = (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
-            uint32_t const be = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
-            return (msg_endian == spq::helper::is_little_endian()) ? le : be;
-        }();
-
-        auto const is_integer = static_cast<bool>(
-            header.control & static_cast<uint8_t>(sparq_header_control_t::INTEGER));
-        auto const is_signed = static_cast<bool>(
-            header.control & static_cast<uint8_t>(sparq_header_control_t::SIGNED));
-
-        if (!is_integer)
+        [[nodiscard]]
+        constexpr double buffer_to_double(uint8_t const* data) const noexcept
         {
-            return std::bit_cast<float>(value32);
+            auto const msg_endian = static_cast<bool>(
+                header.control & static_cast<uint8_t>(header_control_t::LSB_FIRST));
+
+            uint32_t const value32 = [&] {
+                uint32_t const le = (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
+                uint32_t const be = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
+                return (msg_endian == spq::helper::is_little_endian()) ? le : be;
+            }();
+
+            auto const is_integer = static_cast<bool>(
+                header.control & static_cast<uint8_t>(header_control_t::INTEGER));
+            auto const is_signed = static_cast<bool>(
+                header.control & static_cast<uint8_t>(header_control_t::SIGNED));
+
+            if (!is_integer)
+            {
+                return std::bit_cast<float>(value32);
+            }
+
+            if (is_signed)
+            {
+                return std::bit_cast<int32_t>(value32);
+            }
+
+            return value32;
         }
 
-        if (is_signed)
+        constexpr void parse_msg_id_pair(uint8_t const* data)
         {
-            return std::bit_cast<int32_t>(value32);
+            nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
+            ids.resize(nval);
+            values.resize(nval);
+
+            for (uint8_t pair = 0; pair < nval; pair++)
+            {
+                auto const pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
+
+                ids[pair] = data[pair_index];
+                values[pair] = buffer_to_double(&data[pair_index + 1]);
+            }
         }
 
-        return value32;
-    }
-
-    constexpr void parse_msg_id_pair(uint8_t const* data)
-    {
-        nval = header.payload_length / SPARQ_BYTES_PER_VALUE_PAIR;
-        ids.resize(nval);
-        values.resize(nval);
-
-        for (uint8_t pair = 0; pair < nval; pair++)
+        constexpr void parse_msg_bulk_single_id(uint8_t const* data)
         {
-            auto const pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
+            nval = (header.payload_length - 1) / 4;
 
-            ids[pair] = data[pair_index];
-            values[pair] = buffer_to_double(&data[pair_index + 1]);
-        }
-    }
+            ids.assign(nval, data[SPARQ_MESSAGE_HEADER_LENGTH]);
+            values.resize(nval);
 
-    constexpr void parse_msg_bulk_single_id(uint8_t const* data)
-    {
-        nval = (header.payload_length - 1) / 4;
-
-        ids.assign(nval, data[SPARQ_MESSAGE_HEADER_LENGTH]);
-        values.resize(nval);
-
-        uint8_t const* ptr = data + SPARQ_MESSAGE_HEADER_LENGTH + 1;
-        for (double& value : values)
-        {
-            value = buffer_to_double(ptr);
-            ptr += 4; // TODO: Fix magic number
-        }
-    }
-
-    constexpr void parse_msg_sender_command(uint8_t const* data)
-    {
-        command_type = static_cast<sparq_sender_command_t>(data[SPARQ_MESSAGE_HEADER_LENGTH]);
-
-        if (header.payload_length <= 1)
-        {
-            return;
+            uint8_t const* ptr = data + SPARQ_MESSAGE_HEADER_LENGTH + 1;
+            for (double& value : values)
+            {
+                value = buffer_to_double(ptr);
+                ptr += 4; // TODO: Fix magic number
+            }
         }
 
-        auto const additional_command_payload_length = header.payload_length - 1;
-        uint8_t const* first_payload_ptr = &data[SPARQ_MESSAGE_HEADER_LENGTH];
-
-        command_data.resize(additional_command_payload_length);
-        std::copy(first_payload_ptr + 1, first_payload_ptr + additional_command_payload_length + 1, command_data.begin());
-    }
-
-    constexpr void from_array(uint8_t const* data) noexcept
-    {
-        header.from_array(data);
-
-        if (header.payload_length == 0)
+        constexpr void parse_msg_sender_command(uint8_t const* data)
         {
-            return;
+            command_type = static_cast<sender_command_t>(data[SPARQ_MESSAGE_HEADER_LENGTH]);
+
+            if (header.payload_length <= 1)
+            {
+                return;
+            }
+
+            auto const additional_command_payload_length = header.payload_length - 1;
+            uint8_t const* first_payload_ptr = &data[SPARQ_MESSAGE_HEADER_LENGTH];
+
+            command_data.resize(additional_command_payload_length);
+            std::copy(first_payload_ptr + 1, first_payload_ptr + additional_command_payload_length + 1, command_data.begin());
         }
 
-        message_type = static_cast<sparq_message_type_t>(header.control >> 2 & 0b11);
-
-        switch (message_type)
+        constexpr void from_array(uint8_t const* data) noexcept
         {
-        case sparq_message_type_t::STRING:
-            string_data = std::string(reinterpret_cast<char const*>(&data[SPARQ_MESSAGE_HEADER_LENGTH]), header.payload_length);
-            break;
-        case sparq_message_type_t::ID_PAIR:
-            parse_msg_id_pair(data);
-            break;
-        case sparq_message_type_t::BULK_SINGLE_ID:
-            parse_msg_bulk_single_id(data);
-            break;
-        case sparq_message_type_t::SENDER_COMMAND:
-            parse_msg_sender_command(data);
-            break;
-        default:
-            break;
+            header.from_array(data);
+
+            if (header.payload_length == 0)
+            {
+                return;
+            }
+
+            message_type = static_cast<message_type_t>(header.control >> 2 & 0b11);
+
+            switch (message_type)
+            {
+            case message_type_t::STRING:
+                string_data = std::string(reinterpret_cast<char const*>(&data[SPARQ_MESSAGE_HEADER_LENGTH]), header.payload_length);
+                break;
+            case message_type_t::ID_PAIR:
+                parse_msg_id_pair(data);
+                break;
+            case message_type_t::BULK_SINGLE_ID:
+                parse_msg_bulk_single_id(data);
+                break;
+            case message_type_t::SENDER_COMMAND:
+                parse_msg_sender_command(data);
+                break;
+            default:
+                break;
+            }
+
+            checksum = data[SPARQ_MESSAGE_HEADER_LENGTH + header.payload_length];
         }
-
-        checksum = data[SPARQ_MESSAGE_HEADER_LENGTH + header.payload_length];
-    }
-};
-
+    };
+}

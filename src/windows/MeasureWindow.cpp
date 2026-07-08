@@ -10,7 +10,7 @@ namespace spq::ui
         {
             if (ImGui::Button("Add"))
             {
-                markers.push_back(sparq_marker_t{.name = std::string("M") + std::to_string(markers.size())});
+                markers.push_back(marker_t{.name = std::string("M") + std::to_string(markers.size())});
             }
 
             ImGui::SameLine();
@@ -36,7 +36,7 @@ namespace spq::ui
         }
     }
 
-    void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers, data::Datasets& datasets) const
+    void MeasureWindow::measure_markers_table(std::vector<marker_t>& markers, data::Datasets& datasets) const
     {
         if (markers.empty())
         {

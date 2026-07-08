@@ -11,7 +11,7 @@ namespace spq::ui
         {
             if (ImGui::Button("Sine 1000"))
             {
-                sparq_dataset_t ds{};
+                data::dataset_t ds{};
 
                 constexpr auto N = 1000;
                 ds.id = 100;
@@ -47,7 +47,7 @@ namespace spq::ui
 
             if (ImGui::Button("Add"))
             {
-                sparq_dataset_t ds{.id = static_cast<std::size_t>(id)};
+                data::dataset_t ds{.id = static_cast<std::size_t>(id)};
                 ds.set_name(std::string{std::strlen(name_buf) == 0 ? functions.at(selected) : name_buf});
 
                 constexpr auto N = 1000;

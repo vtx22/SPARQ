@@ -27,10 +27,10 @@ namespace spq::data
 
                 switch (message.message_type)
                 {
-                case sparq_message_type_t::STRING:
+                case message_type_t::STRING:
                     m_console_window.add_log(message.string_data.c_str());
                     break;
-                case sparq_message_type_t::SENDER_COMMAND:
+                case message_type_t::SENDER_COMMAND:
                     handle_command(message);
                     break;
                 default:
@@ -98,17 +98,17 @@ namespace spq::data
         }
     }
 
-    void DataHandler::handle_command(sparq_message_t const& message)
+    void DataHandler::handle_command(message_t const& message)
     {
         auto const dataset_lock = datasets();
         auto& datasets = dataset_lock.get();
 
         switch (message.command_type)
         {
-        case sparq_sender_command_t::CLEAR_CONSOLE:
+        case sender_command_t::CLEAR_CONSOLE:
             m_console_window.clear_log();
             break;
-        case sparq_sender_command_t::SET_DATASET_NAME:
+        case sender_command_t::SET_DATASET_NAME:
         {
             auto const id = message.command_data[0];
             auto const ds = datasets.get(id);
@@ -124,7 +124,7 @@ namespace spq::data
             }
             else
             {
-                sparq_dataset_t new_ds;
+                dataset_t new_ds;
                 new_ds.id = id;
                 new_ds.name = new_name;
                 new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + datasets.size());
@@ -135,19 +135,19 @@ namespace spq::data
 
             break;
         }
-        case sparq_sender_command_t::CLEAR_ALL_DATASETS:
+        case sender_command_t::CLEAR_ALL_DATASETS:
             datasets.clear_all();
             break;
-        case sparq_sender_command_t::DELETE_ALL_DATASETS:
+        case sender_command_t::DELETE_ALL_DATASETS:
             datasets.delete_all();
             break;
-        case sparq_sender_command_t::CLEAR_SINGLE_DATASET:
+        case sender_command_t::CLEAR_SINGLE_DATASET:
             datasets.clear(message.command_data[0]);
             break;
-        case sparq_sender_command_t::DELETE_SINGLE_DATASET:
+        case sender_command_t::DELETE_SINGLE_DATASET:
             datasets.delete_dataset(message.command_data[0]);
             break;
-        case sparq_sender_command_t::SWITCH_PLOT_TYPE:
+        case sender_command_t::SWITCH_PLOT_TYPE:
             // TODO: Reenable this later however possible: plot_settings.type = (spq::plotting::plot_type)message.command_data[0];
             break;
         default:
@@ -155,7 +155,7 @@ namespace spq::data
         }
     }
 
-    std::optional<sparq_message_t> DataHandler::receive_message()
+    std::optional<message_t> DataHandler::receive_message()
     {
         static bool in_message = false;
 
@@ -202,7 +202,7 @@ namespace spq::data
             return std::nullopt;
         }
 
-        sparq_message_t message{};
+        message_t message{};
         message.header.from_array(m_message_buffer.data());
 
         if (message.header.checksum != spq::helper::xor8_cs(m_message_buffer, SPARQ_MESSAGE_HEADER_LENGTH - 1))
@@ -228,7 +228,7 @@ namespace spq::data
 
         // Check message checksum if enabled, otherwise assume message valid
         message.valid = true;
-        if (message.header.control & static_cast<uint8_t>(sparq_header_control_t::CS_EN))
+        if (message.header.control & static_cast<uint8_t>(header_control_t::CS_EN))
         {
             message.valid = (message.checksum == spq::helper::xor8_cs(m_message_buffer, total_message_length - 1));
         }

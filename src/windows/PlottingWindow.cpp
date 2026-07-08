@@ -204,7 +204,7 @@ namespace spq::ui
     }
 
     std::pair<std::vector<double>&, std::vector<double>&> PlottingWindow::get_xy_downsampled(
-        sparq_dataset_t& dataset,
+        data::dataset_t& dataset,
         std::size_t const max_samples,
         double x_min,
         double x_max)

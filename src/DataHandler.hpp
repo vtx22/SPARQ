@@ -70,10 +70,10 @@ namespace spq::data
         }
 
         void receiver_loop();
-        std::optional<sparq_message_t> receive_message();
+        std::optional<message_t> receive_message();
 
         [[nodiscard]]
-        constexpr std::vector<sparq_marker_t>& get_markers() noexcept
+        constexpr std::vector<ui::marker_t>& get_markers() noexcept
         {
             return m_markers;
         }
@@ -95,7 +95,7 @@ namespace spq::data
         }
 
     private:
-        void handle_command(sparq_message_t const& message);
+        void handle_command(message_t const& message);
 
         Serial& m_sp;
         ui::ConsoleWindow& m_console_window;
@@ -103,7 +103,7 @@ namespace spq::data
         std::vector<uint8_t> m_serial_buffer;
         std::vector<uint8_t> m_message_buffer;
 
-        std::vector<sparq_marker_t> m_markers;
+        std::vector<ui::marker_t> m_markers;
 
         std::thread m_receive_thread;
         std::atomic<bool> m_running = true;

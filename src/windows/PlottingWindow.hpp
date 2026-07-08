@@ -37,7 +37,7 @@ namespace spq::ui
 
         std::vector<float> bilinear_interpolate(std::vector<float> const& original_image, int original_rows, int original_cols, float scale_factor);
 
-        std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(sparq_dataset_t& dataset, std::size_t max_samples, double x_min, double x_max);
+        std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(data::dataset_t& dataset, std::size_t max_samples, double x_min, double x_max);
 
         [[nodiscard]]
         spq::ui::plot_settings_t& settings() noexcept

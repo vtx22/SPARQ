@@ -87,7 +87,7 @@ namespace spq::data
          * @param id The ID of the dataset to get.
          * @return An optional reference to the dataset, or std::nullopt if no dataset with the given ID was found.
          */
-        constexpr std::optional<std::reference_wrapper<sparq_dataset_t>> get(std::size_t const id) noexcept
+        constexpr std::optional<std::reference_wrapper<dataset_t>> get(std::size_t const id) noexcept
         {
             for (auto& ds : m_datasets)
             {
@@ -116,7 +116,7 @@ namespace spq::data
          * @param dataset The dataset to add.
          * @return True if the dataset was added, false if a dataset with the same ID already exists.
          */
-        constexpr bool add_dataset(sparq_dataset_t const& dataset)
+        constexpr bool add_dataset(dataset_t const& dataset)
         {
             if (exists(dataset.id))
             {
@@ -202,7 +202,7 @@ namespace spq::data
          * @brief Adds data from a received message to the appropriate dataset.
          * @param message The received message containing the data to add.
          */
-        void add_from_message(sparq_message_t const& message)
+        void add_from_message(message_t const& message)
         {
             if (m_first_receive_timestamp == 0)
             {
@@ -219,7 +219,7 @@ namespace spq::data
 
             for (uint16_t i = 0; i < message.nval; i++)
             {
-                sparq_dataset_t* ds = nullptr;
+                dataset_t* ds = nullptr;
 
                 for (auto& d : m_datasets)
                 {
@@ -235,7 +235,7 @@ namespace spq::data
                 {
                     std::cout << "DS not found, creating new one! ID: " << static_cast<int>(message.ids[i]) << "\n";
 
-                    sparq_dataset_t ds_new;
+                    dataset_t ds_new;
 
                     ds_new.id = message.ids[i];
                     ds_new.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + m_datasets.size());
@@ -350,7 +350,7 @@ namespace spq::data
         }
 
     private:
-        std::vector<sparq_dataset_t> m_datasets;
+        std::vector<dataset_t> m_datasets;
 
         std::size_t m_current_absolute_sample{};
         uint64_t m_first_receive_timestamp{};
