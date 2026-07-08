@@ -24,13 +24,36 @@ namespace spq::ui
         {
         }
 
-        void config_limits_n_values() const;
+        constexpr void show_highlighting_rectangle() const
+        {
+            if (!m_highlight_window)
+            {
+                return;
+            }
 
-        constexpr void show_highlighting_rectangle() const;
+            auto constexpr border_width = styling::plot_highlight_border_width;
+            auto p0 = ImGui::GetWindowPos();
+            auto const sz = ImGui::GetWindowSize();
+            ImVec2 p1{p0.x + sz.x, p0.y + sz.y};
 
-        std::vector<float> bilinear_interpolate(std::vector<float> const& original_image, int original_rows, int original_cols, float scale_factor);
+            p0.x += border_width;
+            p0.y += border_width;
+            p1.x -= border_width;
+            p1.y -= border_width;
 
-        std::pair<std::vector<double>&, std::vector<double>&> get_xy_downsampled(data::dataset_t& dataset, std::size_t max_samples, double x_min, double x_max);
+            if (ImGui::IsWindowDocked())
+            {
+                p0.y += ImGui::GetFrameHeight();
+            }
+
+            ImGui::GetWindowDrawList()->AddRect(
+                p0,
+                p1,
+                styling::plot_highlight_color,
+                ImGui::GetStyle().WindowRounding,
+                0,
+                border_width);
+        }
 
         [[nodiscard]]
         auto& settings() noexcept
@@ -63,16 +86,13 @@ namespace spq::ui
             return plot_flags;
         }
 
-        void update_plot_contents(data::Datasets& datasets);
-        void update_markers() const;
-
-        void handle_plot_timeseries(data::Datasets& datasets);
-        void handle_plot_xy(data::Datasets& datasets);
-        void handle_plot_single_value(data::Datasets& datasets);
-        void handle_plot_heatmap(data::Datasets const& datasets);
-
-        std::vector<double> _x_downsampled, _x_in_view;
-        std::vector<double> _y_downsampled, _y_in_view;
+        void update_plot_contents(data::Datasets& datasets)
+        {
+            if (ImPlot::BeginPlot("##Plot", ImVec2(-1, -1), get_plot_flags()))
+            {
+                ImPlot::EndPlot();
+            }
+        }
 
         bool m_highlight_window = false;
         bool m_highlight_colors_pushed = false;
@@ -80,7 +100,11 @@ namespace spq::ui
         std::size_t const m_id{};
 
     protected:
-        void update_content(data::Datasets& datasets) override;
+        void update_content(data::Datasets& datasets) override
+        {
+            update_plot_contents(datasets);
+            show_highlighting_rectangle();
+        }
 
         void before_imgui_begin() override
         {
