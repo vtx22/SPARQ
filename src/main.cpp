@@ -2,7 +2,7 @@
 
 int main()
 {
-    SPARQ sparq;
+    spq::SPARQ sparq;
 
     auto const init_result = sparq.init();
 

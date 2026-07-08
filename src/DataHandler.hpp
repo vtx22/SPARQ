@@ -42,7 +42,7 @@ public:
         return LockedDatasets{m_data_mutex, m_datasets};
     }
 
-    DataHandler(Serial& sp, ConsoleWindow& console_window)
+    DataHandler(Serial& sp, spq::ui::ConsoleWindow& console_window)
         : m_sp(sp),
           m_console_window(console_window)
     {
@@ -96,7 +96,7 @@ private:
     void handle_command(sparq_message_t const& message);
 
     Serial& m_sp;
-    ConsoleWindow& m_console_window;
+    spq::ui::ConsoleWindow& m_console_window;
 
     std::vector<uint8_t> m_serial_buffer;
     std::vector<uint8_t> m_message_buffer;

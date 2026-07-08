@@ -5,18 +5,21 @@
 #include "imgui-SFML.h"
 #include "implot.h"
 
-class DataWindow final : public Window
+namespace spq::ui
 {
-public:
-    explicit DataWindow(DataHandler& data_handler)
-        : Window(ICON_FA_DATABASE "  Data", data_handler)
+    class DataWindow final : public Window
     {
-    }
+    public:
+        explicit DataWindow(DataHandler& data_handler)
+            : Window(ICON_FA_DATABASE "  Data", data_handler)
+        {
+        }
 
-private:
-    void show_dataset_entries(Datasets& datasets) const;
-    void show_datasets_section(Datasets& datasets);
+    private:
+        void show_dataset_entries(Datasets& datasets) const;
+        void show_datasets_section(Datasets& datasets);
 
-protected:
-    void update_content(Datasets& datasets) override;
-};
+    protected:
+        void update_content(Datasets& datasets) override;
+    };
+}

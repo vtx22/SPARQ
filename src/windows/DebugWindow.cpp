@@ -1,85 +1,88 @@
 #include "DebugWindow.hpp"
 
-void DebugWindow::update_content(Datasets& datasets)
+namespace spq::ui
 {
-    ImGui::SeparatorText("Debug");
-    ImGui::PushItemWidth(-FLT_MIN);
-
-    if (ImGui::CollapsingHeader("Presets"))
+    void DebugWindow::update_content(Datasets& datasets)
     {
-        if (ImGui::Button("Sine 1000"))
+        ImGui::SeparatorText("Debug");
+        ImGui::PushItemWidth(-FLT_MIN);
+
+        if (ImGui::CollapsingHeader("Presets"))
         {
-            sparq_dataset_t ds{};
-
-            constexpr auto N = 1000;
-            ds.id = 100;
-            ds.set_name("Sine 1000");
-            ds.samples.reserve(N);
-            ds.y_values.reserve(N);
-
-            for (std::size_t i = 0; i < N; ++i)
+            if (ImGui::Button("Sine 1000"))
             {
-                ds.samples.push_back(static_cast<double>(i));
+                sparq_dataset_t ds{};
 
-                auto const angle = 2.0 * std::numbers::pi_v<double> * static_cast<double>(i) / static_cast<double>(N);
-                ds.y_values.push_back(std::sin(angle));
-            }
+                constexpr auto N = 1000;
+                ds.id = 100;
+                ds.set_name("Sine 1000");
+                ds.samples.reserve(N);
+                ds.y_values.reserve(N);
 
-            datasets.add_dataset(ds);
-        }
-    }
-
-    if (ImGui::CollapsingHeader("Custom"))
-    {
-        static int id{};
-
-        ImGui::InputInt("ID", &id);
-        id = std::max(id, 0);
-
-        char name_buf[64] = {0};
-        ImGui::InputText("Name", name_buf, sizeof(name_buf));
-
-        constexpr std::array functions = {"lin", "sin", "cos"};
-        static int selected = 0;
-        ImGui::Combo("Function", &selected, functions.data(), functions.size());
-
-        if (ImGui::Button("Add"))
-        {
-            sparq_dataset_t ds{.id = static_cast<std::size_t>(id)};
-            ds.set_name(std::string{std::strlen(name_buf) == 0 ? functions.at(selected) : name_buf});
-
-            constexpr auto N = 1000;
-            ds.samples.reserve(N);
-            ds.y_values.reserve(N);
-
-            for (std::size_t i = 0; i < N; ++i)
-            {
-                ds.samples.push_back(static_cast<double>(i));
-
-                switch (selected)
+                for (std::size_t i = 0; i < N; ++i)
                 {
-                default:
-                case 0:
-                {
-                    ds.y_values.push_back(static_cast<double>(i));
-                    break;
-                }
-                case 1:
-                {
+                    ds.samples.push_back(static_cast<double>(i));
+
                     auto const angle = 2.0 * std::numbers::pi_v<double> * static_cast<double>(i) / static_cast<double>(N);
                     ds.y_values.push_back(std::sin(angle));
-                    break;
                 }
-                case 2:
-                {
-                    auto const angle = 2.0 * std::numbers::pi_v<double> * static_cast<double>(i) / static_cast<double>(N);
-                    ds.y_values.push_back(std::cos(angle));
-                    break;
-                }
-                }
-            }
 
-            datasets.add_dataset(ds);
+                datasets.add_dataset(ds);
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Custom"))
+        {
+            static int id{};
+
+            ImGui::InputInt("ID", &id);
+            id = std::max(id, 0);
+
+            char name_buf[64] = {0};
+            ImGui::InputText("Name", name_buf, sizeof(name_buf));
+
+            constexpr std::array functions = {"lin", "sin", "cos"};
+            static int selected = 0;
+            ImGui::Combo("Function", &selected, functions.data(), functions.size());
+
+            if (ImGui::Button("Add"))
+            {
+                sparq_dataset_t ds{.id = static_cast<std::size_t>(id)};
+                ds.set_name(std::string{std::strlen(name_buf) == 0 ? functions.at(selected) : name_buf});
+
+                constexpr auto N = 1000;
+                ds.samples.reserve(N);
+                ds.y_values.reserve(N);
+
+                for (std::size_t i = 0; i < N; ++i)
+                {
+                    ds.samples.push_back(static_cast<double>(i));
+
+                    switch (selected)
+                    {
+                    default:
+                    case 0:
+                    {
+                        ds.y_values.push_back(static_cast<double>(i));
+                        break;
+                    }
+                    case 1:
+                    {
+                        auto const angle = 2.0 * std::numbers::pi_v<double> * static_cast<double>(i) / static_cast<double>(N);
+                        ds.y_values.push_back(std::sin(angle));
+                        break;
+                    }
+                    case 2:
+                    {
+                        auto const angle = 2.0 * std::numbers::pi_v<double> * static_cast<double>(i) / static_cast<double>(N);
+                        ds.y_values.push_back(std::cos(angle));
+                        break;
+                    }
+                    }
+                }
+
+                datasets.add_dataset(ds);
+            }
         }
     }
 }

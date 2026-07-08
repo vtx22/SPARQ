@@ -114,7 +114,7 @@ enum class sparq_sender_command_t : uint8_t
     SWITCH_PLOT_TYPE,      // Remote switch the plot type (e.g. line, heatmap, etc.)
 };
 
-namespace spq::plotting
+namespace spq::ui
 {
     enum class plot_type_t : uint8_t
     {

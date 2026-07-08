@@ -1,134 +1,137 @@
 #include "SettingsWindow.hpp"
 
-SettingsWindow::SettingsWindow(DataHandler& data_handler)
-    : Window(ICON_FA_GEAR "  Settings", data_handler)
+namespace spq::ui
 {
-}
-
-void SettingsWindow::update_content(Datasets& datasets)
-{
-    show_graphics_settings();
-    show_downsampling_settings();
-    show_color_settings();
-
-    if (_settings_changed)
+    SettingsWindow::SettingsWindow(DataHandler& data_handler)
+        : Window(ICON_FA_GEAR "  Settings", data_handler)
     {
-        m_config_handler.write_config();
-        _settings_changed = false;
     }
-}
 
-void SettingsWindow::show_downsampling_settings()
-{
-    if (ImGui::CollapsingHeader("Downsampling"))
+    void SettingsWindow::update_content(Datasets& datasets)
     {
-        auto downsampling_enabled = (m_config_handler.ini["downsampling"]["enabled"] == "1");
-        if (ImGui::Checkbox("Enabled", &downsampling_enabled))
+        show_graphics_settings();
+        show_downsampling_settings();
+        show_color_settings();
+
+        if (_settings_changed)
         {
-            m_config_handler.ini["downsampling"]["enabled"] = downsampling_enabled ? "1" : "0";
-            _settings_changed = true;
+            m_config_handler.write_config();
+            _settings_changed = false;
         }
+    }
 
-        ImGui::Text("Max Samples:");
-        ImGui::SameLine();
-
-        auto max_samples = std::stoi(m_config_handler.ini["downsampling"]["max_samples"]);
-
-        auto const spacing_right = 7.f * ImGui::GetFontSize();
-        ImGui::SetNextItemWidth(-spacing_right);
-
-        if (ImGui::InputInt("##MaxSamples", &max_samples, 0, 0))
+    void SettingsWindow::show_downsampling_settings()
+    {
+        if (ImGui::CollapsingHeader("Downsampling"))
         {
-            if (max_samples < 10)
+            auto downsampling_enabled = (m_config_handler.ini["downsampling"]["enabled"] == "1");
+            if (ImGui::Checkbox("Enabled", &downsampling_enabled))
             {
-                max_samples = 10;
+                m_config_handler.ini["downsampling"]["enabled"] = downsampling_enabled ? "1" : "0";
+                _settings_changed = true;
             }
 
-            m_config_handler.ini["downsampling"]["max_samples"] = std::to_string(max_samples);
-            _settings_changed = true;
-        }
+            ImGui::Text("Max Samples:");
+            ImGui::SameLine();
 
-        ImGui::SameLine();
+            auto max_samples = std::stoi(m_config_handler.ini["downsampling"]["max_samples"]);
 
-        ImGui::SetNextItemWidth(spacing_right);
+            auto const spacing_right = 7.f * ImGui::GetFontSize();
+            ImGui::SetNextItemWidth(-spacing_right);
 
-        constexpr std::array max_samples_types{"Total", "Per Dataset"};
-        auto max_samples_type = std::stoi(m_config_handler.ini["downsampling"]["max_samples_type"]);
-        auto const prev_max_samples_type = max_samples_type;
-        if (ImGui::BeginCombo("##X View", max_samples_types[max_samples_type]))
-        {
-            for (std::size_t n = 0; n < max_samples_types.size(); n++)
+            if (ImGui::InputInt("##MaxSamples", &max_samples, 0, 0))
             {
-                auto const is_selected = (max_samples_type == n);
-
-                if (ImGui::Selectable(max_samples_types[n], is_selected))
+                if (max_samples < 10)
                 {
-                    max_samples_type = n;
+                    max_samples = 10;
                 }
-                if (is_selected)
+
+                m_config_handler.ini["downsampling"]["max_samples"] = std::to_string(max_samples);
+                _settings_changed = true;
+            }
+
+            ImGui::SameLine();
+
+            ImGui::SetNextItemWidth(spacing_right);
+
+            constexpr std::array max_samples_types{"Total", "Per Dataset"};
+            auto max_samples_type = std::stoi(m_config_handler.ini["downsampling"]["max_samples_type"]);
+            auto const prev_max_samples_type = max_samples_type;
+            if (ImGui::BeginCombo("##X View", max_samples_types[max_samples_type]))
+            {
+                for (std::size_t n = 0; n < max_samples_types.size(); n++)
                 {
-                    ImGui::SetItemDefaultFocus();
+                    auto const is_selected = (max_samples_type == n);
+
+                    if (ImGui::Selectable(max_samples_types[n], is_selected))
+                    {
+                        max_samples_type = n;
+                    }
+                    if (is_selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
                 }
+                ImGui::EndCombo();
             }
-            ImGui::EndCombo();
-        }
 
-        if (max_samples_type != prev_max_samples_type)
-        {
-            m_config_handler.ini["downsampling"]["max_samples_type"] = std::to_string(max_samples_type);
-            _settings_changed = true;
+            if (max_samples_type != prev_max_samples_type)
+            {
+                m_config_handler.ini["downsampling"]["max_samples_type"] = std::to_string(max_samples_type);
+                _settings_changed = true;
+            }
         }
     }
-}
 
-void SettingsWindow::show_graphics_settings()
-{
-    if (ImGui::CollapsingHeader("Graphics"))
+    void SettingsWindow::show_graphics_settings()
     {
-        auto vsync_enabled = m_config_handler.ini["graphics"]["vsync"] == "1";
-
-        if (ImGui::Checkbox("VSYNC", &vsync_enabled))
+        if (ImGui::CollapsingHeader("Graphics"))
         {
-            m_config_handler.ini["graphics"]["vsync"] = vsync_enabled ? "1" : "0";
-            _settings_changed = true;
-        }
+            auto vsync_enabled = m_config_handler.ini["graphics"]["vsync"] == "1";
 
-        ImGui::Text("Antialiasing Level:");
-        ImGui::SameLine();
-
-        auto antialiasing_level = std::stoi(m_config_handler.ini["graphics"]["antialiasing"]);
-
-        if (ImGui::InputInt("##MaxSamples", &antialiasing_level, 0, 0))
-        {
-            if (antialiasing_level < 0)
+            if (ImGui::Checkbox("VSYNC", &vsync_enabled))
             {
-                antialiasing_level = 0;
-            }
-            if (antialiasing_level > 8)
-            {
-                antialiasing_level = 8;
+                m_config_handler.ini["graphics"]["vsync"] = vsync_enabled ? "1" : "0";
+                _settings_changed = true;
             }
 
-            m_config_handler.ini["graphics"]["antialiasing"] = std::to_string(antialiasing_level);
-            _settings_changed = true;
+            ImGui::Text("Antialiasing Level:");
+            ImGui::SameLine();
+
+            auto antialiasing_level = std::stoi(m_config_handler.ini["graphics"]["antialiasing"]);
+
+            if (ImGui::InputInt("##MaxSamples", &antialiasing_level, 0, 0))
+            {
+                if (antialiasing_level < 0)
+                {
+                    antialiasing_level = 0;
+                }
+                if (antialiasing_level > 8)
+                {
+                    antialiasing_level = 8;
+                }
+
+                m_config_handler.ini["graphics"]["antialiasing"] = std::to_string(antialiasing_level);
+                _settings_changed = true;
+            }
         }
     }
-}
 
-void SettingsWindow::show_color_settings()
-{
-    if (ImGui::CollapsingHeader("Color"))
+    void SettingsWindow::show_color_settings()
     {
-        ImGui::Text("Color Map:");
-        ImGui::SameLine();
-
-        ImPlotColormap const cm_prev = ImPlot::GetStyle().Colormap;
-        ImPlot::ShowColormapSelector("##Colormap");
-
-        if (cm_prev != ImPlot::GetStyle().Colormap)
+        if (ImGui::CollapsingHeader("Color"))
         {
-            m_config_handler.ini["color"]["colormap"] = std::to_string(ImPlot::GetStyle().Colormap);
-            _settings_changed = true;
+            ImGui::Text("Color Map:");
+            ImGui::SameLine();
+
+            ImPlotColormap const cm_prev = ImPlot::GetStyle().Colormap;
+            ImPlot::ShowColormapSelector("##Colormap");
+
+            if (cm_prev != ImPlot::GetStyle().Colormap)
+            {
+                m_config_handler.ini["color"]["colormap"] = std::to_string(ImPlot::GetStyle().Colormap);
+                _settings_changed = true;
+            }
         }
     }
 }

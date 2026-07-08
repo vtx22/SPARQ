@@ -5,17 +5,20 @@
 #include "imgui-SFML.h"
 #include "implot.h"
 
-class MeasureWindow final : public Window
+namespace spq::ui
 {
-public:
-    explicit MeasureWindow(DataHandler& data_handler)
-        : Window(ICON_FA_RULER_HORIZONTAL "  Measure", data_handler)
+    class MeasureWindow final : public Window
     {
-    }
+    public:
+        explicit MeasureWindow(DataHandler& data_handler)
+            : Window(ICON_FA_RULER_HORIZONTAL "  Measure", data_handler)
+        {
+        }
 
-private:
-    void measure_markers_table(std::vector<sparq_marker_t>& markers, Datasets& datasets) const;
+    private:
+        void measure_markers_table(std::vector<sparq_marker_t>& markers, Datasets& datasets) const;
 
-protected:
-    void update_content(Datasets& datasets) override;
-};
+    protected:
+        void update_content(Datasets& datasets) override;
+    };
+}

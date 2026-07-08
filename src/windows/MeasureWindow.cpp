@@ -1,144 +1,147 @@
 #include "MeasureWindow.hpp"
 
-void MeasureWindow::update_content(Datasets& datasets)
+namespace spq::ui
 {
-    auto& markers = m_data_handler.get_markers();
-
-    if (ImGui::CollapsingHeader("Markers"))
+    void MeasureWindow::update_content(Datasets& datasets)
     {
-        if (ImGui::Button("Add"))
-        {
-            markers.push_back(sparq_marker_t{.name = std::string("M") + std::to_string(markers.size())});
-        }
+        auto& markers = m_data_handler.get_markers();
 
-        ImGui::SameLine();
-
-        if (ImGui::Button("Hide All"))
+        if (ImGui::CollapsingHeader("Markers"))
         {
-            for (auto& m : markers)
+            if (ImGui::Button("Add"))
             {
-                m.hidden = true;
-            }
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Delete All"))
-        {
-            markers.clear();
-        }
-
-        ImGui::Separator();
-
-        measure_markers_table(markers, datasets);
-    }
-}
-
-void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers, Datasets& datasets) const
-{
-    if (markers.empty())
-    {
-        ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Markers");
-    }
-
-    if (ImGui::BeginTable("##MeasureMarkerTable", 7, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
-    {
-        std::vector<std::size_t> to_delete;
-        for (std::size_t i = 0; i < markers.size(); i++)
-        {
-            std::string const i_str = std::to_string(i);
-
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0);
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text(markers[i].name.c_str());
-            ImGui::TableSetColumnIndex(1);
-            ImGui::SetNextItemWidth(200);
-
-            std::string ds_selector_name = std::to_string(markers[i].ds_id);
-            if (markers[i].ds_id != -1 && datasets[markers[i].ds_index].name.length() > 0)
-            {
-                ds_selector_name += " [" + datasets[markers[i].ds_index].name + "]";
+                markers.push_back(sparq_marker_t{.name = std::string("M") + std::to_string(markers.size())});
             }
 
-            std::string const ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1)
-                                                      ? "None Selected"
-                                                      : ds_selector_name;
-            // TODO: Fix mutex lock issue
+            ImGui::SameLine();
 
-            if (datasets.size() == 0)
+            if (ImGui::Button("Hide All"))
             {
-                ImGui::BeginDisabled();
-            }
-
-            if (ImGui::BeginCombo((std::string("###MarkerDatasetSelect") + i_str).c_str(), ds_selector_preview.c_str()))
-            {
-                for (uint8_t n = 0; n < datasets.size(); n++)
+                for (auto& m : markers)
                 {
-                    auto const is_selected = (n == markers[i].ds_index);
-
-                    std::string selectable_name = std::to_string(datasets[n].id);
-                    if (datasets[n].name.length() > 0)
-                    {
-                        selectable_name += " [" + datasets[n].name + "]";
-                    }
-
-                    if (ImGui::Selectable(selectable_name.c_str(), is_selected))
-                    {
-                        markers[i].ds_index = n;
-                        markers[i].ds_id = datasets[n].id;
-                    }
-
-                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                    if (is_selected)
-                    {
-                        ImGui::SetItemDefaultFocus();
-                    }
+                    m.hidden = true;
                 }
-                ImGui::EndCombo();
             }
 
-            if (datasets.size() == 0)
+            ImGui::SameLine();
+
+            if (ImGui::Button("Delete All"))
             {
-                ImGui::EndDisabled();
+                markers.clear();
             }
 
-            ImGui::TableSetColumnIndex(2);
-            ImGui::ColorEdit4(
-                ("##DsColor" + i_str).c_str(),
-                reinterpret_cast<float*>(&markers[i].color),
-                ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
-            ImGui::TableSetColumnIndex(3);
+            ImGui::Separator();
 
-            std::string const hide_text = std::string(markers[i].hidden ? ICON_FA_EYE_SLASH : ICON_FA_EYE)
-                                        + "##HIDE" + i_str;
-            if (ImGui::Button(hide_text.c_str()))
-            {
-                markers[i].hidden = !markers[i].hidden;
-            }
+            measure_markers_table(markers, datasets);
+        }
+    }
 
-            ImGui::TableSetColumnIndex(4);
-
-            std::string const del_text = std::string(ICON_FA_TRASH)
-                                       + "##DEL" + i_str;
-            if (ImGui::Button(del_text.c_str()))
-            {
-                to_delete.push_back(i);
-            }
-
-            ImGui::TableSetColumnIndex(5);
-            ImGui::Text((std::string("x: ") + std::to_string(markers[i].x)).c_str());
-
-            ImGui::TableSetColumnIndex(6);
-            ImGui::Text((std::string("y: ") + std::to_string(markers[i].y)).c_str());
+    void MeasureWindow::measure_markers_table(std::vector<sparq_marker_t>& markers, Datasets& datasets) const
+    {
+        if (markers.empty())
+        {
+            ImGui::TextColored(ImVec4(0.6, 0.6, 0.6, 1), "    No Markers");
         }
 
-        ImGui::EndTable();
-
-        std::sort(to_delete.rbegin(), to_delete.rend());
-        for (auto const id : to_delete)
+        if (ImGui::BeginTable("##MeasureMarkerTable", 7, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
         {
-            markers.erase(markers.begin() + id);
+            std::vector<std::size_t> to_delete;
+            for (std::size_t i = 0; i < markers.size(); i++)
+            {
+                std::string const i_str = std::to_string(i);
+
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text(markers[i].name.c_str());
+                ImGui::TableSetColumnIndex(1);
+                ImGui::SetNextItemWidth(200);
+
+                std::string ds_selector_name = std::to_string(markers[i].ds_id);
+                if (markers[i].ds_id != -1 && datasets[markers[i].ds_index].name.length() > 0)
+                {
+                    ds_selector_name += " [" + datasets[markers[i].ds_index].name + "]";
+                }
+
+                std::string const ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1)
+                                                          ? "None Selected"
+                                                          : ds_selector_name;
+                // TODO: Fix mutex lock issue
+
+                if (datasets.size() == 0)
+                {
+                    ImGui::BeginDisabled();
+                }
+
+                if (ImGui::BeginCombo((std::string("###MarkerDatasetSelect") + i_str).c_str(), ds_selector_preview.c_str()))
+                {
+                    for (uint8_t n = 0; n < datasets.size(); n++)
+                    {
+                        auto const is_selected = (n == markers[i].ds_index);
+
+                        std::string selectable_name = std::to_string(datasets[n].id);
+                        if (datasets[n].name.length() > 0)
+                        {
+                            selectable_name += " [" + datasets[n].name + "]";
+                        }
+
+                        if (ImGui::Selectable(selectable_name.c_str(), is_selected))
+                        {
+                            markers[i].ds_index = n;
+                            markers[i].ds_id = datasets[n].id;
+                        }
+
+                        // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                        if (is_selected)
+                        {
+                            ImGui::SetItemDefaultFocus();
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+
+                if (datasets.size() == 0)
+                {
+                    ImGui::EndDisabled();
+                }
+
+                ImGui::TableSetColumnIndex(2);
+                ImGui::ColorEdit4(
+                    ("##DsColor" + i_str).c_str(),
+                    reinterpret_cast<float*>(&markers[i].color),
+                    ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+                ImGui::TableSetColumnIndex(3);
+
+                std::string const hide_text = std::string(markers[i].hidden ? ICON_FA_EYE_SLASH : ICON_FA_EYE)
+                                            + "##HIDE" + i_str;
+                if (ImGui::Button(hide_text.c_str()))
+                {
+                    markers[i].hidden = !markers[i].hidden;
+                }
+
+                ImGui::TableSetColumnIndex(4);
+
+                std::string const del_text = std::string(ICON_FA_TRASH)
+                                           + "##DEL" + i_str;
+                if (ImGui::Button(del_text.c_str()))
+                {
+                    to_delete.push_back(i);
+                }
+
+                ImGui::TableSetColumnIndex(5);
+                ImGui::Text((std::string("x: ") + std::to_string(markers[i].x)).c_str());
+
+                ImGui::TableSetColumnIndex(6);
+                ImGui::Text((std::string("y: ") + std::to_string(markers[i].y)).c_str());
+            }
+
+            ImGui::EndTable();
+
+            std::sort(to_delete.rbegin(), to_delete.rend());
+            for (auto const id : to_delete)
+            {
+                markers.erase(markers.begin() + id);
+            }
         }
     }
 }
