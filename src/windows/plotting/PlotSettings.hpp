@@ -81,8 +81,8 @@ namespace spq::plotting
 
     struct timeseries_settings : plot_settings
     {
-        x_fit_t x_fit{};
-        y_fit_t y_fit{};
+        x_fit_t x_fit{x_fit_t::all};
+        y_fit_t y_fit{y_fit_t::all};
         x_unit_t x_unit{};
 
         void show_settings() override
