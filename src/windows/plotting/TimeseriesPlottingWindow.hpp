@@ -25,7 +25,7 @@ namespace spq::ui
         {
             using namespace spq::plotting;
 
-            auto const x_label = x_unit_names[static_cast<uint8_t>(m_settings.x_unit)];
+            auto const x_label = x_unit_labels[static_cast<uint8_t>(m_settings.x_unit)];
             switch (m_settings.x_fit)
             {
             case x_fit_t::manual:
@@ -36,6 +36,17 @@ namespace spq::ui
             case x_fit_t::all:
             {
                 ImPlot::SetupAxis(ImAxis_X1, x_label, ImPlotAxisFlags_AutoFit);
+                break;
+            }
+            default:
+                break;
+            }
+
+            switch (m_settings.x_unit)
+            {
+            case x_unit_t::absolute_time:
+            {
+                ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
                 break;
             }
             default:

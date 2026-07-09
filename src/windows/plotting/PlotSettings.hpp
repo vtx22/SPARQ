@@ -71,7 +71,12 @@ namespace spq::plotting
     constexpr std::array<char const*, static_cast<std::size_t>(x_unit_t::COUNT)> x_unit_names{
         "Samples",
         "Relative Time",
-        "Absolute Time"};
+        "Date Time"};
+
+    constexpr std::array<char const*, static_cast<std::size_t>(x_unit_t::COUNT)> x_unit_labels{
+        "Samples",
+        "Relative Time [s]",
+        "Date Time"};
 
     struct plot_settings
     {
