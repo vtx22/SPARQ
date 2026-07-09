@@ -34,8 +34,14 @@ namespace spq::ui
             return;
         }
 
-        auto& [ids_to_plot, plot_setting] = *plot_data;
+        auto& [ids_to_plot, plot_settings] = *plot_data;
 
+        plot_settings.show_settings();
+        show_dataset_selection(ids_to_plot, datasets);
+    }
+
+    void ViewWindow::show_dataset_selection(std::unordered_set<std::size_t>& ids_to_plot, data::Datasets& datasets)
+    {
         for (auto& d : datasets.data())
         {
             constexpr ImVec4 button_color{0.f, 0.5f, 1.f, 1.f};
@@ -57,32 +63,4 @@ namespace spq::ui
             ImGui::PopStyleColor(4);
         }
     }
-
-    // void ViewWindow::show_axis_settings(spq::ui::plot_settings_t& settings)
-    // {
-    //     using namespace spq::ui;
-    //
-    //     auto const spacing_right = 3.5f * ImGui::GetFontSize();
-    //     ImGui::PushItemWidth(-spacing_right);
-    //
-    //     if (ImGui::CollapsingHeader("X Axis"))
-    //     {
-    //         auto selected_x_fit_type = static_cast<int>(settings.x_fit);
-    //         if (ImGui::Combo("X Fit", &selected_x_fit_type, x_fit_names.data(), x_fit_names.size()))
-    //         {
-    //             settings.x_fit = static_cast<x_fit_t>(selected_x_fit_type);
-    //         }
-    //     }
-    //
-    //     if (ImGui::CollapsingHeader("Y Axis"))
-    //     {
-    //         auto selected_y_fit_type = static_cast<int>(settings.y_fit);
-    //         if (ImGui::Combo("Y Fit", &selected_y_fit_type, y_fit_names.data(), y_fit_names.size()))
-    //         {
-    //             settings.y_fit = static_cast<y_fit_t>(selected_y_fit_type);
-    //         }
-    //     }
-    //
-    //     ImGui::PopItemWidth();
-    // }
 }

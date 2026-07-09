@@ -31,6 +31,8 @@ namespace spq::ui
         CreatePlottingWindowCallback m_on_create_plotting_window;
         GetSelectedPlotDataCallback m_get_selected_plot_data;
 
+        static void show_dataset_selection(std::unordered_set<std::size_t>& ids_to_plot, data::Datasets& datasets);
+
     protected:
         void update_content(data::Datasets& datasets) override;
     };

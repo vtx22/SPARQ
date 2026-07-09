@@ -55,8 +55,33 @@ namespace spq::plotting
 
     struct timeseries_settings : plot_settings
     {
+        x_fit_t x_fit{};
+        y_fit_t y_fit{};
+
         void show_settings() override
         {
+            auto const spacing_right = 3.5f * ImGui::GetFontSize();
+            ImGui::PushItemWidth(-spacing_right);
+
+            if (ImGui::CollapsingHeader("X Axis"))
+            {
+                auto selected_x_fit_type = static_cast<int>(x_fit);
+                if (ImGui::Combo("X Fit", &selected_x_fit_type, x_fit_names.data(), x_fit_names.size()))
+                {
+                    x_fit = static_cast<x_fit_t>(selected_x_fit_type);
+                }
+            }
+
+            if (ImGui::CollapsingHeader("Y Axis"))
+            {
+                auto selected_y_fit_type = static_cast<int>(y_fit);
+                if (ImGui::Combo("Y Fit", &selected_y_fit_type, y_fit_names.data(), y_fit_names.size()))
+                {
+                    y_fit = static_cast<y_fit_t>(selected_y_fit_type);
+                }
+            }
+
+            ImGui::PopItemWidth();
         }
     };
 
