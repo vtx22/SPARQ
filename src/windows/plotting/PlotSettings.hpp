@@ -47,6 +47,19 @@ namespace spq::plotting
         "Manual",
         "All"};
 
+    enum class x_unit_t : uint8_t
+    {
+        samples,
+        relative_time,
+        absolute_time,
+        COUNT
+    };
+
+    constexpr std::array<char const*, static_cast<std::size_t>(x_unit_t::COUNT)> x_unit_names{
+        "Samples",
+        "Relative Time",
+        "Absolute Time"};
+
     struct plot_settings
     {
         virtual ~plot_settings() = default;
@@ -57,6 +70,7 @@ namespace spq::plotting
     {
         x_fit_t x_fit{};
         y_fit_t y_fit{};
+        x_unit_t x_unit{};
 
         void show_settings() override
         {
