@@ -33,7 +33,6 @@ namespace spq::ui
                 max_samples = static_cast<uint32_t>(std::round(max_samples / static_cast<double>(datasets.size())));
             }
 
-            std::size_t i = 0;
             for (auto& ds : datasets.data())
             {
                 if (!m_ids_to_plot.contains(ds.id))
@@ -62,8 +61,6 @@ namespace spq::ui
                         y_values.data(),
                         y_values.size());
                 }
-
-                i++;
             }
         }
 
