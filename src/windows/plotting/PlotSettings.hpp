@@ -121,10 +121,49 @@ namespace spq::plotting
         int rows{1};
         int cols{1};
         bool smooth{};
+        bool equal{};
         int smoothing_factor{5};
 
         void show_settings() override
         {
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputInt("##HMI_R", &rows);
+            ImGui::SameLine();
+            ImGui::Text("x");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputInt("###HMI_C", &cols);
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::Checkbox("Equal", &equal);
+
+            ImGui::Checkbox("Values", &show_values);
+            ImGui::SameLine();
+            ImGui::Checkbox("Smooth", &smooth);
+            ImGui::SameLine();
+            if (ImGui::InputInt("Factor", &smoothing_factor))
+            {
+                if (smoothing_factor < 1)
+                {
+                    smoothing_factor = 1;
+                }
+            }
+
+            ImGui::Checkbox("Autoscale", &autoscale);
+            ImGui::SameLine();
+            ImGui::Checkbox("Invert", &invert_scale);
+            if (autoscale)
+            {
+                ImGui::BeginDisabled();
+            }
+
+            ImGui::InputFloat("Minimum Scale", &scale_min);
+            ImGui::InputFloat("Maximum Scale", &scale_max);
+
+            if (autoscale)
+            {
+                ImGui::EndDisabled();
+            }
         }
     };
 }

@@ -21,11 +21,19 @@ namespace spq::ui
         }
 
     private:
+        void update_axes() const
+        {
+            ImPlot::SetupAxis(ImAxis_X1, nullptr, ImPlotAxisFlags_AutoFit);
+            ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
+        }
+
         plotting::heatmap_settings m_settings{};
 
     protected:
         void update_plot_contents(data::Datasets& datasets) override
         {
+            update_axes();
+
             auto const pixel_count = static_cast<std::size_t>(m_settings.rows * m_settings.cols);
             std::vector<float> values(pixel_count);
             for (std::size_t i{}; auto const& ds : datasets.data())
@@ -65,9 +73,15 @@ namespace spq::ui
 
         [[nodiscard]]
         constexpr ImPlotFlags get_plot_flags() const override
-
         {
-            return ImPlotFlags_NoMenus;
+            ImPlotFlags flags{ImPlotFlags_NoMenus};
+
+            if (m_settings.equal)
+            {
+                flags |= ImPlotFlags_Equal;
+            }
+
+            return flags;
         }
     };
 }
