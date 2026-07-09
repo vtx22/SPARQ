@@ -88,30 +88,6 @@ namespace spq::helper
 
 namespace spq::ui
 {
-    enum class x_fit_t : uint8_t
-    {
-        manual,
-        all,
-        last_n,
-        COUNT
-    };
-
-    constexpr std::array<char const*, static_cast<std::size_t>(x_fit_t::COUNT)> x_fit_names{
-        "Manual",
-        "All",
-        "Last N"};
-
-    enum class y_fit_t : uint8_t
-    {
-        manual,
-        all,
-        COUNT
-    };
-
-    constexpr std::array<char const*, static_cast<std::size_t>(y_fit_t::COUNT)> y_fit_names{
-        "Manual",
-        "All"};
-
     struct marker_t
     {
         std::string name{"M"};
