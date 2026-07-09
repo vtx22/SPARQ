@@ -1,5 +1,18 @@
 #pragma once
 
+namespace spq::plotting::internal
+{
+    template <typename Enum>
+    constexpr void enum_combo(const char* label, Enum& value, std::span<const char* const> const items)
+    {
+        int selected = static_cast<int>(value);
+        if (ImGui::Combo(label, &selected, items.data(), items.size()))
+        {
+            value = static_cast<Enum>(selected);
+        }
+    }
+}
+
 namespace spq::plotting
 {
     enum class plot_type : uint8_t
@@ -79,26 +92,13 @@ namespace spq::plotting
 
             if (ImGui::CollapsingHeader("X Axis"))
             {
-                auto selected_x_unit_type = static_cast<int>(x_unit);
-                if (ImGui::Combo("X Unit", &selected_x_unit_type, x_unit_names.data(), x_unit_names.size()))
-                {
-                    x_unit = static_cast<x_unit_t>(selected_x_unit_type);
-                }
-
-                auto selected_x_fit_type = static_cast<int>(x_fit);
-                if (ImGui::Combo("X Fit", &selected_x_fit_type, x_fit_names.data(), x_fit_names.size()))
-                {
-                    x_fit = static_cast<x_fit_t>(selected_x_fit_type);
-                }
+                internal::enum_combo("X Unit", x_unit, x_unit_names);
+                internal::enum_combo("X Fit", x_fit, x_fit_names);
             }
 
             if (ImGui::CollapsingHeader("Y Axis"))
             {
-                auto selected_y_fit_type = static_cast<int>(y_fit);
-                if (ImGui::Combo("Y Fit", &selected_y_fit_type, y_fit_names.data(), y_fit_names.size()))
-                {
-                    y_fit = static_cast<y_fit_t>(selected_y_fit_type);
-                }
+                internal::enum_combo("Y Fit", y_fit, y_fit_names);
             }
 
             ImGui::PopItemWidth();
