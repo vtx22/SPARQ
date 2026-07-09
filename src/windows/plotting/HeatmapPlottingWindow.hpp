@@ -51,6 +51,11 @@ namespace spq::ui
             if (m_settings.autoscale)
             {
                 auto [min, max] = std::ranges::minmax(values);
+
+                if (max == min)
+                {
+                    max += 1.f;
+                }
                 scale_min = min;
                 scale_max = max;
             }

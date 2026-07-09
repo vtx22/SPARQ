@@ -116,7 +116,7 @@ namespace spq::plotting
         bool show_values{};
         float scale_min{};
         float scale_max{100.f};
-        bool autoscale{};
+        bool autoscale{true};
         bool invert_scale{};
         int rows{1};
         int cols{1};
@@ -152,17 +152,10 @@ namespace spq::plotting
             ImGui::Checkbox("Autoscale", &autoscale);
             ImGui::SameLine();
             ImGui::Checkbox("Invert", &invert_scale);
-            if (autoscale)
+            if (!autoscale)
             {
-                ImGui::BeginDisabled();
-            }
-
-            ImGui::InputFloat("Minimum Scale", &scale_min);
-            ImGui::InputFloat("Maximum Scale", &scale_max);
-
-            if (autoscale)
-            {
-                ImGui::EndDisabled();
+                ImGui::InputFloat("Minimum Scale", &scale_min);
+                ImGui::InputFloat("Maximum Scale", &scale_max);
             }
         }
     };
