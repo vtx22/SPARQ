@@ -129,7 +129,7 @@ namespace spq::plotting
             ImGui::SetNextItemWidth(100);
             if (ImGui::InputInt("##HMI_R", &rows))
             {
-                rows = std::max(0, rows);
+                rows = std::max(1, rows);
             }
 
             ImGui::SameLine();
@@ -139,7 +139,7 @@ namespace spq::plotting
             ImGui::SetNextItemWidth(100);
             if (ImGui::InputInt("###HMI_C", &cols))
             {
-                cols = std::max(0, cols);
+                cols = std::max(1, cols);
             }
 
             ImGui::SameLine();
