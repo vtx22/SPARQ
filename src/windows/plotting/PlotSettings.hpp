@@ -79,6 +79,12 @@ namespace spq::plotting
 
             if (ImGui::CollapsingHeader("X Axis"))
             {
+                auto selected_x_unit_type = static_cast<int>(x_unit);
+                if (ImGui::Combo("X Unit", &selected_x_unit_type, x_unit_names.data(), x_unit_names.size()))
+                {
+                    x_unit = static_cast<x_unit_t>(selected_x_unit_type);
+                }
+
                 auto selected_x_fit_type = static_cast<int>(x_fit);
                 if (ImGui::Combo("X Fit", &selected_x_fit_type, x_fit_names.data(), x_fit_names.size()))
                 {
