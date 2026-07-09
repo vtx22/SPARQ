@@ -127,26 +127,34 @@ namespace spq::plotting
         void show_settings() override
         {
             ImGui::SetNextItemWidth(100);
-            ImGui::InputInt("##HMI_R", &rows);
+            if (ImGui::InputInt("##HMI_R", &rows))
+            {
+                rows = std::max(0, rows);
+            }
+
             ImGui::SameLine();
             ImGui::Text("x");
+
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
-            ImGui::InputInt("###HMI_C", &cols);
+            if (ImGui::InputInt("###HMI_C", &cols))
+            {
+                cols = std::max(0, cols);
+            }
+
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
             ImGui::Checkbox("Equal", &equal);
 
             ImGui::Checkbox("Values", &show_values);
+
             ImGui::SameLine();
             ImGui::Checkbox("Smooth", &smooth);
+
             ImGui::SameLine();
             if (ImGui::InputInt("Factor", &smoothing_factor))
             {
-                if (smoothing_factor < 1)
-                {
-                    smoothing_factor = 1;
-                }
+                smoothing_factor = std::max(1, smoothing_factor);
             }
 
             ImGui::Checkbox("Autoscale", &autoscale);
