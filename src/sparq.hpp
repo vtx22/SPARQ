@@ -32,6 +32,7 @@
 #include "windows/SettingsWindow.hpp"
 #include "windows/StatisticsWindow.hpp"
 #include "windows/ViewWindow.hpp"
+#include "windows/plotting/HeatmapPlottingWindow.hpp"
 #include "windows/plotting/PlottingWindow.hpp"
 #include "windows/plotting/TimeseriesPlottingWindow.hpp"
 
@@ -66,6 +67,10 @@ namespace spq
             case plotting::plot_type::timeseries:
             {
                 return std::make_unique<ui::TimeseriesPlottingWindow>(m_data_handler, id);
+            }
+            case plotting::plot_type::heatmap:
+            {
+                return std::make_unique<ui::HeatmapPlottingWindow>(m_data_handler, id);
             }
             }
         }

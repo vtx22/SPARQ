@@ -113,18 +113,58 @@ namespace spq::plotting
     struct heatmap_settings : plot_settings
     {
         bool normalize_xy{};
-        bool show_values{};
+        bool show_values{true};
         float scale_min{};
         float scale_max{100.f};
-        bool autoscale{};
+        bool autoscale{true};
         bool invert_scale{};
-        int rows{1};
-        int cols{1};
+        int rows{10};
+        int cols{10};
         bool smooth{};
+        bool equal{};
         int smoothing_factor{5};
 
         void show_settings() override
         {
+            ImGui::SetNextItemWidth(100);
+            if (ImGui::InputInt("##HMI_R", &rows))
+            {
+                rows = std::max(1, rows);
+            }
+
+            ImGui::SameLine();
+            ImGui::Text("x");
+
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            if (ImGui::InputInt("###HMI_C", &cols))
+            {
+                cols = std::max(1, cols);
+            }
+
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::Checkbox("Equal", &equal);
+
+            ImGui::Checkbox("Values", &show_values);
+
+            ImGui::SameLine();
+            ImGui::Checkbox("Smooth", &smooth);
+
+            ImGui::SameLine();
+            if (ImGui::InputInt("Factor", &smoothing_factor))
+            {
+                smoothing_factor = std::max(1, smoothing_factor);
+            }
+
+            ImGui::Checkbox("Autoscale", &autoscale);
+            ImGui::SameLine();
+            ImGui::Checkbox("Invert", &invert_scale);
+            if (!autoscale)
+            {
+                ImGui::InputFloat("Minimum Scale", &scale_min);
+                ImGui::InputFloat("Maximum Scale", &scale_max);
+            }
         }
     };
 }
