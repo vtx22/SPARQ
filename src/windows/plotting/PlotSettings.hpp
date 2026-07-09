@@ -113,13 +113,13 @@ namespace spq::plotting
     struct heatmap_settings : plot_settings
     {
         bool normalize_xy{};
-        bool show_values{};
+        bool show_values{true};
         float scale_min{};
         float scale_max{100.f};
         bool autoscale{true};
         bool invert_scale{};
-        int rows{1};
-        int cols{1};
+        int rows{10};
+        int cols{10};
         bool smooth{};
         bool equal{};
         int smoothing_factor{5};
