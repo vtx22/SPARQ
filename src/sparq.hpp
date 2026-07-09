@@ -33,6 +33,7 @@
 #include "windows/StatisticsWindow.hpp"
 #include "windows/ViewWindow.hpp"
 #include "windows/plotting/PlottingWindow.hpp"
+#include "windows/plotting/TimeseriesPlottingWindow.hpp"
 
 namespace spq
 {
@@ -52,12 +53,46 @@ namespace spq
         static void update_notifications() noexcept;
 
     private:
-        constexpr void add_plotting_window();
+        constexpr void add_plotting_window(plotting::plot_type const type)
+        {
+            m_plotting_windows.emplace_back(create_plotting_window(type, m_next_id++));
+        }
+
+        std::unique_ptr<ui::PlottingWindow> create_plotting_window(plotting::plot_type const type, IDType const id)
+        {
+            switch (type)
+            {
+            default:
+            case plotting::plot_type::timeseries:
+            {
+                return std::make_unique<ui::TimeseriesPlottingWindow>(m_data_handler, id);
+            }
+            }
+        }
 
         [[nodiscard]]
         constexpr std::optional<std::reference_wrapper<ui::PlottingWindow>> find_plot_by_id(IDType id) const noexcept;
+
+        using PlotData = std::pair<std::unordered_set<std::size_t>&, plotting::plot_settings&>;
+
         [[nodiscard]]
-        constexpr std::optional<std::reference_wrapper<spq::ui::plot_settings_t>> get_selected_plot_settings() const noexcept;
+        constexpr std::optional<PlotData> get_selected_plot_data() const noexcept
+        {
+            if (!m_selected_plot_id)
+            {
+                return std::nullopt;
+            }
+
+            if (auto const& plot = find_plot_by_id(*m_selected_plot_id))
+            {
+                return {
+                    {plot->get().ids_to_plot(), plot->get().settings()}
+                };
+            }
+
+            return std::nullopt;
+        }
+
         constexpr void cleanup_closed_plotting_windows() noexcept;
 
         Serial m_sp;

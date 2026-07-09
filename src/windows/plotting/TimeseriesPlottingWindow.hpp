@@ -6,6 +6,7 @@ namespace spq::ui
 {
     class TimeseriesPlottingWindow final : public PlottingWindow
     {
+    public:
         TimeseriesPlottingWindow(data::DataHandler& data_handler, std::size_t const id)
             : PlottingWindow(
                   std::string(ICON_FA_CHART_LINE "  Plot - Timeseries###PlottingWindow") + std::to_string(id),
@@ -13,6 +14,14 @@ namespace spq::ui
                   id)
         {
         }
+
+        plotting::plot_settings& settings() override
+        {
+            return m_settings;
+        }
+
+    private:
+        plotting::timeseries_settings m_settings{};
 
     protected:
         void update_plot_contents(data::Datasets& datasets) override
@@ -27,7 +36,7 @@ namespace spq::ui
             std::size_t i = 0;
             for (auto& ds : datasets.data())
             {
-                if (!m_plot_settings.ids_to_plot.contains(ds.id))
+                if (!m_ids_to_plot.contains(ds.id))
                 {
                     continue;
                 }
@@ -35,24 +44,24 @@ namespace spq::ui
                 std::string name = (ds.name[0] == 0) ? std::to_string(ds.id) : std::string(ds.name);
                 ImPlot::SetNextLineStyle(ds.color, 3);
 
-                auto [x_values, y_values] = get_xy_downsampled(ds, max_samples, ImPlot::GetPlotLimits().X.Min, ImPlot::GetPlotLimits().X.Max);
-
-                if (ds.display_square)
-                {
-                    ImPlot::PlotStairs(
-                        (name + "###LP" + std::to_string(ds.id)).c_str(),
-                        x_values.data(),
-                        y_values.data(),
-                        y_values.size());
-                }
-                else
-                {
-                    ImPlot::PlotLine(
-                        (name + "###LP" + std::to_string(ds.id)).c_str(),
-                        x_values.data(),
-                        y_values.data(),
-                        y_values.size());
-                }
+                // auto [x_values, y_values] = get_xy_downsampled(ds, max_samples, ImPlot::GetPlotLimits().X.Min, ImPlot::GetPlotLimits().X.Max);
+                //
+                // if (ds.display_square)
+                // {
+                //     ImPlot::PlotStairs(
+                //         (name + "###LP" + std::to_string(ds.id)).c_str(),
+                //         x_values.data(),
+                //         y_values.data(),
+                //         y_values.size());
+                // }
+                // else
+                // {
+                //     ImPlot::PlotLine(
+                //         (name + "###LP" + std::to_string(ds.id)).c_str(),
+                //         x_values.data(),
+                //         y_values.data(),
+                //         y_values.size());
+                // }
 
                 i++;
             }

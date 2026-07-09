@@ -2,6 +2,7 @@
 
 #include "../../sparq_types.hpp"
 #include "../Window.hpp"
+#include "PlotSettings.hpp"
 #include "implot.h"
 #include "implot_internal.h"
 
@@ -56,12 +57,6 @@ namespace spq::ui
         }
 
         [[nodiscard]]
-        auto& settings() noexcept
-        {
-            return m_plot_settings;
-        }
-
-        [[nodiscard]]
         constexpr auto id() const noexcept
         {
             return m_id;
@@ -71,6 +66,14 @@ namespace spq::ui
         {
             m_highlight_window = highlight;
         }
+
+        [[nodiscard]]
+        constexpr auto& ids_to_plot() noexcept
+        {
+            return m_ids_to_plot;
+        }
+
+        virtual plotting::plot_settings& settings() = 0;
 
     private:
         void update_plot(data::Datasets& datasets)
@@ -82,9 +85,8 @@ namespace spq::ui
             }
         }
 
-        bool m_highlight_window = false;
-        bool m_highlight_colors_pushed = false;
-        plot_settings_t m_plot_settings;
+        bool m_highlight_window{};
+        bool m_highlight_colors_pushed{};
         std::size_t const m_id{};
 
     protected:
@@ -133,5 +135,7 @@ namespace spq::ui
         {
             return true;
         }
+
+        std::unordered_set<std::size_t> m_ids_to_plot{};
     };
 }
