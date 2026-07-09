@@ -14,10 +14,7 @@
 
     "MeasureWindow.hpp"
     "MeasureWindow.cpp"
-
-    "PlottingWindow.hpp"
-    "PlottingWindow.cpp"
-
+    
     "SettingsWindow.hpp"
     "SettingsWindow.cpp"
 
@@ -26,3 +23,5 @@
     "ViewWindow.hpp"
     "ViewWindow.cpp"
 )
+
+add_subdirectory(plotting)

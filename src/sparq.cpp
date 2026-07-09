@@ -11,8 +11,8 @@ namespace spq
           m_measure_window(m_data_handler),
           m_view_window(
               m_data_handler,
-              [this]() { add_plotting_window(); },
-              [this]() { return get_selected_plot_settings(); }),
+              [this](plotting::plot_type const p) { add_plotting_window(p); },
+              [this]() { return get_selected_plot_data(); }),
           m_statistics_window(m_data_handler),
           m_settings_window(m_data_handler),
           m_debug_window(m_data_handler)
@@ -24,7 +24,7 @@ namespace spq
     {
         std::cout << "\n=== SPARQ " << SPARQ_VERSION << " ===\n\n";
         std::cout << "Initializing ...\n\n";
-        std::cout << "System Endianess: " << (spq::helper::is_little_endian() ? "Little Endian" : "Big Endian") << "\n";
+        std::cout << "System Endianess: " << (helper::is_little_endian() ? "Little Endian" : "Big Endian") << "\n";
 
         if (window_init() < 0)
         {
@@ -51,7 +51,7 @@ namespace spq
 #endif
 
         // add one default plotting window at startup
-        add_plotting_window();
+        add_plotting_window(plotting::plot_type::timeseries);
     }
 
     int SPARQ::window_init()
@@ -224,12 +224,6 @@ namespace spq
         }
     }
 
-    constexpr void SPARQ::add_plotting_window()
-    {
-        m_plotting_windows.push_back(
-            std::make_unique<ui::PlottingWindow>(m_data_handler, m_next_id++));
-    }
-
     constexpr std::optional<std::reference_wrapper<ui::PlottingWindow>> SPARQ::find_plot_by_id(IDType const id) const noexcept
     {
         for (auto const& plot : m_plotting_windows)
@@ -238,21 +232,6 @@ namespace spq
             {
                 return *plot;
             }
-        }
-
-        return std::nullopt;
-    }
-
-    constexpr std::optional<std::reference_wrapper<spq::ui::plot_settings_t>> SPARQ::get_selected_plot_settings() const noexcept
-    {
-        if (!m_selected_plot_id)
-        {
-            return std::nullopt;
-        }
-
-        if (auto const& plot = find_plot_by_id(*m_selected_plot_id))
-        {
-            return plot->get().settings();
         }
 
         return std::nullopt;
