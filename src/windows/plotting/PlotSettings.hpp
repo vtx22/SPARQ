@@ -1,5 +1,18 @@
 #pragma once
 
+namespace spq::plotting::internal
+{
+    template <typename Enum>
+    constexpr void enum_combo(const char* label, Enum& value, std::span<const char* const> const items)
+    {
+        int selected = static_cast<int>(value);
+        if (ImGui::Combo(label, &selected, items.data(), items.size()))
+        {
+            value = static_cast<Enum>(selected);
+        }
+    }
+}
+
 namespace spq::plotting
 {
     enum class plot_type : uint8_t
@@ -47,6 +60,24 @@ namespace spq::plotting
         "Manual",
         "All"};
 
+    enum class x_unit_t : uint8_t
+    {
+        samples,
+        relative_time,
+        absolute_time,
+        COUNT
+    };
+
+    constexpr std::array<char const*, static_cast<std::size_t>(x_unit_t::COUNT)> x_unit_names{
+        "Samples",
+        "Relative Time",
+        "Date Time"};
+
+    constexpr std::array<char const*, static_cast<std::size_t>(x_unit_t::COUNT)> x_unit_labels{
+        "Samples",
+        "Relative Time [s]",
+        "Date Time"};
+
     struct plot_settings
     {
         virtual ~plot_settings() = default;
@@ -55,8 +86,9 @@ namespace spq::plotting
 
     struct timeseries_settings : plot_settings
     {
-        x_fit_t x_fit{};
-        y_fit_t y_fit{};
+        x_fit_t x_fit{x_fit_t::all};
+        y_fit_t y_fit{y_fit_t::all};
+        x_unit_t x_unit{};
 
         void show_settings() override
         {
@@ -65,20 +97,13 @@ namespace spq::plotting
 
             if (ImGui::CollapsingHeader("X Axis"))
             {
-                auto selected_x_fit_type = static_cast<int>(x_fit);
-                if (ImGui::Combo("X Fit", &selected_x_fit_type, x_fit_names.data(), x_fit_names.size()))
-                {
-                    x_fit = static_cast<x_fit_t>(selected_x_fit_type);
-                }
+                internal::enum_combo("X Unit", x_unit, x_unit_names);
+                internal::enum_combo("X Fit", x_fit, x_fit_names);
             }
 
             if (ImGui::CollapsingHeader("Y Axis"))
             {
-                auto selected_y_fit_type = static_cast<int>(y_fit);
-                if (ImGui::Combo("Y Fit", &selected_y_fit_type, y_fit_names.data(), y_fit_names.size()))
-                {
-                    y_fit = static_cast<y_fit_t>(selected_y_fit_type);
-                }
+                internal::enum_combo("Y Fit", y_fit, y_fit_names);
             }
 
             ImGui::PopItemWidth();

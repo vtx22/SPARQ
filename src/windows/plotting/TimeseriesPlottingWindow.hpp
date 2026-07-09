@@ -21,11 +21,62 @@ namespace spq::ui
         }
 
     private:
+        constexpr void update_axes() const
+        {
+            using namespace spq::plotting;
+
+            auto const x_label = x_unit_labels[static_cast<uint8_t>(m_settings.x_unit)];
+            switch (m_settings.x_fit)
+            {
+            case x_fit_t::manual:
+            {
+                ImPlot::SetupAxis(ImAxis_X1, x_label, 0);
+                break;
+            }
+            case x_fit_t::all:
+            {
+                ImPlot::SetupAxis(ImAxis_X1, x_label, ImPlotAxisFlags_AutoFit);
+                break;
+            }
+            default:
+                break;
+            }
+
+            switch (m_settings.x_unit)
+            {
+            case x_unit_t::absolute_time:
+            {
+                ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
+                break;
+            }
+            default:
+                break;
+            }
+
+            switch (m_settings.y_fit)
+            {
+            case y_fit_t::manual:
+            {
+                ImPlot::SetupAxis(ImAxis_Y1, nullptr, 0);
+                break;
+            }
+            case y_fit_t::all:
+            {
+                ImPlot::SetupAxis(ImAxis_Y1, nullptr, ImPlotAxisFlags_AutoFit);
+                break;
+            }
+            default:
+                break;
+            }
+        }
+
         plotting::timeseries_settings m_settings{};
 
     protected:
         void update_plot_contents(data::Datasets& datasets) override
         {
+            update_axes();
+
             uint32_t max_samples = std::stoi(m_config_handler.ini["downsampling"]["max_samples"]);
 
             if (m_config_handler.ini["downsampling"]["max_samples_type"] == "0" && !datasets.empty())
