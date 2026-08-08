@@ -58,12 +58,12 @@ namespace spq::ui
                 ImGui::SetNextItemWidth(200);
 
                 std::string ds_selector_name = std::to_string(markers[i].ds_id);
-                if (markers[i].ds_id != -1 && datasets[markers[i].ds_index].name.length() > 0)
+                if (markers[i].ds_id != -1 && !datasets[markers[i].ds_index].name.empty())
                 {
                     ds_selector_name += " [" + datasets[markers[i].ds_index].name + "]";
                 }
 
-                std::string const ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1)
+                std::string const ds_selector_preview = (datasets.empty() || markers[i].ds_id == -1)
                                                           ? "None Selected"
                                                           : ds_selector_name;
                 // TODO: Fix mutex lock issue
@@ -80,7 +80,7 @@ namespace spq::ui
                         auto const is_selected = (n == markers[i].ds_index);
 
                         std::string selectable_name = std::to_string(datasets[n].id);
-                        if (datasets[n].name.length() > 0)
+                        if (!datasets[n].name.empty())
                         {
                             selectable_name += " [" + datasets[n].name + "]";
                         }

@@ -179,7 +179,7 @@ namespace spq::ui
                 max_index = x_values->size() - 1;
             }
 
-            std::size_t number_of_samples = max_index - min_index;
+            std::size_t const number_of_samples = max_index - min_index;
 
             // Keep only the values that are visible
             x_in_view.resize(number_of_samples);

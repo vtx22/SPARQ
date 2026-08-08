@@ -40,14 +40,14 @@ namespace spq
     {
         m_fixed_windows.clear();
 
-        m_fixed_windows.push_back(m_connection_window);
-        m_fixed_windows.push_back(m_data_window);
-        m_fixed_windows.push_back(m_measure_window);
-        m_fixed_windows.push_back(m_view_window);
-        m_fixed_windows.push_back(m_statistics_window);
-        m_fixed_windows.push_back(m_settings_window);
+        m_fixed_windows.emplace_back(m_connection_window);
+        m_fixed_windows.emplace_back(m_data_window);
+        m_fixed_windows.emplace_back(m_measure_window);
+        m_fixed_windows.emplace_back(m_view_window);
+        m_fixed_windows.emplace_back(m_statistics_window);
+        m_fixed_windows.emplace_back(m_settings_window);
 #ifdef SPARQ_DEBUG_BUILD
-        m_fixed_windows.push_back(m_debug_window);
+        m_fixed_windows.emplace_back(m_debug_window);
 #endif
 
         // add one default plotting window at startup
@@ -156,7 +156,7 @@ namespace spq
             ImGui::SFML::Update(m_render_window, deltaClock.restart());
 
             // == DRAWING == //
-            ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
+            ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 
             update_windows();
             update_notifications();

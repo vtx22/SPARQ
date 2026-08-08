@@ -3,7 +3,7 @@
 namespace spq::plotting::internal
 {
     template <typename Enum>
-    constexpr void enum_combo(const char* label, Enum& value, std::span<const char* const> const items)
+    constexpr void enum_combo(char const* label, Enum& value, std::span<char const* const> const items)
     {
         int selected = static_cast<int>(value);
         if (ImGui::Combo(label, &selected, items.data(), items.size()))

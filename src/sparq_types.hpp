@@ -30,7 +30,7 @@ namespace spq::helper
      * @return The computed XOR checksum as a uint8_t.
      */
     [[nodiscard]]
-    constexpr uint8_t xor8_cs(std::span<const uint8_t> const data, std::size_t const length) noexcept
+    constexpr uint8_t xor8_cs(std::span<uint8_t const> const data, std::size_t const length) noexcept
     {
         uint8_t cs{};
 
@@ -181,11 +181,9 @@ namespace spq::data
         uint16_t payload_length{};
         uint8_t checksum{};
 
-        message_header_t()
-        {
-        }
+        message_header_t() = default;
 
-        message_header_t(uint8_t const* buffer)
+        explicit message_header_t(uint8_t const* buffer)
         {
             from_array(buffer);
         }
@@ -269,7 +267,7 @@ namespace spq::data
             ids.resize(nval);
             values.resize(nval);
 
-            for (uint8_t pair = 0; pair < nval; pair++)
+            for (uint16_t pair = 0; pair < nval; pair++)
             {
                 auto const pair_index = SPARQ_MESSAGE_HEADER_LENGTH + pair * SPARQ_BYTES_PER_VALUE_PAIR;
 
