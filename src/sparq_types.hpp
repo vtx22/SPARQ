@@ -199,11 +199,11 @@ namespace spq::data
 
             if (message_endianess == spq::helper::is_little_endian())
             {
-                payload_length = (buffer[2] << 8) + buffer[3];
+                payload_length = (buffer[3] << 8) + buffer[2];
             }
             else
             {
-                payload_length = (buffer[3] << 8) + buffer[2];
+                payload_length = (buffer[2] << 8) + buffer[3];
             }
 
             checksum = buffer[4];
