@@ -27,13 +27,13 @@ namespace spq::ui
                 ImGui::Text("  %zu", datasets[i].id);
                 ImGui::TableSetColumnIndex(1);
                 ImGui::SetNextItemWidth(150);
-                char* name_buffer = datasets[i].name_buffer;
+                auto& name_buffer = datasets[i].name_buffer;
                 ImGui::InputTextWithHint(
                     ("##DsNameTB" + i_str).c_str(),
                     "Custom Name",
-                    name_buffer,
-                    sizeof(name_buffer));
-                datasets[i].name = name_buffer;
+                    name_buffer.data(),
+                    name_buffer.size());
+                datasets[i].set_name(name_buffer.data());
                 ImGui::TableSetColumnIndex(2);
                 ImGui::ColorEdit4(
                     ("##DsColor" + i_str).c_str(),

@@ -134,7 +134,7 @@ namespace spq::data
     struct dataset_t
     {
         std::size_t id{};
-        char name_buffer[64] = {0};
+        std::array<char, 64> name_buffer{};
         std::string name{};
         std::string name_with_id{};
         ImVec4 color{1.f, 0.f, 0.f, 1.f};
@@ -170,7 +170,7 @@ namespace spq::data
         {
             name = new_name;
             name_with_id = name + " [" + std::to_string(id) + "]";
-            std::snprintf(name_buffer, sizeof(name_buffer), "%s", name.c_str());
+            std::snprintf(name_buffer.data(), sizeof(name_buffer), "%s", name.c_str());
         }
     };
 

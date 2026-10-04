@@ -51,7 +51,7 @@ namespace spq::ui
                 return;
             }
 
-            for (auto& d : datasets.data())
+            for (auto const& d : datasets.data())
             {
                 constexpr ImVec4 button_color{0.f, 0.5f, 1.f, 1.f};
                 auto const button_state_color = ids_to_plot.contains(d.id) ? button_color : ImVec4{};
