@@ -23,7 +23,6 @@ namespace spq::data
             if (received_message)
             {
                 auto const& message = received_message.value();
-                std::scoped_lock lock{m_data_mutex};
 
                 switch (message.message_type)
                 {
@@ -37,7 +36,6 @@ namespace spq::data
                 {
                     auto const dataset_lock = datasets();
                     auto& datasets = dataset_lock.get();
-
                     datasets.add_from_message(message);
                     break;
                 }
