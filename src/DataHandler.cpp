@@ -117,17 +117,14 @@ namespace spq::data
             if (ds.has_value())
             {
                 auto& ds_ref = ds.value().get();
-                ds_ref.name = new_name;
-                std::strncpy(ds_ref.name_buffer, new_name.c_str(), sizeof(ds_ref.name_buffer));
+                ds_ref.set_name(new_name);
             }
             else
             {
                 dataset_t new_ds;
                 new_ds.id = id;
-                new_ds.name = new_name;
+                new_ds.set_name(new_name);
                 new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + datasets.size());
-                std::strncpy(new_ds.name_buffer, new_name.c_str(), sizeof(new_ds.name_buffer));
-
                 datasets.add_dataset(new_ds);
             }
 

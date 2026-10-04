@@ -239,6 +239,7 @@ namespace spq::data
 
                     ds_new.id = message.ids[i];
                     ds_new.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + m_datasets.size());
+                    ds_new.set_name("");
 
                     auto const rel_time = (message.timestamp - m_first_receive_timestamp) / 1000.0;
                     auto const abs_time = message.timestamp / 1000.0;
