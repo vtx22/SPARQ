@@ -24,7 +24,6 @@ namespace spq
     {
         std::cout << "\n=== SPARQ " << SPARQ_VERSION << " ===\n\n";
         std::cout << "Initializing ...\n\n";
-        std::cout << "System Endianess: " << (helper::is_little_endian() ? "Little Endian" : "Big Endian") << "\n";
 
         if (window_init() < 0)
         {
@@ -40,14 +39,14 @@ namespace spq
     {
         m_fixed_windows.clear();
 
-        m_fixed_windows.push_back(m_connection_window);
-        m_fixed_windows.push_back(m_data_window);
-        m_fixed_windows.push_back(m_measure_window);
-        m_fixed_windows.push_back(m_view_window);
-        m_fixed_windows.push_back(m_statistics_window);
-        m_fixed_windows.push_back(m_settings_window);
+        m_fixed_windows.emplace_back(m_connection_window);
+        m_fixed_windows.emplace_back(m_data_window);
+        m_fixed_windows.emplace_back(m_measure_window);
+        m_fixed_windows.emplace_back(m_view_window);
+        m_fixed_windows.emplace_back(m_statistics_window);
+        m_fixed_windows.emplace_back(m_settings_window);
 #ifdef SPARQ_DEBUG_BUILD
-        m_fixed_windows.push_back(m_debug_window);
+        m_fixed_windows.emplace_back(m_debug_window);
 #endif
 
         // add one default plotting window at startup

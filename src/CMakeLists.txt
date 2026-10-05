@@ -1,147 +1,50 @@
-﻿# ─────────────────────────────────────────────
-#  Collect sources
-# ─────────────────────────────────────────────
+﻿include(Vendor)
+
 file(GLOB OWN_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-file(GLOB IMGUI_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/imgui/*.cpp")
-file(GLOB IMSFML_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/imgui-sfml/*.cpp")
-file(GLOB IMPLOT_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/implot/*.cpp")
-file(GLOB IMSTYLE_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ImStyles/*.cpp")
 
-set(ALL_SOURCES
-    ${OWN_SOURCES}
-    ${IMGUI_SOURCES}
-    ${IMSFML_SOURCES}
-    ${IMPLOT_SOURCES}
-    ${IMSTYLE_SOURCES}
-)
+if (WIN32 AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/SPARQ.res")
+    list(APPEND OWN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/SPARQ.res")
+endif ()
 
-# ─────────────────────────────────────────────
-#  Platform-specific sources
-# ─────────────────────────────────────────────
-if(WIN32)
-    file(GLOB SERIAL_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cpp-serial-win/src/*.cpp")
-    list(APPEND ALL_SOURCES ${SERIAL_SOURCES})
-
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/SPARQ.res")
-        list(APPEND ALL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/SPARQ.res")
-    endif()
-endif()
-
-if(UNIX AND NOT APPLE)
-    file(GLOB SERIAL_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cpp-serial-lin/src/*.cpp")
-    list(APPEND ALL_SOURCES ${SERIAL_SOURCES})
-endif()
-
-# ─────────────────────────────────────────────
-#  Executable
-# ─────────────────────────────────────────────
-add_executable(${PROJECT_NAME} ${ALL_SOURCES})
+add_executable(SPARQ ${OWN_SOURCES})
 add_subdirectory(windows)
-# ─────────────────────────────────────────────
-#  Include directories
-# ─────────────────────────────────────────────
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/imgui
-    ${CMAKE_CURRENT_SOURCE_DIR}/imgui-sfml
-    ${CMAKE_CURRENT_SOURCE_DIR}/implot
-    ${CMAKE_CURRENT_SOURCE_DIR}/ImStyles
-)
 
-if(WIN32)
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/cpp-serial-win/src
-    )
-endif()
+target_include_directories(SPARQ PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_precompile_headers(SPARQ PRIVATE pch.hpp)
 
-if(UNIX AND NOT APPLE)
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/cpp-serial-lin/src
-    )
-endif()
+target_link_libraries(SPARQ PRIVATE
+        imgui_sfml
+        implot
+        imstyles
+        serial
+        sfml-graphics sfml-window sfml-system)
 
-# ─────────────────────────────────────────────
-#  Compile definitions
-# ─────────────────────────────────────────────
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE SPARQ_DEBUG_BUILD)
-else()
-    target_compile_definitions(${PROJECT_NAME} PRIVATE SPARQ_RELEASE_BUILD)
-endif()
+if (TARGET SPARQ-Protocol)
+    target_link_libraries(SPARQ PRIVATE SPARQ-Protocol)
+else ()
+    target_include_directories(SPARQ SYSTEM PRIVATE "${sparq-protocol_SOURCE_DIR}")
+endif ()
 
-if(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE SPARQ_WINDOWS_BUILD)
-endif()
+target_compile_definitions(SPARQ PRIVATE
+        $<$<CONFIG:Debug>:SPARQ_DEBUG_BUILD>
+        $<$<NOT:$<CONFIG:Debug>>:SPARQ_RELEASE_BUILD>
+        $<$<BOOL:${WIN32}>:SPARQ_WINDOWS_BUILD>
+        $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>>:BUILD_LINUX>)
 
-if(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE
-        IMGUI_SFML_VIEWPORTS_ENABLE
-        SFML_STATIC
-        NOMINMAX
-        WIN32_LEAN_AND_MEAN
-    )
+target_compile_options(SPARQ PRIVATE
+        $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall>
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>)
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        opengl32
-        gdi32
-        dwmapi
-    )
+if (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_link_options(SPARQ PRIVATE -static -Wl,--allow-multiple-definition)
+endif ()
 
-    # By linking winmm the console window is hidden for release builds
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        target_link_libraries(${PROJECT_NAME} PRIVATE
-            winmm
-        )
-    endif()
-
-
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        target_compile_definitions(${PROJECT_NAME} PRIVATE
-            SFML_USE_STATIC_STD_LIBS
-        )
-
-        target_link_options(${PROJECT_NAME} PRIVATE
-            -static-libstdc++
-            -static-libgcc
-            --static
-        )
-    endif()
-endif()
-
-if(UNIX AND NOT APPLE)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE BUILD_LINUX)
-endif()
-
-# ─────────────────────────────────────────────
-#  Link libraries
-# ─────────────────────────────────────────────
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    sfml-graphics
-    sfml-window
-    sfml-system
-)
-
-if(UNIX AND NOT APPLE)
-    target_link_libraries(${PROJECT_NAME} PRIVATE GL)
-endif()
-
-# ─────────────────────────────────────────────
-#  Compiler warnings
-# ─────────────────────────────────────────────
-target_compile_options(${PROJECT_NAME} PRIVATE
-    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall>
-    $<$<CXX_COMPILER_ID:MSVC>:/W4>
-)
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${CMAKE_SOURCE_DIR}/src/default-configs/config.ini
-    ${CMAKE_SOURCE_DIR}/src/default-configs/imgui.ini
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>
-
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/src/assets
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
-
-    COMMENT "Copying runtime assets..."
-)
+add_custom_command(TARGET SPARQ POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_CURRENT_SOURCE_DIR}/default-configs/config.ini
+        ${CMAKE_CURRENT_SOURCE_DIR}/default-configs/imgui.ini
+        $<TARGET_FILE_DIR:SPARQ>
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:SPARQ>/assets
+        COMMENT "Copying runtime assets...")

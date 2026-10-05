@@ -8,6 +8,8 @@
 #include "sparq_types.hpp"
 #include "windows/ConsoleWindow.hpp"
 
+#include <sparq/decoder.hpp>
+
 namespace spq::data
 {
     class DataHandler final
@@ -49,7 +51,7 @@ namespace spq::data
               m_console_window(console_window)
         {
             m_sp.set_timeouts(0xFFFF'FFFF, 0, 0, 0, 0);
-            m_serial_buffer.reserve(static_cast<std::size_t>(SPARQ_MAX_MESSAGE_LENGTH) * 2);
+            m_serial_buffer.reserve(constants::max_message_length * 2);
 
             m_receive_thread = std::thread(&DataHandler::receiver_loop, this);
             std::cout << "Starting receiver thread ...\n";
@@ -70,10 +72,10 @@ namespace spq::data
         }
 
         void receiver_loop();
-        std::optional<message_t> receive_message();
 
-        [[nodiscard]]
-        constexpr std::vector<ui::marker_t>& get_markers() noexcept
+        std::optional<timestamped_message_view> receive_message();
+
+        [[nodiscard]] constexpr std::vector<ui::marker_t>& get_markers() noexcept
         {
             return m_markers;
         }
@@ -95,7 +97,7 @@ namespace spq::data
         }
 
     private:
-        void handle_command(message_t const& message);
+        void handle_command(timestamped_message_view const& message);
 
         Serial& m_sp;
         ui::ConsoleWindow& m_console_window;
@@ -110,5 +112,8 @@ namespace spq::data
         std::mutex m_data_mutex, m_serial_mutex;
 
         Datasets m_datasets{};
+
+        decoder<constants::max_message_length * 4> m_decoder{};
+        std::uint64_t m_rx_timestamp{};
     };
 }

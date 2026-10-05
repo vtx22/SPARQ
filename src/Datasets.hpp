@@ -202,66 +202,51 @@ namespace spq::data
          * @brief Adds data from a received message to the appropriate dataset.
          * @param message The received message containing the data to add.
          */
-        void add_from_message(message_t const& message)
+        void add_from_message(timestamped_message_view const& message)
         {
             if (m_first_receive_timestamp == 0)
             {
                 m_first_receive_timestamp = message.timestamp;
             }
 
+            // same for every sample of this message, so compute once
+            auto const rel_time = static_cast<double>(message.timestamp - m_first_receive_timestamp) / 1000.0;
+            auto const abs_time = static_cast<double>(message.timestamp) / 1000.0;
+
             m_timestamps.emplace_back(message.timestamp);
-            m_rel_times.emplace_back((message.timestamp - m_first_receive_timestamp) / 1000.0);
+            m_rel_times.emplace_back(rel_time);
 
-            // if (!_console_window.TextOnly)
-            // {
-            //     _console_window.add_data_to_log(message.ids.data(), message.values.data(), message.nval);
-            // }
-
-            for (uint16_t i = 0; i < message.nval; i++)
+            for (auto const [id, value] : message.view.samples())
             {
-                dataset_t* ds = nullptr;
+                auto& ds = find_or_create_dataset(id);
 
-                for (auto& d : m_datasets)
-                {
-                    if (d.id == message.ids[i])
-                    {
-                        ds = &d;
-                        break;
-                    }
-                }
+                auto const sample_index = ds.samples.empty()
+                                            ? static_cast<double>(m_current_absolute_sample)
+                                            : (ds.samples.back() + 1.0);
 
-                // The dataset does not exist, we have to create a new one
-                if (ds == nullptr)
-                {
-                    std::cout << "DS not found, creating new one! ID: " << static_cast<int>(message.ids[i]) << "\n";
-
-                    dataset_t ds_new;
-
-                    ds_new.id = message.ids[i];
-                    ds_new.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + m_datasets.size());
-                    ds_new.set_name("");
-
-                    auto const rel_time = (message.timestamp - m_first_receive_timestamp) / 1000.0;
-                    auto const abs_time = message.timestamp / 1000.0;
-
-                    ds_new.append_raw_values(m_current_absolute_sample, rel_time, abs_time, message.values[i]);
-                    m_datasets.push_back(ds_new);
-
-                    continue;
-                }
-
-                // Dataset already exists but might be empty
-                auto const new_sample = ds->samples.empty()
-                                          ? static_cast<double>(m_current_absolute_sample)
-                                          : (ds->samples.back() + 1.0);
-                auto const new_rel_time = (message.timestamp - m_first_receive_timestamp) / 1000.0;
-                auto const new_abs_time = message.timestamp / 1000.0;
-                auto const new_y_value = message.values[i];
-
-                ds->append_raw_values(new_sample, new_rel_time, new_abs_time, new_y_value);
+                ds.append_raw_values(sample_index, rel_time, abs_time, value);
             }
 
             m_current_absolute_sample++;
+        }
+
+        [[nodiscard]]
+        constexpr dataset_t& find_or_create_dataset(std::uint8_t const id)
+        {
+            if (auto const it = std::ranges::find(m_datasets, id, &dataset_t::id); it != m_datasets.end())
+            {
+                return *it;
+            }
+
+            std::cout << "DS not found, creating new one! ID: " << static_cast<int>(id) << "\n";
+
+            auto const color_index = ImPlot::GetColormapSize() / 2 + static_cast<int>(m_datasets.size());
+
+            auto& ds = m_datasets.emplace_back();
+            ds.id = id;
+            ds.color = ImPlot::GetColormapColor(color_index);
+            ds.set_name("");
+            return ds;
         }
 
         /**
