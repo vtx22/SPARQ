@@ -1,4 +1,4 @@
-﻿include(Vendor)
+﻿include(vendor)
 
 file(GLOB OWN_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
