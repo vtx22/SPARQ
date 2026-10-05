@@ -64,6 +64,9 @@ namespace spq
             switch (type)
             {
             default:
+            {
+                ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Not implemented yet!"});
+            }
             case plotting::plot_type::timeseries:
             {
                 return std::make_unique<ui::TimeseriesPlottingWindow>(m_data_handler, id);
