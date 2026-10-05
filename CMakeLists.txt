@@ -7,8 +7,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include(FetchContent)
-
 set(SFML_BUILD_AUDIO OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_NETWORK OFF CACHE BOOL "" FORCE)
 set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -21,20 +19,10 @@ else ()
     set(BUILD_SHARED_LIBS TRUE CACHE BOOL "" FORCE)
 endif ()
 
-FetchContent_Declare(SFML
-        GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG 2.5.1
-        GIT_SHALLOW ON
-        EXCLUDE_FROM_ALL
-        SYSTEM)
+include(cmake/CPM.cmake)
 
-FetchContent_Declare(SPARQ-Protocol
-        GIT_REPOSITORY https://github.com/vtx22/SPARQ-Protocol.git
-        GIT_TAG v2.0.1
-        GIT_SHALLOW ON)
-
-FetchContent_MakeAvailable(SFML SPARQ-Protocol)
-
+CPMAddPackage("gh:SFML/SFML#2.5.1")
+CPMAddPackage("gh:vtx22/SPARQ-Protocol#v2.0.1")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
