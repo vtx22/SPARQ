@@ -101,57 +101,94 @@ namespace spq::data
 
     void DataHandler::handle_command(timestamped_message_view const& message)
     {
-        // auto const dataset_lock = datasets();
-        // auto& datasets = dataset_lock.get();
-        // auto const& view = message.view;
-        //
-        // switch (*view.command())
-        // {
-        // case sender_command::clear_console:
-        //     m_console_window.clear_log();
-        //     break;
-        // case sender_command::set_dataset_name:
-        // {
-        //     auto const id = message.command_data[0];
-        //     auto const ds = datasets.get(id);
-        //     auto const new_name = std::string(
-        //         reinterpret_cast<char const*>(&message.command_data[1]),
-        //         message.command_data.size() - 1);
-        //
-        //     if (ds.has_value())
-        //     {
-        //         auto& ds_ref = ds.value().get();
-        //         ds_ref.set_name(new_name);
-        //     }
-        //     else
-        //     {
-        //         dataset_t new_ds;
-        //         new_ds.id = id;
-        //         new_ds.set_name(new_name);
-        //         new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + datasets.size());
-        //         datasets.add_dataset(new_ds);
-        //     }
-        //
-        //     break;
-        // }
-        // case sender_command_t::CLEAR_ALL_DATASETS:
-        //     datasets.clear_all();
-        //     break;
-        // case sender_command_t::DELETE_ALL_DATASETS:
-        //     datasets.delete_all();
-        //     break;
-        // case sender_command_t::CLEAR_SINGLE_DATASET:
-        //     datasets.clear(message.command_data[0]);
-        //     break;
-        // case sender_command_t::DELETE_SINGLE_DATASET:
-        //     datasets.delete_dataset(message.command_data[0]);
-        //     break;
-        // case sender_command_t::SWITCH_PLOT_TYPE:
-        //     // TODO: Reenable this later however possible: plot_settings.type = (spq::plotting::plot_type)message.command_data[0];
-        //     break;
-        // default:
-        //     break;
-        // }
+        auto const& view = message.view;
+
+        auto const command = view.command();
+        if (!command.has_value())
+        {
+            return;
+        }
+
+        // Bytes after the command byte. The decoder only guarantees that the command byte exists,
+        // so this may be empty and has to be checked before it is indexed.
+        auto const data = view.command_data();
+
+        auto const reject_malformed = [] {
+            ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Malformed sender command!"});
+        };
+
+        auto const dataset_lock = datasets();
+        auto& datasets = dataset_lock.get();
+        
+        switch (*command)
+        {
+        case sender_command::clear_console:
+        {
+            m_console_window.clear_log();
+            break;
+        }
+        case sender_command::set_dataset_name:
+        {
+            if (data.empty())
+            {
+                reject_malformed();
+                break;
+            }
+
+            auto const id = data[0];
+            auto const name_bytes = data.subspan(1u); // may be empty: clears the name
+            std::string const new_name{reinterpret_cast<char const*>(name_bytes.data()), name_bytes.size()};
+
+            auto const ds = datasets.get(id);
+
+            if (ds.has_value())
+            {
+                auto& ds_ref = ds.value().get();
+                ds_ref.set_name(new_name);
+            }
+            else
+            {
+                dataset_t new_ds;
+                new_ds.id = id;
+                new_ds.set_name(new_name);
+                new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + static_cast<int>(datasets.size()));
+                datasets.add_dataset(new_ds);
+            }
+
+            break;
+        }
+
+        case sender_command::clear_all_datasets:
+            datasets.clear_all();
+            break;
+
+        case sender_command::delete_all_datasets:
+            datasets.delete_all();
+            break;
+
+        case sender_command::clear_single_dataset:
+            if (data.empty())
+            {
+                reject_malformed();
+                break;
+            }
+            datasets.clear(data[0]);
+            break;
+
+        case sender_command::delete_single_dataset:
+            if (data.empty())
+            {
+                reject_malformed();
+                break;
+            }
+            datasets.delete_dataset(data[0]);
+            break;
+
+        case sender_command::switch_plot_type: // TODO: Reenable this later however possible: plot_settings.type = (spq::plotting::plot_type)data[0];
+        default:
+            ImGui::InsertNotification({ImGuiToastType::Error, SPARQ_NOTIFY_DURATION_ERR, "Sender command not implemented!"});
+            break;
+        }
     }
 
     [[nodiscard]]
