@@ -30,7 +30,7 @@ FetchContent_Declare(SFML
 
 FetchContent_Declare(SPARQ-Protocol
         GIT_REPOSITORY https://github.com/vtx22/SPARQ-Protocol.git
-        GIT_TAG v2.0.0
+        GIT_TAG v2.0.1
         GIT_SHALLOW ON)
 
 FetchContent_MakeAvailable(SFML SPARQ-Protocol)
