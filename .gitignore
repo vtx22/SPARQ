@@ -14,3 +14,4 @@ src/nul
 *.aps
 *.APS
 /.idea
+/src/.idea

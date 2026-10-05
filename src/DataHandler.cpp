@@ -8,7 +8,7 @@ namespace spq::data
 
         while (m_running)
         {
-            std::unique_lock serial_lock(m_serial_mutex);
+            std::unique_lock serial_lock{m_serial_mutex};
 
             if (!m_sp.get_open())
             {
@@ -22,14 +22,14 @@ namespace spq::data
 
             if (received_message)
             {
-                auto const& message = received_message.value();
+                auto const& message = *received_message;
 
-                switch (message.message_type)
+                switch (message.view.type())
                 {
-                case message_type_t::STRING:
-                    m_console_window.add_log(message.string_data.c_str());
+                case message_type::string:
+                    m_console_window.add_log(message.view.string()->data());
                     break;
-                case message_type_t::SENDER_COMMAND:
+                case message_type::command:
                     handle_command(message);
                     break;
                 default:
@@ -40,6 +40,9 @@ namespace spq::data
                     break;
                 }
                 }
+
+                // If a message was received there is a chance there is more in the buffer, so dont do the sleep for now
+                continue;
             }
 
             // Add sleep only once per fixed interval
@@ -96,150 +99,86 @@ namespace spq::data
         }
     }
 
-    void DataHandler::handle_command(message_t const& message)
+    void DataHandler::handle_command(timestamped_message_view const& message)
     {
-        auto const dataset_lock = datasets();
-        auto& datasets = dataset_lock.get();
-
-        switch (message.command_type)
-        {
-        case sender_command_t::CLEAR_CONSOLE:
-            m_console_window.clear_log();
-            break;
-        case sender_command_t::SET_DATASET_NAME:
-        {
-            auto const id = message.command_data[0];
-            auto const ds = datasets.get(id);
-            auto const new_name = std::string(
-                reinterpret_cast<char const*>(&message.command_data[1]),
-                message.command_data.size() - 1);
-
-            if (ds.has_value())
-            {
-                auto& ds_ref = ds.value().get();
-                ds_ref.set_name(new_name);
-            }
-            else
-            {
-                dataset_t new_ds;
-                new_ds.id = id;
-                new_ds.set_name(new_name);
-                new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + datasets.size());
-                datasets.add_dataset(new_ds);
-            }
-
-            break;
-        }
-        case sender_command_t::CLEAR_ALL_DATASETS:
-            datasets.clear_all();
-            break;
-        case sender_command_t::DELETE_ALL_DATASETS:
-            datasets.delete_all();
-            break;
-        case sender_command_t::CLEAR_SINGLE_DATASET:
-            datasets.clear(message.command_data[0]);
-            break;
-        case sender_command_t::DELETE_SINGLE_DATASET:
-            datasets.delete_dataset(message.command_data[0]);
-            break;
-        case sender_command_t::SWITCH_PLOT_TYPE:
-            // TODO: Reenable this later however possible: plot_settings.type = (spq::plotting::plot_type)message.command_data[0];
-            break;
-        default:
-            break;
-        }
+        // auto const dataset_lock = datasets();
+        // auto& datasets = dataset_lock.get();
+        // auto const& view = message.view;
+        //
+        // switch (*view.command())
+        // {
+        // case sender_command::clear_console:
+        //     m_console_window.clear_log();
+        //     break;
+        // case sender_command::set_dataset_name:
+        // {
+        //     auto const id = message.command_data[0];
+        //     auto const ds = datasets.get(id);
+        //     auto const new_name = std::string(
+        //         reinterpret_cast<char const*>(&message.command_data[1]),
+        //         message.command_data.size() - 1);
+        //
+        //     if (ds.has_value())
+        //     {
+        //         auto& ds_ref = ds.value().get();
+        //         ds_ref.set_name(new_name);
+        //     }
+        //     else
+        //     {
+        //         dataset_t new_ds;
+        //         new_ds.id = id;
+        //         new_ds.set_name(new_name);
+        //         new_ds.color = ImPlot::GetColormapColor(ImPlot::GetColormapSize() / 2 + datasets.size());
+        //         datasets.add_dataset(new_ds);
+        //     }
+        //
+        //     break;
+        // }
+        // case sender_command_t::CLEAR_ALL_DATASETS:
+        //     datasets.clear_all();
+        //     break;
+        // case sender_command_t::DELETE_ALL_DATASETS:
+        //     datasets.delete_all();
+        //     break;
+        // case sender_command_t::CLEAR_SINGLE_DATASET:
+        //     datasets.clear(message.command_data[0]);
+        //     break;
+        // case sender_command_t::DELETE_SINGLE_DATASET:
+        //     datasets.delete_dataset(message.command_data[0]);
+        //     break;
+        // case sender_command_t::SWITCH_PLOT_TYPE:
+        //     // TODO: Reenable this later however possible: plot_settings.type = (spq::plotting::plot_type)message.command_data[0];
+        //     break;
+        // default:
+        //     break;
+        // }
     }
 
-    std::optional<message_t> DataHandler::receive_message()
+    [[nodiscard]]
+    std::optional<timestamped_message_view> DataHandler::receive_message()
     {
-        static bool in_message = false;
+        if (auto const msg = m_decoder.next()) // frames left over from the last read
+        {
+            return timestamped_message_view{.view = *msg, .timestamp = m_rx_timestamp};
+        }
 
-        // Read everything that's available
-        auto const len = m_sp.read(m_serial_buffer.data(), SPARQ_MAX_MESSAGE_LENGTH * 2);
+        auto const dst = m_decoder.write_span();
+        auto const received = m_sp.read(dst.data(), dst.size());
 
-        if (len <= 0 && m_message_buffer.empty())
+        if (received == 0)
         {
             return std::nullopt;
         }
 
-        // Append to message buffer
-        m_message_buffer.insert(m_message_buffer.end(), m_serial_buffer.begin(), m_serial_buffer.begin() + len);
+        m_rx_timestamp = helper::now_ms();
+        m_decoder.commit(received);
 
-        if (!in_message)
+        if (auto const msg = m_decoder.next())
         {
-            // We are waiting for a new message, so check everything that we have for a signature
-            for (size_t i = 0; i < m_message_buffer.size(); i++)
-            {
-                // TODO: Replace with set signature
-                if (m_message_buffer[i] == SPARQ_DEFAULT_SIGNATURE)
-                {
-                    // Delete everything in font of the signature so that the current message is always at the front
-                    m_message_buffer.erase(m_message_buffer.begin(), m_message_buffer.begin() + i);
-
-                    in_message = true;
-                    break;
-                }
-            }
-
-            // No signature found, ditch buffer
-            if (!in_message)
-            {
-                m_message_buffer.clear();
-                return std::nullopt;
-            }
+            return timestamped_message_view{.view = *msg, .timestamp = m_rx_timestamp};
         }
 
-        // If we got here signature was detected and it is at the start of the buffer
-
-        // Message is not complete yet, header is incomplete
-        if (m_message_buffer.size() < SPARQ_MESSAGE_HEADER_LENGTH)
-        {
-            return std::nullopt;
-        }
-
-        message_t message{};
-        message.header.from_array(m_message_buffer.data());
-
-        if (message.header.checksum != spq::helper::xor8_cs(m_message_buffer, SPARQ_MESSAGE_HEADER_LENGTH - 1))
-        {
-            // Header checksum is wrong, clear the message buffer from that part
-            m_message_buffer.erase(m_message_buffer.begin(), m_message_buffer.begin() + SPARQ_MESSAGE_HEADER_LENGTH);
-            in_message = false;
-            return std::nullopt;
-        }
-
-        auto const total_message_length = SPARQ_MESSAGE_HEADER_LENGTH + SPARQ_CHECKSUM_LENGTH + message.header.payload_length;
-
-        if (m_message_buffer.size() < total_message_length)
-        {
-            // Message is not complete yet
-            return std::nullopt;
-        }
-
-        // Finally we got a full message
-        message.from_array(m_message_buffer.data());
-
-        in_message = false;
-
-        // Check message checksum if enabled, otherwise assume message valid
-        message.valid = true;
-        if (message.header.control & static_cast<uint8_t>(header_control_t::CS_EN))
-        {
-            message.valid = (message.checksum == spq::helper::xor8_cs(m_message_buffer, total_message_length - 1));
-        }
-
-        if (!message.valid)
-        {
-            std::cerr << "Message Checksum is wrong!\n";
-        }
-
-        // Save current timestep
-        using namespace std::chrono;
-        message.timestamp = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-
-        // Clear the message from the buffer
-        m_message_buffer.erase(m_message_buffer.begin(), m_message_buffer.begin() + total_message_length);
-        return message;
+        return std::nullopt;
     }
 
     void DataHandler::export_datasets_csv(Datasets const& datasets)
