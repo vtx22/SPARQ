@@ -84,6 +84,13 @@ namespace spq::helper
         return (char_to_hex_value(high) << 4) | char_to_hex_value(low);
     }
 
+    [[nodiscard]]
+    constexpr std::uint64_t now_ms() noexcept
+    {
+        using namespace std::chrono;
+        return static_cast<std::uint64_t>(duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count());
+    }
+
 }
 
 namespace spq::ui
