@@ -1,6 +1,6 @@
 #pragma once
 
-#define SPARQ_VERSION "v0.5.2"
+#define SPARQ_VERSION "v0.6.0"
 
 constexpr auto SPARQ_MAX_FPS = 120;
 constexpr auto SPARQ_FONT = "./assets/roboto.ttf";
