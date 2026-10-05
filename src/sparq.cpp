@@ -24,7 +24,6 @@ namespace spq
     {
         std::cout << "\n=== SPARQ " << SPARQ_VERSION << " ===\n\n";
         std::cout << "Initializing ...\n\n";
-        std::cout << "System Endianess: " << (helper::is_little_endian() ? "Little Endian" : "Big Endian") << "\n";
 
         if (window_init() < 0)
         {
