@@ -22,7 +22,7 @@ endif ()
 include(cmake/CPM.cmake)
 
 CPMAddPackage("gh:SFML/SFML#2.5.1")
-CPMAddPackage("gh:vtx22/SPARQ-Protocol#v2.0.1")
+CPMAddPackage("gh:vtx22/SPARQ-Protocol#v2.2.0")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
