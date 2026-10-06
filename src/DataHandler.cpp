@@ -56,47 +56,31 @@ namespace spq::data
         }
     }
 
-    void DataHandler::update_markers()
+    [[nodiscard]]
+    std::optional<timestamped_message_view> DataHandler::receive_message()
     {
-        for (auto& m : m_markers)
+        if (auto const msg = m_decoder.next()) // frames left over from the last read
         {
-            if (m.ds_id == -1)
-            {
-                continue;
-            }
-
-            auto const dataset_lock = datasets();
-            auto& datasets = dataset_lock.get();
-
-            auto const& ds = datasets[m.ds_index];
-
-            if (ds.samples.size() < 2)
-            {
-                continue;
-            }
-
-            std::size_t si = 0;
-            for (si = 0; si < ds.samples.size(); si++)
-            {
-                if (ds.samples[si] > m.x)
-                {
-                    break;
-                }
-            }
-
-            if (si == 0)
-            {
-                m.y = 0;
-                continue;
-            }
-
-            auto const s_upper = ds.samples[si];
-            auto const s_lower = ds.samples[si - 1];
-            auto const y_upper = ds.y_values[si];
-            auto const y_lower = ds.y_values[si - 1];
-
-            m.y = y_lower + (y_upper - y_lower) / (s_upper - s_lower) * (m.x - s_lower);
+            return timestamped_message_view{.view = *msg, .timestamp = m_rx_timestamp};
         }
+
+        auto const dst = m_decoder.write_span();
+        auto const received = m_sp.read(dst.data(), dst.size());
+
+        if (received == 0)
+        {
+            return std::nullopt;
+        }
+
+        m_rx_timestamp = helper::now_ms();
+        m_decoder.commit(received);
+
+        if (auto const msg = m_decoder.next())
+        {
+            return timestamped_message_view{.view = *msg, .timestamp = m_rx_timestamp};
+        }
+
+        return std::nullopt;
     }
 
     void DataHandler::handle_command(timestamped_message_view const& message)
@@ -119,7 +103,7 @@ namespace spq::data
 
         auto const dataset_lock = datasets();
         auto& datasets = dataset_lock.get();
-        
+
         switch (*command)
         {
         case sender_command::clear_console:
@@ -191,31 +175,47 @@ namespace spq::data
         }
     }
 
-    [[nodiscard]]
-    std::optional<timestamped_message_view> DataHandler::receive_message()
+    void DataHandler::update_markers()
     {
-        if (auto const msg = m_decoder.next()) // frames left over from the last read
+        for (auto& m : m_markers)
         {
-            return timestamped_message_view{.view = *msg, .timestamp = m_rx_timestamp};
+            if (m.ds_id == -1)
+            {
+                continue;
+            }
+
+            auto const dataset_lock = datasets();
+            auto& datasets = dataset_lock.get();
+
+            auto const& ds = datasets[m.ds_index];
+
+            if (ds.samples.size() < 2)
+            {
+                continue;
+            }
+
+            std::size_t si = 0;
+            for (si = 0; si < ds.samples.size(); si++)
+            {
+                if (ds.samples[si] > m.x)
+                {
+                    break;
+                }
+            }
+
+            if (si == 0)
+            {
+                m.y = 0;
+                continue;
+            }
+
+            auto const s_upper = ds.samples[si];
+            auto const s_lower = ds.samples[si - 1];
+            auto const y_upper = ds.y_values[si];
+            auto const y_lower = ds.y_values[si - 1];
+
+            m.y = y_lower + (y_upper - y_lower) / (s_upper - s_lower) * (m.x - s_lower);
         }
-
-        auto const dst = m_decoder.write_span();
-        auto const received = m_sp.read(dst.data(), dst.size());
-
-        if (received == 0)
-        {
-            return std::nullopt;
-        }
-
-        m_rx_timestamp = helper::now_ms();
-        m_decoder.commit(received);
-
-        if (auto const msg = m_decoder.next())
-        {
-            return timestamped_message_view{.view = *msg, .timestamp = m_rx_timestamp};
-        }
-
-        return std::nullopt;
     }
 
     void DataHandler::export_datasets_csv(Datasets const& datasets)
