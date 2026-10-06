@@ -13,7 +13,7 @@ namespace spq::data
             if (!m_sp.get_open())
             {
                 serial_lock.unlock();
-                std::this_thread::sleep_for(milliseconds(SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS));
+                std::this_thread::sleep_for(milliseconds(SPARQ_RECEIVE_LOOP_DELAY_INTERVAL));
                 continue;
             }
 
@@ -48,7 +48,7 @@ namespace spq::data
             // Add sleep only once per fixed interval
             static auto last_sleep_time = steady_clock::now();
             auto const current_time = steady_clock::now();
-            if (std::chrono::duration_cast<milliseconds>(current_time - last_sleep_time).count() >= SPARQ_RECEIVE_LOOP_DELAY_INTERVAL_MS)
+            if (current_time - last_sleep_time >= SPARQ_RECEIVE_LOOP_DELAY_INTERVAL)
             {
                 std::this_thread::sleep_for(SPARQ_RECEIVE_LOOP_DELAY);
                 last_sleep_time = current_time;
