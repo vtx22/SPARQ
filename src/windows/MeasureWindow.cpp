@@ -63,24 +63,24 @@ namespace spq::ui
                     ds_selector_name += " [" + datasets[markers[i].ds_index].name + "]";
                 }
 
-                std::string const ds_selector_preview = (datasets.size() == 0 || markers[i].ds_id == -1)
+                std::string const ds_selector_preview = (datasets.empty() || markers[i].ds_id == -1)
                                                           ? "None Selected"
                                                           : ds_selector_name;
                 // TODO: Fix mutex lock issue
 
-                if (datasets.size() == 0)
+                if (datasets.empty())
                 {
                     ImGui::BeginDisabled();
                 }
 
                 if (ImGui::BeginCombo((std::string("###MarkerDatasetSelect") + i_str).c_str(), ds_selector_preview.c_str()))
                 {
-                    for (uint8_t n = 0; n < datasets.size(); n++)
+                    for (std::size_t n = 0; n < datasets.size(); n++)
                     {
-                        auto const is_selected = (n == markers[i].ds_index);
+                        auto const is_selected = n == markers[i].ds_index;
 
                         std::string selectable_name = std::to_string(datasets[n].id);
-                        if (datasets[n].name.length() > 0)
+                        if (!datasets[n].name.empty())
                         {
                             selectable_name += " [" + datasets[n].name + "]";
                         }
@@ -100,7 +100,7 @@ namespace spq::ui
                     ImGui::EndCombo();
                 }
 
-                if (datasets.size() == 0)
+                if (datasets.empty())
                 {
                     ImGui::EndDisabled();
                 }

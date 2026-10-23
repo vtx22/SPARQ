@@ -155,7 +155,7 @@ namespace spq
             ImGui::SFML::Update(m_render_window, deltaClock.restart());
 
             // == DRAWING == //
-            ImGui::DockSpaceOverViewport(0, ImGuiDockNodeFlags_PassthruCentralNode);
+            ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 
             update_windows();
             update_notifications();
